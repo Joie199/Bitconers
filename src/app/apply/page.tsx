@@ -364,20 +364,23 @@ export default function ApplyPage() {
                     setFormData({ ...formData, preferredCohort: cohortId });
                     setSelectedCohort(cohortId ? parseInt(cohortId) : null);
                   }}
-                  className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
+                  className={`w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer ${
+                    formData.preferredCohort ? 'text-green-400' : 'text-zinc-50'
+                  }`}
                 >
                   <option value="" className="bg-zinc-950 text-zinc-400">Select a cohort</option>
                   {cohorts.map((cohort) => (
-                    <option key={cohort.id} value={cohort.id} className="bg-zinc-950 text-zinc-50">
+                    <option 
+                      key={cohort.id} 
+                      value={cohort.id} 
+                      className={`bg-zinc-950 ${
+                        formData.preferredCohort === cohort.id.toString() ? 'text-green-400' : 'text-zinc-50'
+                      }`}
+                    >
                       {cohort.name} ({cohort.available} seats available)
                     </option>
                   ))}
                 </select>
-                {selectedCohort && (
-                  <p className="mt-1 text-xs text-green-400">
-                    ✓ {cohorts.find((c) => c.id === selectedCohort)?.name}
-                  </p>
-                )}
               </div>
             </div>
 
