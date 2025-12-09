@@ -21,6 +21,7 @@ A modern, visual guide to understanding Bitcoin — from keys and UTXOs to minin
 - **Interactive Learning Chapters** - Comprehensive Bitcoin education from basics to advanced topics with Bitcoin-themed icons and suggested order
 - **Cohort Registration** - Africa-focused registration with automatic country codes, flags, cohort selection from Notion, and real-time seat availability
 - **Cohort Management** - Dynamic cohort display with status, sessions, level badges (Beginner/Intermediate/Advanced), and available seats calculated from enrollments
+- **Developer Hub** - Comprehensive roadmap for Bitcoin developers with learning resources, community links, opportunities, portfolio projects, and certification path
 - **Mentorship Program** - Apply to become a mentor, guest lecturer, volunteer, or ambassador with clear vetting steps
 - **Impact Dashboard** - Track progress with metrics, cohort history, and outcomes
 - **Donation Support** - Lightning Network and on-chain Bitcoin donations
