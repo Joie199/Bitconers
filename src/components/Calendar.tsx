@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface CalendarEvent {
@@ -13,99 +13,32 @@ interface CalendarEvent {
   description?: string;
 }
 
-// Mock events data
-const events: CalendarEvent[] = [
-  {
-    id: '1',
-    title: 'Week 3 Live Class',
-    date: new Date(2025, 1, 7), // Feb 7, 2025
-    type: 'live-class',
-    time: '7:00 PM EAT',
-    link: '#',
-  },
-  {
-    id: '2',
-    title: 'Decode a Transaction',
-    date: new Date(2025, 1, 10), // Feb 10, 2025
-    type: 'assignment',
-    link: '#',
-  },
-  {
-    id: '3',
-    title: 'Office Hours with Mentors',
-    date: new Date(2025, 1, 8), // Feb 8, 2025
-    type: 'community',
-    time: '6:00 PM EAT',
-    link: '#',
-  },
-  {
-    id: '4',
-    title: 'Lightning Workshop',
-    date: new Date(2025, 1, 10), // Feb 10, 2025
-    type: 'workshop',
-    time: '8:00 PM EAT',
-    link: '#',
-  },
-  {
-    id: '5',
-    title: 'Lightning Invoice Challenge',
-    date: new Date(2025, 1, 12), // Feb 12, 2025
-    type: 'deadline',
-    link: '#',
-  },
-  {
-    id: '6',
-    title: 'WhatsApp Q&A Session',
-    date: new Date(2025, 1, 9), // Feb 9, 2025
-    type: 'community',
-    time: '5:00 PM EAT',
-    link: '#',
-  },
-  {
-    id: '7',
-    title: 'Guest Mentor Talk',
-    date: new Date(2025, 1, 14), // Feb 14, 2025
-    type: 'community',
-    time: '7:30 PM EAT',
-    link: '#',
-  },
-  {
-    id: '8',
-    title: 'Lightning Practice Session',
-    date: new Date(2025, 1, 11), // Feb 11, 2025
-    type: 'community',
-    time: '6:30 PM EAT',
-    link: '#',
-  },
-  {
-    id: '9',
-    title: 'Quiz 1',
-    date: new Date(2025, 0, 20), // Jan 20, 2025
-    type: 'quiz',
-    link: '#',
-  },
-  {
-    id: '10',
-    title: 'Final Assessment',
-    date: new Date(2025, 1, 4), // Feb 4, 2025
-    type: 'quiz',
-    link: '#',
-  },
-  {
-    id: '11',
-    title: 'Cohort Start',
-    date: new Date(2025, 0, 15), // Jan 15, 2025
-    type: 'cohort',
-    link: '#',
-  },
-  {
-    id: '12',
-    title: 'Graduation Ceremony',
-    date: new Date(2025, 1, 28), // Feb 28, 2025
-    type: 'cohort',
-    link: '#',
-  },
-];
+// Fallback mock events (dated relative to "now") used if API fails
+const createFallbackEvents = (): CalendarEvent[] => {
+  const now = new Date();
+  const d1 = new Date(now);
+  const d2 = new Date(now);
+  d1.setDate(now.getDate() + 1);
+  d2.setDate(now.getDate() + 2);
+  return [
+    {
+      id: 'fallback-1',
+      title: 'Live Class - Welcome Session',
+      date: d1,
+      type: 'live-class',
+      time: '7:00 PM',
+      link: '#',
+    },
+    {
+      id: 'fallback-2',
+      title: 'Office Hours with Mentors',
+      date: d2,
+      type: 'community',
+      time: '6:00 PM',
+      link: '#',
+    },
+  ];
+};
 
 const eventTypeColors = {
   'live-class': 'bg-blue-500/20 border-blue-500/50 text-blue-300',
@@ -131,6 +64,53 @@ export function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [view, setView] = useState<'month' | 'list'>('month');
+  const [events, setEvents] = useState<CalendarEvent[]>(createFallbackEvents());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch events from Notion API
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch('/api/notion/events');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch events: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.events && Array.isArray(data.events)) {
+          // Transform API events (date is ISO string) to CalendarEvent format
+          const transformedEvents: CalendarEvent[] = data.events.map((event: any) => ({
+            id: event.id,
+            title: event.title,
+            date: new Date(event.date),
+            type: event.type,
+            time: event.time,
+            link: event.link || '#',
+            description: event.description,
+          }));
+          
+          setEvents(transformedEvents);
+        } else {
+          // If no events or invalid format, use fallback
+          setEvents(createFallbackEvents());
+        }
+      } catch (err: any) {
+        console.error('Error fetching events:', err);
+        setError(err.message);
+        // Use fallback events on error
+        setEvents(createFallbackEvents());
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchEvents();
+  }, []);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -151,21 +131,18 @@ export function Calendar() {
     );
   };
 
-  // Get upcoming events (next 7 days)
+  // Get upcoming events (all future, sorted by date/time)
   const getUpcomingEvents = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
 
     return events
       .filter((event) => {
         const eventDate = new Date(event.date);
-        eventDate.setHours(0, 0, 0, 0);
-        return eventDate >= today && eventDate <= nextWeek;
+        return eventDate.getTime() >= today.getTime();
       })
       .sort((a, b) => a.date.getTime() - b.date.getTime())
-      .slice(0, 5);
+      .slice(0, 10);
   };
 
   // Navigate months
@@ -230,6 +207,20 @@ export function Calendar() {
           </button>
         </div>
       </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="mb-4 text-center text-sm text-zinc-400">
+          Loading events...
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="mb-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-2 text-xs text-yellow-300">
+          {error} (using fallback events)
+        </div>
+      )}
 
       {view === 'month' ? (
         <>
@@ -390,9 +381,17 @@ export function Calendar() {
                     </span>
                     <span className="text-xs text-zinc-500">•</span>
                     <span className="text-xs font-medium">{eventTypeLabels[event.type]}</span>
+                    {event.time && (
+                      <>
+                        <span className="text-xs text-zinc-500">•</span>
+                        <span className="text-xs text-zinc-300">{event.time}</span>
+                      </>
+                    )}
                   </div>
                   <div className="font-medium">{event.title}</div>
-                  {event.time && <div className="mt-1 text-xs text-zinc-400">{event.time}</div>}
+                  {event.description && (
+                    <div className="mt-1 text-xs text-zinc-400 line-clamp-2">{event.description}</div>
+                  )}
                 </div>
                 <a
                   href={generateGoogleCalendarLink(event)}
@@ -406,6 +405,11 @@ export function Calendar() {
               </div>
             </div>
           ))}
+          {getUpcomingEvents().length === 0 && (
+            <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-3 text-center text-sm text-zinc-400">
+              No upcoming events
+            </div>
+          )}
         </div>
       )}
 

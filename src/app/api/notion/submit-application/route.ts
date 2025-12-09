@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPage, formatPropertiesForSubmission } from '@/lib/notion';
+import { createPage, formatPropertiesForSubmission, notion } from '@/lib/notion';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,8 +26,31 @@ export async function POST(request: NextRequest) {
     // Clean the database ID - remove any whitespace
     const cleanDbId = databaseId.trim().replace(/\s/g, '');
 
-    // Format properties for Notion
-    const properties = formatPropertiesForSubmission(formData);
+    // Optional: resolve Preferred Cohort relation if Cohorts DB is configured
+    let preferredCohortRelation: { id: string }[] | undefined;
+    const cohortsDbId = process.env.NOTION_COHORTS_DB_ID?.trim().replace(/\s/g, '');
+    if (formData.preferredCohort && cohortsDbId) {
+      try {
+        const match = await notion.databases.query({
+          database_id: cohortsDbId,
+          filter: {
+            property: 'Name',
+            title: {
+              equals: formData.preferredCohort,
+            },
+          },
+        });
+        const page = match.results?.[0];
+        if (page?.id) {
+          preferredCohortRelation = [{ id: page.id }];
+        }
+      } catch (cohortError) {
+        console.error('Error resolving cohort relation:', cohortError);
+      }
+    }
+
+    // If the Notion property is a relation, send relation even if no match (empty array)
+    const properties = formatPropertiesForSubmission(formData, preferredCohortRelation ?? []);
 
     // Create page in Notion database
     const page = await createPage(cleanDbId, properties);

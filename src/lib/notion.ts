@@ -10,12 +10,30 @@ export async function queryDatabase(databaseId: string) {
   try {
     // Clean the database ID - remove any whitespace and ensure proper format
     const cleanId = databaseId.trim().replace(/\s/g, '');
-    
-    // Use the correct API method - query pages in a database
-    const response = await notion.databases.query({
-      database_id: cleanId,
+
+    const apiKey = process.env.NOTION_API_KEY;
+    if (!apiKey) {
+      throw new Error('NOTION_API_KEY is not set');
+    }
+
+    // Direct fetch to avoid client bundling issues
+    const res = await fetch(`https://api.notion.com/v1/databases/${cleanId}/query`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
     });
-    return response.results;
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Notion query failed (${res.status}): ${text}`);
+    }
+
+    const json = await res.json();
+    return json.results;
   } catch (error) {
     console.error('Error querying Notion database:', error);
     throw error;
@@ -72,16 +90,19 @@ export function extractText(richText: any[]): string {
 }
 
 // Helper function to format Notion properties for form submission
-export function formatPropertiesForSubmission(formData: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  country: string;
-  city: string;
-  experienceLevel: string;
-  preferredCohort: string;
-}) {
+export function formatPropertiesForSubmission(
+  formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    country: string;
+    city: string;
+    experienceLevel: string;
+    preferredCohort: string;
+  },
+  preferredCohortRelation?: { id: string }[]
+) {
   return {
     'Name': {
       title: [
@@ -121,15 +142,20 @@ export function formatPropertiesForSubmission(formData: {
         name: formData.experienceLevel,
       },
     },
-    'Preferred Cohort': {
-      rich_text: [
-        {
-          text: {
-            content: formData.preferredCohort,
-          },
+    // If the Notion property is a relation, supply relation; otherwise fallback to rich text
+    'Preferred Cohort': preferredCohortRelation
+      ? {
+          relation: preferredCohortRelation,
+        }
+      : {
+          rich_text: [
+            {
+              text: {
+                content: formData.preferredCohort,
+              },
+            },
+          ],
         },
-      ],
-    },
   };
 }
 

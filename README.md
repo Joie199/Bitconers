@@ -6,25 +6,28 @@ A modern, visual guide to understanding Bitcoin — from keys and UTXOs to minin
 
 - **Student Dashboard** - Comprehensive dashboard with progress tracking, achievements, sats wallet, calendar, assignments, and learning path
 - **Interactive Calendar** - Full-featured calendar with month/list views, color-coded events (live classes, assignments, deadlines, quizzes), and Google Calendar integration
-- **Authentication System** - Sign In modal with beautiful UI and backdrop blur effects
+- **Authentication System** - Sign In/Sign Up modal with beautiful UI, backdrop blur effects, and Notion-based profile management
+- **Profile Management** - User profiles with editable information, profile picture upload, and automatic data sync with Notion
 - **Progress Tracking** - Gamified progress overview with course completion, chapters, assignments, sats earned, and attendance rates
-- **Achievements System** - Unlockable achievements with visual badges
-- **Sats Wallet** - Track earned sats with pending rewards and LNURL withdrawal
-- **Learning Path** - Interactive chapter cards with status indicators (completed, in-progress, locked)
+- **Achievements System** - Unlockable achievements with visual badges fetched from Notion
+- **Sats Wallet** - Track earned sats with pending rewards from Notion Sats Rewards database
+- **Learning Path** - Interactive chapter cards with status indicators (completed, in-progress, locked) and icons
 - **Assignments & Tasks** - Organized view of due assignments and completed tasks
-- **Live Sessions** - Upcoming events with join buttons and calendar integration
+- **Live Sessions** - Upcoming events fetched from Notion Events database with join buttons and calendar integration
 - **Community Integration** - Quick access to WhatsApp, Nostr, mentor messaging, and Q&A
 - **Resources Hub** - Centralized access to guides, wallets, tools, and tutorials
 - **Certification Tracking** - Progress towards certification with requirements checklist
-- **Leaderboard** - Rankings based on sats earned, assignments completed, and attendance
+- **Leaderboard** - Rankings based on sats earned from Notion Achievements database
 - **Interactive Learning Chapters** - Comprehensive Bitcoin education from basics to advanced topics with Bitcoin-themed icons and suggested order
-- **Cohort Registration** - Africa-focused registration with automatic country codes, mandatory phone, and unified dropdown styling
+- **Cohort Registration** - Africa-focused registration with automatic country codes, flags, cohort selection from Notion, and real-time seat availability
+- **Cohort Management** - Dynamic cohort display with status, sessions, level badges (Beginner/Intermediate/Advanced), and available seats calculated from enrollments
 - **Mentorship Program** - Apply to become a mentor, guest lecturer, volunteer, or ambassador with clear vetting steps
 - **Impact Dashboard** - Track progress with metrics, cohort history, and outcomes
 - **Donation Support** - Lightning Network and on-chain Bitcoin donations
 - **Blog ("Voices of the Bitcoin Academy")** - Student and mentor stories, technical deep dives, featured posts, and submissions
 - **FAQ Section** - Answers to common questions about time zones, requirements, and policies
 - **Full-width Layout & Bitcoin Backgrounds** - Futuristic Bitcoin B, blockchain, and keys visuals across all pages
+- **Notion Integration** - Full database integration for students, applications, cohorts, enrollments, events, sats rewards, achievements, and profiles
 
 ## Pages
 
@@ -63,9 +66,16 @@ Create a `.env.local` file in the root directory (see `env.template` for referen
 NOTION_API_KEY=secret_your_notion_api_key_here
 NOTION_APPLICATIONS_DB_ID=your_applications_database_id_here
 NOTION_COHORTS_DB_ID=your_cohorts_database_id_here
+NOTION_COHORT_ENROLLMENT_DB_ID=your_cohort_enrollment_database_id_here
+NOTION_STUDENTS_DB_ID=your_students_database_id_here
+NOTION_EVENTS_DB_ID=your_events_database_id_here
+NOTION_SATS_REWARDS_DB_ID=your_sats_rewards_database_id_here
+NOTION_ACHIEVEMENTS_DB_ID=your_achievements_database_id_here
+NOTION_PROFILE_DB_ID=your_profile_database_id_here
+# ... and more (see env.template for full list)
 ```
 
-See [NOTION_SETUP.md](./NOTION_SETUP.md) for detailed setup instructions.
+See [NOTION_SETUP.md](./NOTION_SETUP.md) and [NOTION_DATABASES.md](./NOTION_DATABASES.md) for detailed setup instructions.
 
 ### Run the Development Server
 
@@ -115,7 +125,12 @@ src/
 │       └── notion/        # Notion integration endpoints
 │           ├── test/      # Connection test endpoint
 │           ├── submit-application/ # Form submission endpoint
-│           └── cohorts/   # Cohorts data endpoint
+│           ├── cohorts/   # Cohorts data endpoint
+│           ├── students/  # Students data endpoint
+│           ├── events/    # Events/calendar data endpoint
+│           ├── sats/      # Sats rewards data endpoint
+│           ├── leaderboard/ # Leaderboard data endpoint
+│           └── profile/   # Profile management endpoints (login, register, update)
 ├── app/layout.tsx         # Root layout with Bitcoin backgrounds
 └── tailwind.config.ts     # Tailwind theme (Bitcoin palette)
 ```

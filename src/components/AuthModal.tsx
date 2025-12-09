@@ -18,6 +18,8 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -38,9 +40,10 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
 
   if (!isOpen || !mounted) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
+    setServerError(null);
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -48,19 +51,40 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
       newErrors.email = 'Email is invalid';
     }
 
+    // We do not verify password against Notion (not stored there)
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
 
     if (isSignIn) {
       // Sign in logic
       if (Object.keys(newErrors).length === 0) {
-        console.log('Sign in:', formData.email);
-        // TODO: Implement actual sign in logic
-        alert('Sign in functionality will be implemented');
-        onClose();
+        try {
+          setLoading(true);
+          const res = await fetch('/api/notion/profile/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: formData.email }),
+          });
+          if (!res.ok) throw new Error(`Login failed (${res.status})`);
+          const data = await res.json();
+          if (data.found) {
+            try {
+              localStorage.setItem('profileEmail', formData.email);
+            } catch {
+              // ignore
+            }
+            onClose();
+            // navigate to dashboard
+            window.location.href = '/dashboard';
+          } else {
+            setServerError('Invalid credentials. User not found.');
+          }
+        } catch (err: any) {
+          setServerError(err.message || 'Sign in failed.');
+        } finally {
+          setLoading(false);
+        }
       }
     } else {
       // Sign up logic
@@ -75,10 +99,31 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
       }
 
       if (Object.keys(newErrors).length === 0) {
-        console.log('Sign up:', formData);
-        // TODO: Implement actual sign up logic
-        alert('Sign up functionality will be implemented');
-        onClose();
+        try {
+          setLoading(true);
+          const [firstName = '', lastName = ''] = formData.name.split(' ');
+          const res = await fetch('/api/notion/profile/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              firstName: firstName || formData.name,
+              lastName: lastName || '',
+              email: formData.email,
+            }),
+          });
+          if (!res.ok) throw new Error(`Sign up failed (${res.status})`);
+          await res.json();
+          try {
+            localStorage.setItem('profileEmail', formData.email);
+          } catch {
+            // ignore
+          }
+          onClose();
+        } catch (err: any) {
+          setServerError(err.message || 'Sign up failed.');
+        } finally {
+          setLoading(false);
+        }
       }
     }
 
@@ -284,11 +329,18 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-white transition hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
+            disabled={loading}
+            className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 font-semibold text-white transition hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400/50 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSignIn ? 'Sign In' : 'Create Account'}
+            {loading ? 'Working...' : isSignIn ? 'Sign In' : 'Create Account'}
           </button>
         </form>
+
+        {serverError && (
+          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+            {serverError}
+          </div>
+        )}
 
         {/* Switch mode */}
         <div className="mt-6 text-center">

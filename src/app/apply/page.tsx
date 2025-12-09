@@ -2,38 +2,18 @@
 
 import { useState, useEffect } from "react";
 
-const cohorts = [
-  {
-    id: 1,
-    name: "Cohort 1 - January 2025",
-    startDate: "January 15, 2025",
-    endDate: "March 15, 2025",
-    seats: 20,
-    available: 8,
-    level: "Beginner",
-    duration: "8 weeks",
-  },
-  {
-    id: 2,
-    name: "Cohort 2 - March 2025",
-    startDate: "March 1, 2025",
-    endDate: "April 26, 2025",
-    seats: 25,
-    available: 15,
-    level: "Intermediate",
-    duration: "8 weeks",
-  },
-  {
-    id: 3,
-    name: "Cohort 3 - May 2025",
-    startDate: "May 5, 2025",
-    endDate: "June 30, 2025",
-    seats: 30,
-    available: 30,
-    level: "Beginner",
-    duration: "8 weeks",
-  },
-];
+interface Cohort {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  sessions: number;
+  level: string;
+  seats: number;
+  available: number;
+  enrolled: number;
+}
 
 const africanCountries = [
   { name: "Nigeria", code: "+234", flag: "🇳🇬" },
@@ -90,7 +70,10 @@ const africanCountries = [
 ];
 
 export default function ApplyPage() {
-  const [selectedCohort, setSelectedCohort] = useState<number | null>(null);
+  const [cohorts, setCohorts] = useState<Cohort[]>([]);
+  const [cohortsLoading, setCohortsLoading] = useState(true);
+  const [cohortsError, setCohortsError] = useState<string | null>(null);
+  const [selectedCohort, setSelectedCohort] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCountryCode, setSelectedCountryCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -136,15 +119,69 @@ export default function ApplyPage() {
     setFormData({ ...formData, phone: fullPhone });
   };
 
+  // Fetch cohorts from Notion
+  useEffect(() => {
+    const fetchCohorts = async () => {
+      try {
+        setCohortsLoading(true);
+        setCohortsError(null);
+        const res = await fetch('/api/notion/cohorts');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch cohorts: ${res.status}`);
+        }
+        const data = await res.json();
+        
+        // Format dates and transform data
+        const formattedCohorts: Cohort[] = (data.cohorts || []).map((cohort: any) => {
+          const formatDate = (dateStr: string) => {
+            if (!dateStr) return 'TBD';
+            try {
+              const date = new Date(dateStr);
+              return date.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+              });
+            } catch {
+              return dateStr;
+            }
+          };
+          
+          return {
+            id: cohort.id,
+            name: cohort.name || 'Unnamed Cohort',
+            startDate: formatDate(cohort.startDate),
+            endDate: formatDate(cohort.endDate),
+            status: cohort.status || '',
+            sessions: cohort.sessions || 0,
+            level: cohort.level || 'Beginner',
+          };
+        });
+        
+        setCohorts(formattedCohorts);
+      } catch (err: any) {
+        console.error('Error fetching cohorts:', err);
+        setCohortsError(err.message || 'Failed to load cohorts');
+        // Fallback to empty array
+        setCohorts([]);
+      } finally {
+        setCohortsLoading(false);
+      }
+    };
+    
+    fetchCohorts();
+  }, []);
+
   // Auto-fill preferred cohort when a cohort is selected
   useEffect(() => {
     if (selectedCohort !== null) {
       const cohort = cohorts.find((c) => c.id === selectedCohort);
       if (cohort) {
-        setFormData((prev) => ({ ...prev, preferredCohort: cohort.name }));
+        // Update preferredCohort to match the selected cohort ID (dropdown uses ID as value)
+        setFormData((prev) => ({ ...prev, preferredCohort: cohort.id }));
       }
     }
-  }, [selectedCohort]);
+  }, [selectedCohort, cohorts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,19 +193,41 @@ export default function ApplyPage() {
       country: selectedCountry,
     };
 
+    const selectedCohortObj = selectedCohort ? cohorts.find((c) => c.id === selectedCohort) : null;
+    const cohortNumber = selectedCohortObj ? selectedCohortObj.id : null;
+    const cohortName = selectedCohortObj ? selectedCohortObj.name : formData.preferredCohort || '';
+
     try {
       // Submit to Notion API
-      const response = await fetch('/api/notion/submit-application', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finalFormData),
-      });
+      const [applicationRes] = await Promise.all([
+        fetch('/api/notion/submit-application', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(finalFormData),
+        }),
+        // Best-effort profile registration (does not block success)
+        fetch('/api/notion/profile/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            cohortNumber,
+            cohortName,
+          }),
+        }).catch((err) => {
+          console.warn('Profile registration failed:', err);
+        }),
+      ]);
 
-      const result = await response.json();
+      const result = await applicationRes.json();
 
-      if (response.ok) {
+      if (applicationRes.ok) {
         alert('Application submitted successfully! We will review and get back to you soon.');
         // Reset form
         setFormData({
@@ -212,6 +271,15 @@ export default function ApplyPage() {
         {/* Cohort Details */}
         <section className="space-y-6">
           <h2 className="text-xl font-semibold text-zinc-50">Upcoming Cohorts</h2>
+          {cohortsLoading ? (
+            <div className="text-center py-8 text-cyan-400">Loading cohorts...</div>
+          ) : cohortsError ? (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-center text-red-300">
+              {cohortsError}
+            </div>
+          ) : cohorts.length === 0 ? (
+            <div className="text-center py-8 text-zinc-400">No upcoming cohorts available at this time.</div>
+          ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {cohorts.map((cohort) => (
               <div
@@ -224,19 +292,37 @@ export default function ApplyPage() {
               >
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-zinc-50">{cohort.name}</h3>
-                  <span className="rounded-full bg-cyan-500/20 px-2 py-1 text-xs font-medium text-cyan-300">
+                  <span className={`rounded-full px-2 py-1 text-xs font-medium ${
+                    cohort.level?.toLowerCase() === 'beginner' 
+                      ? 'bg-blue-500/20 text-blue-300'
+                      : cohort.level?.toLowerCase() === 'intermediate'
+                      ? 'bg-orange-500/20 text-orange-300'
+                      : cohort.level?.toLowerCase() === 'advanced'
+                      ? 'bg-purple-500/20 text-purple-300'
+                      : 'bg-cyan-500/20 text-cyan-300'
+                  }`}>
                     {cohort.level}
                   </span>
                 </div>
                 <div className="space-y-2 text-sm text-zinc-300">
                   <p><span className="font-medium text-zinc-400">Start:</span> {cohort.startDate}</p>
                   <p><span className="font-medium text-zinc-400">End:</span> {cohort.endDate}</p>
-                  <p><span className="font-medium text-zinc-400">Duration:</span> {cohort.duration}</p>
-                  <div className="mt-4 flex items-center justify-between rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-2">
-                    <span className="text-xs text-zinc-400">Seats Available</span>
-                    <span className={`font-semibold ${cohort.available > 0 ? "text-orange-400" : "text-red-400"}`}>
-                      {cohort.available} / {cohort.seats}
-                    </span>
+                  {cohort.status && (
+                    <p><span className="font-medium text-zinc-400">Status:</span> {cohort.status}</p>
+                  )}
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center justify-between rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-2">
+                      <span className="text-xs text-zinc-400">Sessions</span>
+                      <span className="font-semibold text-cyan-400">
+                        {cohort.sessions}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border border-orange-400/20 bg-zinc-900/50 p-2">
+                      <span className="text-xs text-zinc-400">Seats Available</span>
+                      <span className={`font-semibold ${cohort.available > 0 ? "text-orange-400" : "text-red-400"}`}>
+                        {cohort.available} / {cohort.seats}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <button
@@ -252,6 +338,7 @@ export default function ApplyPage() {
               </div>
             ))}
           </div>
+          )}
         </section>
 
         {/* Registration Form */}
@@ -331,11 +418,6 @@ export default function ApplyPage() {
                     placeholder="1234567890"
                   />
                 </div>
-                {selectedCountry && selectedCountryCode && (
-                  <p className="mt-1 text-xs text-green-400">
-                    ✓ Country code auto-filled from country selection
-                  </p>
-                )}
               </div>
             </div>
 
@@ -354,7 +436,7 @@ export default function ApplyPage() {
                   <option value="" className="bg-zinc-950 text-zinc-400">Select your country</option>
                   {africanCountries.map((country) => (
                     <option key={country.name} value={country.name} className="bg-zinc-950 text-zinc-50">
-                      {country.flag} {country.name} {country.code}
+                      {country.flag} {country.name}
                     </option>
                   ))}
                 </select>
@@ -399,7 +481,7 @@ export default function ApplyPage() {
                   onChange={(e) => {
                     const cohortId = e.target.value;
                     setFormData({ ...formData, preferredCohort: cohortId });
-                    setSelectedCohort(cohortId ? parseInt(cohortId) : null);
+                    setSelectedCohort(cohortId || null);
                   }}
                   className={`w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer ${
                     formData.preferredCohort ? 'text-green-400' : 'text-zinc-50'

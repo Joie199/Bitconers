@@ -72,3 +72,4 @@ This will tell you:
 - ✅ If the database is accessible
 - ❌ What specific error you're getting
 
+
