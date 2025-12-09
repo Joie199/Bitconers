@@ -178,61 +178,207 @@ export default function DeveloperHubPage() {
               {/* 2. Learn the Tools */}
               <div>
                 <h3 className="mb-4 text-xl font-semibold text-cyan-300">2. Learn the Tools</h3>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <a
-                    href="https://sparrowwallet.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Sparrow Wallet</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://bitcoincore.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Bitcoin Core</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://electrum.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Electrum</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://mempool.space"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">mempool.space</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://github.com/rust-bitcoin/rust-bitcoin"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Rust-Bitcoin</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://bitcoin.org/en/developer-glossary"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Bitcoin Developer Glossary</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
+                <div className="space-y-6">
+                  {/* Bitcoin Core */}
+                  <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-orange-200">Bitcoin Core</h4>
+                      <a
+                        href="https://bitcoincore.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-orange-300 hover:text-orange-200"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">The fundamental tool for any Bitcoin developer.</p>
+                    <p className="mb-3 text-sm font-medium text-orange-200">Why use it?</p>
+                    <ul className="ml-4 space-y-1 text-sm text-zinc-400">
+                      <li>• Lets students run a full node</li>
+                      <li>• Explore blockchain data</li>
+                      <li>• Practice RPC commands</li>
+                      <li>• Learn how transactions & blocks work under the hood</li>
+                    </ul>
+                  </div>
+
+                  {/* Sparrow Wallet */}
+                  <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-cyan-200">Sparrow Wallet</h4>
+                      <a
+                        href="https://sparrowwallet.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-300 hover:text-cyan-200"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">One of the best educational tools for understanding UTXOs, signing, and PSBTs.</p>
+                    <p className="mb-3 text-sm font-medium text-cyan-200">Why use it?</p>
+                    <ul className="ml-4 space-y-1 text-sm text-zinc-400">
+                      <li>• Shows UTXOs visually</li>
+                      <li>• Easy way to build, sign, and broadcast transactions</li>
+                      <li>• Teaches inputs, outputs, fees, script types</li>
+                      <li>• Supports testnet and signet</li>
+                    </ul>
+                  </div>
+
+                  {/* Bitcoin CLI / RPC Commands */}
+                  <div className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-purple-200">Bitcoin CLI / RPC Commands</h4>
+                      <a
+                        href="https://bitcoin.org/en/developer-reference#rpc-quick-reference"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-300 hover:text-purple-200"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">This is what Bitcoin Core developers use daily.</p>
+                    <p className="mb-3 text-sm font-medium text-purple-200">Why use it?</p>
+                    <ul className="ml-4 space-y-1 text-sm text-zinc-400">
+                      <li>• Direct interaction with the node</li>
+                      <li>• Teaches JSON-RPC</li>
+                      <li>• Builds foundation for wallet programming</li>
+                    </ul>
+                  </div>
+
+                  {/* Mempool Explorers & Block Explorers */}
+                  <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-green-200">Mempool Explorers & Block Explorers</h4>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">Tools that help beginners see Bitcoin in action.</p>
+                    <p className="mb-3 text-sm font-medium text-green-200">Best Ones:</p>
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <a
+                        href="https://mempool.space"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>mempool.space</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://explorer.btc.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>explorer.btc.com</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://blockstream.info"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Signet Explorer</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Signet & Testnet */}
+                  <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-yellow-200">Signet & Testnet</h4>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">Every developer must learn to use Bitcoin's testing chains.</p>
+                    <p className="mb-3 text-sm font-medium text-yellow-200">Why?</p>
+                    <ul className="ml-4 space-y-1 text-sm text-zinc-400">
+                      <li>• Safe environment</li>
+                      <li>• No real money</li>
+                      <li>• Instant transactions</li>
+                    </ul>
+                  </div>
+
+                  {/* Lightning Tools */}
+                  <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-blue-200">Lightning Tools (Optional Beginner Layer)</h4>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">Let beginners see what Lightning development looks like.</p>
+                    <p className="mb-3 text-sm font-medium text-blue-200">Tools:</p>
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <a
+                        href="https://github.com/lightningnetwork/lnd"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>LND</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://github.com/ElementsProject/lightning"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>Core Lightning</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://lnbits.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>LNbits</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://getalby.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>Alby</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Additional Resources */}
+                  <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-5">
+                    <h4 className="mb-3 text-lg font-semibold text-zinc-200">Additional Resources</h4>
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <a
+                        href="https://electrum.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Electrum</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://github.com/rust-bitcoin/rust-bitcoin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Rust-Bitcoin</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://bitcoin.org/en/developer-glossary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Bitcoin Developer Glossary</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
