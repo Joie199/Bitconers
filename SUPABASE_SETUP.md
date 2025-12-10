@@ -47,7 +47,18 @@ If not, add them manually in Vercel project settings.
 
 ## Step 5: Add Sample Data (Optional)
 
-You can add sample data through the Supabase dashboard or via SQL:
+### Option A: Basic Sample Data
+Run `supabase/sample-data.sql` for basic test data (3 cohorts, 5 events).
+
+### Option B: Enhanced Sample Data (Recommended)
+Run `supabase/enhanced-sample-data.sql` for comprehensive test data:
+- 5 cohorts (multiple levels)
+- 12+ events (live classes, workshops, deadlines, quizzes, community events)
+- Developer resources
+- Developer events
+
+### Option C: Manual Entry
+You can add data through the Supabase dashboard or via SQL:
 
 ```sql
 -- Example: Add a cohort
@@ -58,6 +69,24 @@ VALUES ('Cohort 1', '2025-01-15', '2025-04-15', 'Upcoming', 12, 'Beginner', 30);
 INSERT INTO events (name, type, start_time, description)
 VALUES ('Introduction to Bitcoin', 'live-class', '2025-01-15 10:00:00+00', 'First class of the cohort');
 ```
+
+## Step 6: Add Database Views (Optional but Recommended)
+
+Run `supabase/database-views.sql` to create helpful views:
+- `student_summary` - Combined student and profile data
+- `cohort_enrollment_summary` - Cohorts with enrollment counts
+- `student_rewards_summary` - Aggregated sats rewards
+- `upcoming_events` - Future events only
+- `student_achievements_summary` - Student achievements
+- `application_summary` - Applications with cohort info
+
+## Step 7: Add Database Improvements (Optional but Recommended)
+
+Run `supabase/database-improvements.sql` to add:
+- Additional performance indexes
+- Data validation constraints
+- Helper functions
+- Database documentation comments
 
 ## Troubleshooting
 
