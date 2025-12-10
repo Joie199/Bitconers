@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide-react";
 import { AuthModal } from "./AuthModal";
+import { ChangePasswordModal } from "./ChangePasswordModal";
+import { ProfileModal } from "./ProfileModal";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
@@ -11,6 +13,12 @@ export function Navbar() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileData, setProfileData] = useState<any | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, profile, loading, logout } = useAuth();
 
@@ -103,7 +111,18 @@ export function Navbar() {
                 onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
                 className="flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-3 py-2 text-sm font-medium text-orange-300 transition hover:from-orange-500/30 hover:to-cyan-500/30"
               >
-                <span className="max-w-[120px] truncate">{profile.name || 'User'}</span>
+                {profile.photoUrl ? (
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.name}
+                    className="h-7 w-7 rounded-full object-cover border-2 border-orange-400/50"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-orange-500 text-xs font-bold text-black">
+                    {profile.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <span className="max-w-[100px] truncate">{profile.name || 'User'}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${accountDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               {accountDropdownOpen && (
@@ -205,7 +224,18 @@ export function Navbar() {
                 onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
                 className="flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500/20 to-cyan-500/20 px-3 py-2 text-sm font-medium text-orange-300 transition hover:from-orange-500/30 hover:to-cyan-500/30"
               >
-                <span className="max-w-[100px] truncate">{profile.name || 'User'}</span>
+                {profile.photoUrl ? (
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.name}
+                    className="h-7 w-7 rounded-full object-cover border-2 border-orange-400/50"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-orange-500 text-xs font-bold text-black">
+                    {profile.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <span className="max-w-[80px] truncate">{profile.name || 'User'}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform ${accountDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               {accountDropdownOpen && (
@@ -363,12 +393,7 @@ export function Navbar() {
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    // Navigate to dashboard and trigger profile modal
-                    if (window.location.pathname === '/dashboard') {
-                      window.dispatchEvent(new CustomEvent('openProfileModal'));
-                    } else {
-                      window.location.href = '/dashboard?openProfile=true';
-                    }
+                    setProfileModalOpen(true);
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
                 >
@@ -378,7 +403,7 @@ export function Navbar() {
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    alert('Password change not implemented yet. Please contact support.');
+                    setChangePasswordOpen(true);
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
                 >
@@ -417,6 +442,33 @@ export function Navbar() {
         onClose={() => setAuthModalOpen(false)}
         mode={authMode}
       />
+      {profile?.email && (
+        <>
+          <ChangePasswordModal
+            isOpen={changePasswordOpen}
+            onClose={() => setChangePasswordOpen(false)}
+            userEmail={profile.email}
+          />
+          <ProfileModal
+            isOpen={profileModalOpen}
+            onClose={() => {
+              setProfileModalOpen(false);
+              setProfileData(null);
+              setProfileError(null);
+              setProfileImage(null);
+            }}
+            userEmail={profile.email}
+            profileData={profileData}
+            profileLoading={profileLoading}
+            profileError={profileError}
+            profileImage={profileImage}
+            onProfileUpdate={() => {
+              // Refresh auth state after profile update
+              window.location.reload();
+            }}
+          />
+        </>
+      )}
     </header>
   );
 }
