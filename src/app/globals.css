@@ -249,3 +249,9 @@ select:focus {
   display: none;  /* Chrome, Safari and Opera */
 }
 
+/* Hide Student button if it appears (cached content) - using attribute selector */
+button[class*="rounded-full"][class*="border-zinc-700"]:has(svg.lucide-circle-user-round),
+.relative > button:has(svg.lucide-circle-user-round) {
+  display: none !important;
+}
+

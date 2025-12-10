@@ -12,38 +12,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Look up profile by email
-    const { data: profiles, error } = await supabase
+    // Get profile
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id')
       .eq('email', email.toLowerCase().trim())
-      .maybeSingle();
+      .single();
 
-    if (error || !profiles) {
+    if (profileError || !profile) {
       return NextResponse.json(
-        { found: false, profile: null },
-        { status: 200 }
+        { error: 'Profile not found' },
+        { status: 404 }
       );
     }
 
+    // Check if student record exists
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id')
+      .eq('profile_id', profile.id)
+      .maybeSingle();
+
     return NextResponse.json(
-      {
-        found: true,
-        profile: {
-          id: profiles.id,
-          name: profiles.name,
-          email: profiles.email,
-          phone: profiles.phone,
-          country: profiles.country,
-          city: profiles.city,
-          status: profiles.status,
-          photoUrl: profiles.photo_url,
-        },
+      { 
+        isStudent: !!student,
+        profileId: profile.id,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error('Error in profile login API:', error);
+    console.error('Error checking student status:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

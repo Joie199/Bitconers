@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Calendar } from './Calendar';
-import { UserCircle2 } from 'lucide-react';
 
 export function StudentDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'certification' | 'leaderboard'>('overview');
@@ -11,7 +10,6 @@ export function StudentDashboard() {
   const [satsTotals, setSatsTotals] = useState<{ paid: number; pending: number }>({ paid: 0, pending: 0 });
   const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
   const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileEmail, setProfileEmail] = useState('');
   const [profileData, setProfileData] = useState<any | null>(null);
@@ -92,10 +90,36 @@ export function StudentDashboard() {
     Promise.all([fetchStudent(), fetchSatsTotals(), fetchLeaderboard()]).finally(() => {
       if (mounted) setLoading(false);
     });
+    
+    // Listen for profile modal open event from Navbar
+    const handleOpenProfileModal = () => {
+      const emailToUse = storedProfileEmail || profileEmail;
+      if (emailToUse) {
+        setProfileModalOpen(true);
+        setProfileError(null);
+        setProfileData(null);
+        setProfileEmail(emailToUse);
+        fetchProfileByEmail(emailToUse);
+      }
+    };
+
+    window.addEventListener('openProfileModal', handleOpenProfileModal);
+    
+    // Check URL params for profile modal
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('openProfile') === 'true') {
+        handleOpenProfileModal();
+        // Clean up URL
+        window.history.replaceState({}, '', '/dashboard');
+      }
+    }
+    
     return () => {
       mounted = false;
+      window.removeEventListener('openProfileModal', handleOpenProfileModal);
     };
-  }, []);
+  }, [storedProfileEmail, profileEmail]);
 
   const fetchProfileByEmail = async (lookupEmail: string) => {
     if (!lookupEmail) {
@@ -206,14 +230,28 @@ export function StudentDashboard() {
           onImageChange={setProfileImage}
           onUpdate={async (updatedData: any) => {
             try {
+              // If profileImage is a URL (already uploaded), use it; otherwise don't send it
+              const updatePayload: any = { 
+                email: storedProfileEmail || profileEmail, 
+                ...updatedData 
+              };
+              
+              // Only include photoUrl if it's a URL (not base64)
+              if (profileImage && profileImage.startsWith('http')) {
+                updatePayload.photoUrl = profileImage;
+              }
+              
               const res = await fetch('/api/profile/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: storedProfileEmail || profileEmail, ...updatedData }),
+                body: JSON.stringify(updatePayload),
               });
               if (!res.ok) throw new Error('Failed to update profile');
               const data = await res.json();
               setProfileData(data.profile);
+              if (data.profile.photoUrl) {
+                setProfileImage(data.profile.photoUrl);
+              }
               setIsEditingProfile(false);
               alert('Profile updated successfully!');
             } catch (err: any) {
@@ -221,58 +259,6 @@ export function StudentDashboard() {
             }
           }}
         />
-        {/* Top bar: optional profile/settings */}
-        <div className="mb-4 flex items-center justify-end">
-          <div className="relative">
-            <button
-              onClick={() => setProfileMenuOpen((v) => !v)}
-              className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/70 px-3 py-1.5 text-sm text-zinc-200 transition hover:border-cyan-500/50 hover:text-zinc-100"
-            >
-              <UserCircle2 className="h-5 w-5 text-cyan-300" />
-              <span>{student.name || 'Student'}</span>
-            </button>
-            {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 rounded-lg border border-zinc-700 bg-zinc-900/95 shadow-2xl">
-                <div className="px-3 py-2 text-xs text-zinc-500">Account</div>
-                <button
-                  onClick={() => {
-                    setProfileModalOpen(true);
-                    setProfileMenuOpen(false);
-                    setProfileError(null);
-                    setProfileData(null);
-                    const emailToUse = storedProfileEmail || profileEmail;
-                    if (emailToUse) {
-                      setProfileEmail(emailToUse);
-                      fetchProfileByEmail(emailToUse);
-                    }
-                  }}
-                  className="block w-full px-3 py-2 text-left text-sm text-zinc-200 hover:bg-zinc-800"
-                >
-                  Profile
-                </button>
-                <button className="block w-full px-3 py-2 text-left text-sm text-zinc-200 hover:bg-zinc-800">
-                  Change Password
-                </button>
-                <div className="px-3 py-2 text-xs text-zinc-500">Session</div>
-                <button
-                  onClick={() => {
-                    // Clear stored email and session data
-                    try {
-                      localStorage.removeItem('profileEmail');
-                    } catch (e) {
-                      // ignore
-                    }
-                    // Redirect to home page
-                    window.location.href = '/';
-                  }}
-                  className="block w-full px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
-                >
-                  Log out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
 
         {loading && (
           <div className="mb-4 rounded-lg border border-cyan-400/30 bg-cyan-500/10 px-4 py-3 text-cyan-100">
@@ -285,7 +271,7 @@ export function StudentDashboard() {
           </div>
         )}
 
-        {/* 1️⃣ Welcome Header */}
+        {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-zinc-50 sm:text-4xl">
             Welcome back, {student.name} 👋
@@ -293,20 +279,10 @@ export function StudentDashboard() {
           <p className="mt-2 text-lg text-zinc-400">
             Your journey to Bitcoin sovereignty continues.
           </p>
-          <div className="mt-4 flex flex-wrap gap-4 text-sm text-zinc-300">
-            <span className="flex items-center gap-2">
-              <span className="text-orange-400">Current Cohort:</span>
-              {student.cohort || '—'}
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="text-cyan-400">Role:</span>
-              {student.role || student.status || 'Student'}
-            </span>
-          </div>
         </div>
 
 
-        {/* Tabs for Overview, Certification, Leaderboard */}
+        {/* Tabs */}
         <div className="mb-6 flex gap-2 border-b border-zinc-800">
           <button
             onClick={() => setActiveTab('overview')}
@@ -482,7 +458,7 @@ export function StudentDashboard() {
               </div>
             </div>
 
-            {/* 4️⃣ Learning Path */}
+            {/* Learning Path */}
             <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
               <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Your Learning Path</h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -523,7 +499,7 @@ export function StudentDashboard() {
               </div>
             </div>
 
-            {/* 5️⃣ Assignments & Tasks */}
+            {/* Assignments & Tasks */}
             <div className="rounded-xl border border-orange-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
               <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Assignments & Tasks</h2>
               <div className="space-y-4">
@@ -569,84 +545,6 @@ export function StudentDashboard() {
             </div>
 
 
-            {/* 7️⃣ Community Section */}
-            <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]">
-              <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Community</h2>
-              <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <Link
-                  href="https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji"
-                  target="_blank"
-                  className="rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-center font-medium text-green-300 transition hover:bg-green-500/20"
-                >
-                  Join WhatsApp
-                </Link>
-                <Link
-                  href="https://nostr.com"
-                  target="_blank"
-                  className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-3 text-center font-medium text-purple-300 transition hover:bg-purple-500/20"
-                >
-                  Join Nostr
-                </Link>
-                <button className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3 text-center font-medium text-orange-300 transition hover:bg-orange-500/20">
-                  Message a Mentor
-                </button>
-                <button className="rounded-lg border border-zinc-500/30 bg-zinc-500/10 p-3 text-center font-medium text-zinc-300 transition hover:bg-zinc-500/20">
-                  Ask a Question
-                </button>
-              </div>
-              <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-center">
-                <span className="text-sm text-green-400">🟢 Mentor currently online</span>
-              </div>
-            </div>
-
-            {/* 8️⃣ Resources Hub */}
-            <div className="rounded-xl border border-zinc-700 bg-black/80 p-6">
-              <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Resources Hub</h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {resources.map((resource: any, index: number) => (
-                  <Link
-                    key={index}
-                    href={resource.link}
-                    className="flex flex-col items-center rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 text-center transition hover:border-cyan-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="mb-2 text-2xl">{resource.icon}</span>
-                    <span className="text-sm font-medium text-zinc-300">{resource.title}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-
-            {/* 🔟 Support & Help */}
-            <div className="rounded-xl border border-zinc-700 bg-black/80 p-6">
-              <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Support & Help</h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <button className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-4 text-center font-medium text-cyan-300 transition hover:bg-cyan-500/20">
-                  Contact Mentor
-                </button>
-                <button className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-4 text-center font-medium text-orange-300 transition hover:bg-orange-500/20">
-                  Report Issue
-                </button>
-                <button className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-4 text-center font-medium text-purple-300 transition hover:bg-purple-500/20">
-                  Request 1:1 Support
-                </button>
-                <Link
-                  href="/faq"
-                  className="rounded-lg border border-zinc-500/30 bg-zinc-500/10 p-4 text-center font-medium text-zinc-300 transition hover:bg-zinc-500/20"
-                >
-                  FAQ
-                </Link>
-                <button className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-center font-medium text-red-300 transition hover:bg-red-500/20">
-                  Tutorials (Videos)
-                </button>
-                <Link
-                  href="/blog/submit"
-                  className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-center font-medium text-green-300 transition hover:bg-green-500/20"
-                >
-                  Publish Blog Post
-                </Link>
-              </div>
-            </div>
           </div>
         )}
 
@@ -857,14 +755,30 @@ function ProfileModal({
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
-                    if (file) {
+                    if (file && profile?.email) {
                       const reader = new FileReader();
-                      reader.onload = (event) => {
+                      reader.onload = async (event) => {
                         const result = event.target?.result as string;
                         onImageChange(result);
-                        // TODO: Upload to server/storage and save URL to Supabase
+                        // Upload to Supabase Storage
+                        try {
+                          const res = await fetch('/api/profile/upload-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                              email: profile.email,
+                              imageData: result 
+                            }),
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            onImageChange(data.photoUrl);
+                          }
+                        } catch (err) {
+                          console.error('Error uploading image:', err);
+                        }
                       };
                       reader.readAsDataURL(file);
                     }
@@ -963,8 +877,12 @@ function ProfileModal({
                 <div className="space-y-2">
                   <div><span className="text-zinc-400">Name:</span> {profile.name || '—'}</div>
                   <div><span className="text-zinc-400">Email:</span> {profile.email || '—'}</div>
-                  <div><span className="text-zinc-400">Student ID:</span> {profile.studentId || '—'}</div>
                   <div><span className="text-zinc-400">Status:</span> {profile.status || '—'}</div>
+                  {!isRegistered && (
+                    <div className="mt-3 rounded-lg border border-orange-500/30 bg-orange-500/10 p-2 text-xs text-orange-200">
+                      You're not enrolled as a student yet. Apply to join a cohort!
+                    </div>
+                  )}
                 </div>
               )}
             </div>

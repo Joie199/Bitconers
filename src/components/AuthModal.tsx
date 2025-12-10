@@ -111,6 +111,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
               firstName: firstName || formData.name,
               lastName: lastName || '',
               email: formData.email,
+              password: formData.password, // Include password
             }),
           });
           

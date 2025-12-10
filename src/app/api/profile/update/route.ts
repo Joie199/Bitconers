@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
           phone: profile.phone,
           country: profile.country,
           city: profile.city,
-          studentId: profile.student_id,
           status: profile.status,
           photoUrl: profile.photo_url,
         },
