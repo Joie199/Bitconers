@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
+import { validatePassword, getPasswordRequirements } from '@/lib/passwordValidation';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -53,9 +54,15 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
       newErrors.email = 'Email is invalid';
     }
 
-    // TODO: Replace with Supabase authentication
+    // Password validation for signup
     if (!formData.password) {
       newErrors.password = 'Password is required';
+    } else if (!isSignIn) {
+      // Strong password validation for signup only
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.errors[0] || 'Password does not meet requirements';
+      }
     }
 
     if (isSignIn) {
@@ -310,8 +317,13 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
               value={formData.password}
               onChange={handleChange}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-              placeholder="••••••••"
+              placeholder={isSignIn ? "••••••••" : "Enter strong password"}
             />
+            {!isSignIn && (
+              <p className="mt-1 text-xs text-zinc-500">
+                {getPasswordRequirements()}
+              </p>
+            )}
             {errors.password && (
               <p className="mt-1 text-sm text-red-400">{errors.password}</p>
             )}

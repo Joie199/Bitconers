@@ -58,11 +58,23 @@ export function Navbar() {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Don't close if clicking on logout button (it handles its own redirect)
       const target = event.target as HTMLElement;
+      
+      // Don't close if clicking on logout button
       if (target.closest('button') && target.closest('button')?.textContent?.includes('Logout')) {
         return;
       }
+      
+      // Don't close if clicking on Profile or Change Password buttons
+      const button = target.closest('button');
+      if (button) {
+        const buttonText = button.textContent || '';
+        if (buttonText.includes('Profile') || buttonText.includes('Change Password')) {
+          return; // Let the button's onClick handle it
+        }
+      }
+      
+      // Close dropdown if clicking outside
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setAccountDropdownOpen(false);
       }
@@ -180,7 +192,9 @@ export function Navbar() {
                       {profile.email}
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setAccountDropdownOpen(false);
                         setProfileModalOpen(true);
                       }}
@@ -190,7 +204,9 @@ export function Navbar() {
                       Profile
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setAccountDropdownOpen(false);
                         setChangePasswordOpen(true);
                       }}
@@ -291,9 +307,14 @@ export function Navbar() {
                       {profile.email}
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Close dropdown first, then open modal after a tiny delay to ensure dropdown closes
                         setAccountDropdownOpen(false);
-                        setProfileModalOpen(true);
+                        setTimeout(() => {
+                          setProfileModalOpen(true);
+                        }, 50);
                       }}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
                     >
@@ -301,9 +322,14 @@ export function Navbar() {
                       Profile
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Close dropdown first, then open modal after a tiny delay to ensure dropdown closes
                         setAccountDropdownOpen(false);
-                        setChangePasswordOpen(true);
+                        setTimeout(() => {
+                          setChangePasswordOpen(true);
+                        }, 50);
                       }}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
                     >
@@ -435,7 +461,9 @@ export function Navbar() {
                   Dashboard
                 </Link>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     setMobileMenuOpen(false);
                     setProfileModalOpen(true);
                   }}
@@ -445,7 +473,9 @@ export function Navbar() {
                   Profile
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     setMobileMenuOpen(false);
                     setChangePasswordOpen(true);
                   }}
@@ -489,11 +519,14 @@ export function Navbar() {
         onClose={() => setAuthModalOpen(false)}
         mode={authMode}
       />
-      {profile?.email && (
+      {/* Always render modals if user is authenticated - they handle their own visibility */}
+      {isAuthenticated && profile?.email && (
         <>
           <ChangePasswordModal
             isOpen={changePasswordOpen}
-            onClose={() => setChangePasswordOpen(false)}
+            onClose={() => {
+              setChangePasswordOpen(false);
+            }}
             userEmail={profile.email}
           />
           <ProfileModal

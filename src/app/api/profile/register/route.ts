@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
+import { validatePassword } from '@/lib/passwordValidation';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,9 +14,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!password || password.length < 6) {
+    if (!password) {
       return NextResponse.json(
-        { error: 'Password is required and must be at least 6 characters' },
+        { error: 'Password is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate strong password requirements
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return NextResponse.json(
+        { error: passwordValidation.errors[0] || 'Password does not meet security requirements' },
         { status: 400 }
       );
     }

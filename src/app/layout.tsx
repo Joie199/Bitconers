@@ -103,7 +103,7 @@ export default function RootLayout({
         <div className="bitcoin-keys-bg" />
         <div className="flex min-h-screen flex-col">
           <Navbar />
-          <div className="flex-1 relative z-10">{children}</div>
+          <main className="flex-1 relative z-10">{children}</main>
           <Footer />
         </div>
       </body>

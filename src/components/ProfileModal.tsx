@@ -46,6 +46,23 @@ export function ProfileModal({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (profileData) {
@@ -195,7 +212,7 @@ export function ProfileModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const initials = profileData?.name
     ? profileData.name
@@ -207,8 +224,14 @@ export function ProfileModal({
     : 'U';
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-xl p-4">
-      <div className="w-full max-w-md rounded-2xl border border-cyan-400/20 bg-zinc-950 p-6 shadow-2xl">
+    <div 
+      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-xl p-4"
+      style={{ zIndex: 99999 }}
+    >
+      <div 
+        className="w-full max-w-md rounded-2xl border border-cyan-400/20 bg-zinc-950 p-6 shadow-2xl"
+        style={{ position: 'relative', zIndex: 100000 }}
+      >
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <User className="h-5 w-5 text-cyan-400" />

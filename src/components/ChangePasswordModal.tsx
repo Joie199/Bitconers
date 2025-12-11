@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Key } from 'lucide-react';
+import { validatePassword, getPasswordRequirements } from '@/lib/passwordValidation';
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -19,8 +20,25 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +51,12 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
     }
     if (!formData.newPassword) {
       newErrors.newPassword = 'New password is required';
-    } else if (formData.newPassword.length < 6) {
-      newErrors.newPassword = 'Password must be at least 6 characters';
+    } else {
+      // Strong password validation
+      const passwordValidation = validatePassword(formData.newPassword);
+      if (!passwordValidation.isValid) {
+        newErrors.newPassword = passwordValidation.errors[0] || 'Password does not meet requirements';
+      }
     }
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
@@ -88,8 +110,14 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-xl p-4">
-      <div className="w-full max-w-md rounded-2xl border border-cyan-400/20 bg-zinc-950 p-6 shadow-2xl">
+    <div 
+      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-xl p-4"
+      style={{ zIndex: 99999 }}
+    >
+      <div 
+        className="w-full max-w-md rounded-2xl border border-cyan-400/20 bg-zinc-950 p-6 shadow-2xl"
+        style={{ position: 'relative', zIndex: 100000 }}
+      >
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Key className="h-5 w-5 text-cyan-400" />
@@ -139,6 +167,9 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
                 placeholder="Enter your new password"
               />
+              <p className="mt-1 text-xs text-zinc-500">
+                {getPasswordRequirements()}
+              </p>
               {errors.newPassword && (
                 <p className="mt-1 text-sm text-red-400">{errors.newPassword}</p>
               )}
