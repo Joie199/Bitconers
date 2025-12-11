@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS events (
   description TEXT,
   link TEXT,
   recording_url TEXT,
+  cohort_id UUID REFERENCES cohorts(id) ON DELETE SET NULL, -- If NULL, event is for everyone. If set, event is only for this specific cohort.
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -139,6 +140,7 @@ CREATE INDEX IF NOT EXISTS idx_cohort_enrollment_cohort ON cohort_enrollment(coh
 CREATE INDEX IF NOT EXISTS idx_cohort_enrollment_student ON cohort_enrollment(student_id);
 CREATE INDEX IF NOT EXISTS idx_students_profile ON students(profile_id);
 CREATE INDEX IF NOT EXISTS idx_events_start_time ON events(start_time);
+CREATE INDEX IF NOT EXISTS idx_events_cohort_id ON events(cohort_id);
 CREATE INDEX IF NOT EXISTS idx_sats_rewards_student ON sats_rewards(student_id);
 CREATE INDEX IF NOT EXISTS idx_achievements_student ON achievements(student_id);
 
