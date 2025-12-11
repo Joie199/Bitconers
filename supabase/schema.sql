@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS cohort_enrollment (
 -- Students table (extends profiles with academic data)
 CREATE TABLE IF NOT EXISTS students (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  profile_id UUID UNIQUE REFERENCES profiles(id) ON DELETE CASCADE,
   progress_percent INTEGER DEFAULT 0,
   assignments_completed INTEGER DEFAULT 0,
   projects_completed INTEGER DEFAULT 0,

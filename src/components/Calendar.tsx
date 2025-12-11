@@ -60,7 +60,11 @@ const eventTypeLabels = {
   cohort: 'Cohort',
 };
 
-export function Calendar() {
+interface CalendarProps {
+  cohortId?: string | null;
+}
+
+export function Calendar({ cohortId }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [view, setView] = useState<'month' | 'list'>('month');
@@ -68,37 +72,73 @@ export function Calendar() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: Fetch events from Supabase
+  // Fetch events from Supabase, filtered by cohort if provided
   useEffect(() => {
     async function fetchEvents() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/events');
+        
+        // Build URL with cohort_id if provided
+        const url = cohortId 
+          ? `/api/events?cohort_id=${encodeURIComponent(cohortId)}`
+          : '/api/events';
+        
+        console.log('📅 Calendar: Fetching events from:', url);
+        
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Failed to fetch events: ${response.status}`);
         }
         const data = await response.json();
         
+        console.log('📅 Calendar: Received events data:', {
+          eventsCount: data.events?.length || 0,
+          hasEvents: !!data.events,
+          isArray: Array.isArray(data.events),
+        });
+        
         if (data.events && Array.isArray(data.events)) {
           // Transform API events (date is ISO string) to CalendarEvent format
-          const transformedEvents: CalendarEvent[] = data.events.map((event: any) => ({
-            id: event.id,
-            title: event.title,
-            date: new Date(event.date),
-            type: event.type,
-            time: event.time,
-            link: event.link || '#',
-            description: event.description,
-          }));
+          const transformedEvents: CalendarEvent[] = data.events
+            .filter((event: any) => {
+              // Only include events with valid dates
+              if (!event.date) {
+                console.warn('⚠️ Event missing date:', event);
+                return false;
+              }
+              const eventDate = new Date(event.date);
+              if (isNaN(eventDate.getTime())) {
+                console.warn('⚠️ Event has invalid date:', event);
+                return false;
+              }
+              return true;
+            })
+            .map((event: any) => ({
+              id: event.id,
+              title: event.title,
+              date: new Date(event.date),
+              type: event.type || 'community',
+              time: event.time || '',
+              link: event.link || '#',
+              description: event.description || '',
+            }));
           
-          setEvents(transformedEvents);
+          console.log('📅 Calendar: Transformed events:', transformedEvents.length);
+          
+          if (transformedEvents.length > 0) {
+            setEvents(transformedEvents);
+            console.log('✅ Calendar: Events loaded successfully');
+          } else {
+            console.warn('⚠️ Calendar: No valid events found, using fallback');
+            setEvents(createFallbackEvents());
+          }
         } else {
-          // If no events or invalid format, use fallback
+          console.warn('⚠️ Calendar: Invalid events format, using fallback');
           setEvents(createFallbackEvents());
         }
       } catch (err: any) {
-        console.error('Error fetching events:', err);
+        console.error('❌ Calendar: Error fetching events:', err);
         setError(err.message);
         // Use fallback events on error
         setEvents(createFallbackEvents());
@@ -108,7 +148,7 @@ export function Calendar() {
     }
 
     fetchEvents();
-  }, []);
+  }, [cohortId]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();

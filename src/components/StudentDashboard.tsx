@@ -4,7 +4,42 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Calendar } from './Calendar';
 
-export function StudentDashboard() {
+interface UserData {
+  profile: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    country?: string;
+    city?: string;
+    status: string;
+    photoUrl?: string;
+    studentId?: string;
+  };
+  isRegistered: boolean;
+  student: {
+    progressPercent: number;
+    assignmentsCompleted: number;
+    projectsCompleted: number;
+    liveSessionsAttended: number;
+  } | null;
+  cohort: {
+    id: string;
+    name: string;
+    startDate?: string;
+    endDate?: string;
+    status: string;
+    level?: string;
+    sessions?: number;
+  } | null;
+  cohortEnrollments: any[];
+}
+
+interface StudentDashboardProps {
+  userData?: UserData | null;
+}
+
+export function StudentDashboard({ userData }: StudentDashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'certification' | 'leaderboard'>('overview');
   const [studentData, setStudentData] = useState<any | null>(null);
   const [satsTotals, setSatsTotals] = useState<{ paid: number; pending: number }>({ paid: 0, pending: 0 });
@@ -24,7 +59,42 @@ export function StudentDashboard() {
 
   useEffect(() => {
     let mounted = true;
-    // load stored email (from auth modal)
+    
+    // If userData is provided from dashboard, use it
+    if (userData) {
+      if (mounted) {
+        // Set student data from userData if registered
+        if (userData.isRegistered && userData.student) {
+          setStudentData({
+            name: userData.profile.name,
+            email: userData.profile.email,
+            progress: userData.student.progressPercent,
+            assignmentsCompleted: userData.student.assignmentsCompleted,
+            projectsCompleted: userData.student.projectsCompleted,
+            liveSessions: userData.student.liveSessionsAttended,
+            cohort: userData.cohort?.name || '',
+            status: userData.profile.status,
+            photoUrl: userData.profile.photoUrl,
+          });
+        } else {
+          // User is logged in but not registered as student
+          setStudentData({
+            name: userData.profile.name,
+            email: userData.profile.email,
+            progress: 0,
+            assignmentsCompleted: 0,
+            projectsCompleted: 0,
+            liveSessions: 0,
+            cohort: userData.cohort?.name || '',
+            status: userData.profile.status,
+            photoUrl: userData.profile.photoUrl,
+          });
+        }
+        setError(null);
+      }
+    }
+
+    // Fallback: load stored email (from auth modal) if userData not provided
     try {
       const stored = localStorage.getItem('profileEmail');
       if (stored) {
@@ -99,9 +169,17 @@ export function StudentDashboard() {
       }
     };
 
-    Promise.all([fetchStudent(), fetchSatsTotals(), fetchLeaderboard()]).finally(() => {
-      if (mounted) setLoading(false);
-    });
+    // Only fetch if userData not provided
+    if (!userData) {
+      Promise.all([fetchStudent(), fetchSatsTotals(), fetchLeaderboard()]).finally(() => {
+        if (mounted) setLoading(false);
+      });
+    } else {
+      // If userData provided, still fetch sats and leaderboard
+      Promise.all([fetchSatsTotals(), fetchLeaderboard()]).finally(() => {
+        if (mounted) setLoading(false);
+      });
+    }
     
     // Listen for profile modal open event from Navbar
     const handleOpenProfileModal = () => {
@@ -293,10 +371,12 @@ export function StudentDashboard() {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-zinc-50 sm:text-4xl">
-            Welcome back, {student.name} 👋
+            Welcome back, {userData?.profile?.name || student.name || 'Student'} 👋
           </h1>
           <p className="mt-2 text-lg text-zinc-400">
-            Your journey to Bitcoin sovereignty continues.
+            {userData?.isRegistered 
+              ? `Your journey to Bitcoin sovereignty continues.${userData?.cohort ? ` You're enrolled in ${userData.cohort.name}.` : ''}`
+              : 'Your journey to Bitcoin sovereignty continues.'}
           </p>
         </div>
 
@@ -401,7 +481,7 @@ export function StudentDashboard() {
               </div>
               {/* Right side: Calendar */}
               <div className="lg:col-span-1">
-                <Calendar />
+                <Calendar cohortId={userData?.cohort?.id || null} />
               </div>
             </div>
 

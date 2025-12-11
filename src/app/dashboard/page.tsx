@@ -7,9 +7,10 @@ import { StudentDashboard } from "@/components/StudentDashboard";
 export default function DashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
-    // Check if user is authenticated
+    // Check if user is authenticated and get user data
     const checkAuth = async () => {
       try {
         const storedEmail = localStorage.getItem('profileEmail');
@@ -19,8 +20,8 @@ export default function DashboardPage() {
           return;
         }
 
-        // Verify the session (profile exists)
-        const res = await fetch('/api/profile/verify-session', {
+        // Get comprehensive user data (profile, student status, cohort)
+        const res = await fetch('/api/profile/user-data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: storedEmail }),
@@ -33,13 +34,14 @@ export default function DashboardPage() {
         }
 
         const data = await res.json();
-        if (!data.valid || !data.profile) {
+        if (!data.profile) {
           localStorage.removeItem('profileEmail');
           router.push('/');
           return;
         }
 
-        // User is authenticated
+        // Store user data for dashboard
+        setUserData(data);
         setLoading(false);
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -62,5 +64,5 @@ export default function DashboardPage() {
     );
   }
 
-  return <StudentDashboard />;
+  return <StudentDashboard userData={userData} />;
 }

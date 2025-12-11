@@ -1,0 +1,162 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+
+/**
+ * Get comprehensive user data including:
+ * - Profile information
+ * - Student registration status
+ * - Student progress data
+ * - Cohort information
+ */
+export async function POST(req: NextRequest) {
+  try {
+    const { email } = await req.json();
+
+    if (!email) {
+      return NextResponse.json(
+        { error: 'Email is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get profile
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      return NextResponse.json(
+        { error: 'Profile not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user is registered as a student
+    let { data: student, error: studentError } = await supabaseAdmin
+      .from('students')
+      .select('*')
+      .eq('profile_id', profile.id)
+      .maybeSingle();
+
+    // If user is enrolled in a cohort but doesn't have a student record, create it
+    if (!student) {
+      // Check if user is enrolled in any cohort
+      const { data: enrollments } = await supabaseAdmin
+        .from('cohort_enrollment')
+        .select('cohort_id')
+        .eq('student_id', profile.id)
+        .limit(1);
+
+      // If enrolled in a cohort, create student record
+      if (enrollments && enrollments.length > 0) {
+        const { data: newStudent, error: createError } = await supabaseAdmin
+          .from('students')
+          .insert({
+            profile_id: profile.id,
+            progress_percent: 0,
+            assignments_completed: 0,
+            projects_completed: 0,
+            live_sessions_attended: 0,
+          })
+          .select('*')
+          .single();
+
+        if (!createError && newStudent) {
+          student = newStudent;
+        }
+      }
+    }
+
+    // Get cohort information (from profile.cohort_id or cohort_enrollment)
+    let cohort = null;
+    let cohortEnrollments: any[] = [];
+
+    // Check direct cohort_id in profile
+    if (profile.cohort_id) {
+      const { data: directCohort } = await supabaseAdmin
+        .from('cohorts')
+        .select('*')
+        .eq('id', profile.cohort_id)
+        .maybeSingle();
+      
+      if (directCohort) {
+        cohort = directCohort;
+      }
+    }
+
+    // Also check cohort_enrollment table (many-to-many)
+    const { data: enrollments } = await supabaseAdmin
+      .from('cohort_enrollment')
+      .select(`
+        *,
+        cohorts (*)
+      `)
+      .eq('student_id', profile.id);
+
+    if (enrollments && enrollments.length > 0) {
+      cohortEnrollments = enrollments.map((enrollment: any) => ({
+        id: enrollment.cohorts?.id,
+        name: enrollment.cohorts?.name,
+        startDate: enrollment.cohorts?.start_date,
+        endDate: enrollment.cohorts?.end_date,
+        status: enrollment.cohorts?.status,
+        level: enrollment.cohorts?.level,
+        enrolledAt: enrollment.enrolled_at,
+      }));
+
+      // If no direct cohort but have enrollments, use the first one
+      if (!cohort && cohortEnrollments.length > 0) {
+        const firstEnrollment = enrollments[0];
+        if (firstEnrollment.cohorts) {
+          cohort = firstEnrollment.cohorts;
+        }
+      }
+    }
+
+    // Get student progress data if student exists
+    const studentData = student ? {
+      progressPercent: student.progress_percent || 0,
+      assignmentsCompleted: student.assignments_completed || 0,
+      projectsCompleted: student.projects_completed || 0,
+      liveSessionsAttended: student.live_sessions_attended || 0,
+    } : null;
+
+    return NextResponse.json(
+      {
+        profile: {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          country: profile.country,
+          city: profile.city,
+          status: profile.status,
+          photoUrl: profile.photo_url,
+          studentId: profile.student_id,
+        },
+        isRegistered: !!student,
+        student: studentData,
+        cohort: cohort ? {
+          id: cohort.id,
+          name: cohort.name,
+          startDate: cohort.start_date,
+          endDate: cohort.end_date,
+          status: cohort.status,
+          level: cohort.level,
+          sessions: cohort.sessions,
+        } : null,
+        cohortEnrollments,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error in user-data API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
