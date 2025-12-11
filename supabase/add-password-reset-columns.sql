@@ -15,3 +15,5 @@ CREATE INDEX IF NOT EXISTS idx_profiles_reset_token_expiry ON profiles(reset_tok
 COMMENT ON COLUMN profiles.reset_token IS 'Secure token for password reset (expires after 1 hour)';
 COMMENT ON COLUMN profiles.reset_token_expiry IS 'Expiration timestamp for password reset token';
 
+
+

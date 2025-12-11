@@ -129,3 +129,5 @@ curl http://localhost:3000/api/events
 curl "http://localhost:3000/api/events?cohort_id=YOUR_COHORT_ID"
 ```
 
+
+

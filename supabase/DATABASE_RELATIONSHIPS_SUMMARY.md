@@ -142,3 +142,5 @@ CREATE TABLE IF NOT EXISTS events (
 - ✅ `ensure-enrolled-students-have-records.sql` - Fixes existing data
 - ✅ `verify-all-relationships.sql` - Verification script
 
+
+

@@ -244,3 +244,5 @@ curl -X POST http://localhost:3000/api/profile/verify-session \
 4. Test mobile responsiveness
 5. Deploy to staging/production
 
+
+

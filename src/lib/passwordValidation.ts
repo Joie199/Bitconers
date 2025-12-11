@@ -51,3 +51,5 @@ export function getPasswordRequirements(): string {
   return 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character';
 }
 
+
+

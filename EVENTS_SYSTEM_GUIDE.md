@@ -162,3 +162,5 @@ VALUES
 - [ ] Calendar shows cohort events only to users in that cohort
 - [ ] Users without cohort see only events for everyone
 
+
+

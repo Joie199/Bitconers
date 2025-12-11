@@ -72,3 +72,5 @@ LEFT JOIN students s ON p.id = s.profile_id
 WHERE p.cohort_id IS NOT NULL OR ce.id IS NOT NULL
 ORDER BY status, p.email;
 
+
+

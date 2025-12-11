@@ -119,3 +119,5 @@ To verify modals work on every page:
 - Event propagation is properly handled to prevent conflicts with click-outside handlers
 - All modals are rendered at the document body level using `createPortal`
 
+
+

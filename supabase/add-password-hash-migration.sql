@@ -10,3 +10,5 @@ COMMENT ON COLUMN profiles.password_hash IS 'Bcrypt hashed password for authenti
 -- Note: Existing profiles without passwords will need to set a password
 -- Users with old-style hashes (hashed_*) will be automatically migrated on next login
 
+
+

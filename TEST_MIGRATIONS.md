@@ -69,3 +69,5 @@ Run `supabase/quick-verify-migrations.sql` in Supabase SQL Editor to check all m
 
 Your migrations are successfully applied! The events system should now work correctly with cohort filtering.
 
+
+

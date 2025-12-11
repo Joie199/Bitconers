@@ -33,3 +33,5 @@ WHERE tc.constraint_type = 'UNIQUE'
     AND tc.table_name = 'students'
     AND kcu.column_name = 'profile_id';
 
+
+
