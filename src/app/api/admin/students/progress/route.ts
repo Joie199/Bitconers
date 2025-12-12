@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch profiles with students and chapter_progress relationships
+    // Fetch profiles with students, chapter_progress, and attendance relationships
     const { data: profiles, error } = await supabaseAdmin
       .from('profiles')
       .select(`
@@ -19,7 +19,8 @@ export async function GET(_req: NextRequest) {
         email,
         status,
         students:students(id, cohort_id, created_at),
-        chapter_progress:chapter_progress(is_completed, is_unlocked)
+        chapter_progress:chapter_progress(is_completed, is_unlocked, chapter_number),
+        attendance:attendance(event_id, join_time, duration_minutes)
       `)
       .limit(200);
 
@@ -27,10 +28,29 @@ export async function GET(_req: NextRequest) {
       throw error;
     }
 
+    // Get total live-class events count for attendance calculation
+    const { data: liveEvents } = await supabaseAdmin
+      .from('events')
+      .select('id', { count: 'exact', head: false })
+      .eq('type', 'live-class');
+
+    const totalLiveLectures = liveEvents?.length || 0;
+
     const progress = (profiles || []).map((p: any) => {
       const chapterData = p.chapter_progress || [];
       const completed = chapterData.filter((c: any) => c.is_completed).length;
       const unlocked = chapterData.length;
+      
+      // Calculate attendance
+      const attendanceRecords = p.attendance || [];
+      const lecturesAttended = attendanceRecords.length;
+      const attendancePercent = totalLiveLectures > 0 
+        ? Math.round((lecturesAttended / totalLiveLectures) * 100)
+        : 0;
+
+      // Overall progress: 50% chapters + 50% attendance
+      const overallProgress = Math.round((completed / 20) * 50 + attendancePercent * 0.5);
+
       return {
         id: p.id,
         name: `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Unnamed',
@@ -40,6 +60,11 @@ export async function GET(_req: NextRequest) {
         studentId: p.students?.[0]?.id || null,
         completedChapters: completed,
         unlockedChapters: unlocked,
+        totalChapters: 20, // Assuming 20 chapters total
+        lecturesAttended,
+        totalLiveLectures,
+        attendancePercent,
+        overallProgress,
       };
     });
 

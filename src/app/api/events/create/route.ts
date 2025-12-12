@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
       link, 
       recording_url,
       cohort_id, // null or "for_all" for everyone, or UUID for specific cohort
-      for_all // boolean: true = for everyone, false = for specific cohort
+      for_all, // boolean: true = for everyone, false = for specific cohort
+      chapter_number // optional: chapter number for live-class events
     } = await req.json();
 
     // Validate required fields
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
         link: link || null,
         recording_url: recording_url || null,
         cohort_id: finalCohortId, // null = for everyone, UUID = for specific cohort
+        chapter_number: chapter_number && eventType === 'live-class' ? parseInt(chapter_number) : null,
       })
       .select('*')
       .single();

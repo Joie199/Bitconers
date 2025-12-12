@@ -56,6 +56,11 @@ interface ProgressItem {
   studentId: string | null;
   completedChapters: number;
   unlockedChapters: number;
+  totalChapters?: number;
+  lecturesAttended?: number;
+  totalLiveLectures?: number;
+  attendancePercent?: number;
+  overallProgress?: number;
 }
 
 interface AdminSession {
@@ -93,12 +98,15 @@ export default function AdminDashboardPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [progress, setProgress] = useState<ProgressItem[]>([]);
   const [mentorships, setMentorships] = useState<MentorshipApp[]>([]);
+  const [liveClassEvents, setLiveClassEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [processing, setProcessing] = useState<string | null>(null);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingCohort, setCreatingCohort] = useState(false);
+  const [uploadingAttendance, setUploadingAttendance] = useState(false);
+  const [selectedEventForUpload, setSelectedEventForUpload] = useState<string>('');
 
   const [eventForm, setEventForm] = useState({
     name: '',
@@ -108,6 +116,7 @@ export default function AdminDashboardPage() {
     description: '',
     link: '',
     cohort_id: 'for_all',
+    chapter_number: '',
   });
 
   const [cohortForm, setCohortForm] = useState({
@@ -161,6 +170,7 @@ export default function AdminDashboardPage() {
         fetchOverview(),
         fetchEvents(),
         fetchProgress(),
+        fetchLiveClassEvents(),
         fetchMentorships(),
       ]);
     } catch (err: any) {
@@ -206,6 +216,53 @@ export default function AdminDashboardPage() {
     const res = await fetchWithAuth('/api/admin/mentorships');
     const data = await res.json();
     if (data.applications) setMentorships(data.applications);
+  };
+
+  const fetchLiveClassEvents = async () => {
+    const res = await fetchWithAuth('/api/admin/events/live-classes');
+    const data = await res.json();
+    if (data.events) setLiveClassEvents(data.events);
+  };
+
+  const handleAttendanceUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+
+    if (!file || !selectedEventForUpload) {
+      setError('Please select an event and CSV file');
+      return;
+    }
+
+    setUploadingAttendance(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('eventId', selectedEventForUpload);
+
+      const res = await fetchWithAuth('/api/admin/attendance/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upload attendance');
+      }
+
+      alert(`Success! Processed ${data.processed} records, matched ${data.matched} students.${data.totalErrors > 0 ? ` ${data.totalErrors} errors.` : ''}`);
+      form.reset();
+      setSelectedEventForUpload('');
+      fetchProgress(); // Refresh progress data
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload attendance');
+    } finally {
+      setUploadingAttendance(false);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -306,6 +363,7 @@ export default function AdminDashboardPage() {
           ...eventForm,
           cohort_id: eventForm.cohort_id === 'for_all' ? null : eventForm.cohort_id,
           for_all: eventForm.cohort_id === 'for_all',
+          chapter_number: eventForm.type === 'live-class' && eventForm.chapter_number ? parseInt(eventForm.chapter_number) : null,
         }),
       });
       const data = await res.json();
@@ -320,6 +378,7 @@ export default function AdminDashboardPage() {
         description: '',
         link: '',
         cohort_id: 'for_all',
+        chapter_number: '',
       });
     } catch (err: any) {
       alert(err.message || 'Failed to create event');
@@ -664,6 +723,17 @@ export default function AdminDashboardPage() {
                   <option value="quiz">Quiz</option>
                   <option value="cohort">Cohort</option>
                 </select>
+                {eventForm.type === 'live-class' && (
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    className="w-full rounded border border-zinc-700 bg-black px-3 py-2 text-sm text-zinc-100"
+                    placeholder="Chapter number (1-20, optional)"
+                    value={eventForm.chapter_number}
+                    onChange={(e) => setEventForm({ ...eventForm, chapter_number: e.target.value })}
+                  />
+                )}
                 <input
                   type="datetime-local"
                   className="w-full rounded border border-zinc-700 bg-black px-3 py-2 text-sm text-zinc-100"
@@ -792,6 +862,50 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Attendance Upload */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+          <h3 className="mb-3 text-lg font-semibold text-zinc-50">Upload Attendance (Google Meet CSV)</h3>
+          <form onSubmit={handleAttendanceUpload} className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm text-zinc-300">Select Event</label>
+                <select
+                  value={selectedEventForUpload}
+                  onChange={(e) => setSelectedEventForUpload(e.target.value)}
+                  className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-50"
+                  required
+                >
+                  <option value="">Choose event...</option>
+                  {liveClassEvents.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.name} {e.start_time ? `(${new Date(e.start_time).toLocaleDateString()})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm text-zinc-300">CSV File</label>
+                <input
+                  type="file"
+                  accept=".csv"
+                  className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 file:mr-4 file:rounded file:border-0 file:bg-zinc-800 file:px-4 file:py-2 file:text-sm file:text-zinc-50"
+                  required
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={uploadingAttendance}
+              className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {uploadingAttendance ? 'Uploading...' : 'Upload Attendance'}
+            </button>
+            <p className="text-xs text-zinc-400">
+              CSV should include: Email, Name, Join Time, Leave Time, Duration (minutes)
+            </p>
+          </form>
+        </div>
+
         {/* Student progress */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
           <h3 className="mb-3 text-lg font-semibold text-zinc-50">Student Progress</h3>
@@ -802,8 +916,9 @@ export default function AdminDashboardPage() {
                   <th className="px-3 py-2">Name</th>
                   <th className="px-3 py-2">Email</th>
                   <th className="px-3 py-2">Cohort</th>
-                  <th className="px-3 py-2">Completed</th>
-                  <th className="px-3 py-2">Unlocked</th>
+                  <th className="px-3 py-2">Chapters</th>
+                  <th className="px-3 py-2">Attendance</th>
+                  <th className="px-3 py-2">Overall</th>
                 </tr>
               </thead>
               <tbody>
@@ -812,8 +927,28 @@ export default function AdminDashboardPage() {
                     <td className="px-3 py-2 text-zinc-50">{p.name}</td>
                     <td className="px-3 py-2 text-zinc-400">{p.email}</td>
                     <td className="px-3 py-2 text-zinc-400">{p.cohortId || '—'}</td>
-                    <td className="px-3 py-2 text-green-300">{p.completedChapters}</td>
-                    <td className="px-3 py-2 text-zinc-300">{p.unlockedChapters}</td>
+                    <td className="px-3 py-2">
+                      <span className="text-green-300">{p.completedChapters}</span>
+                      <span className="text-zinc-500">/{p.totalChapters || 20}</span>
+                    </td>
+                    <td className="px-3 py-2">
+                      {p.lecturesAttended !== undefined && p.totalLiveLectures !== undefined ? (
+                        <span>
+                          <span className="text-blue-300">{p.lecturesAttended}</span>
+                          <span className="text-zinc-500">/{p.totalLiveLectures}</span>
+                          <span className="ml-2 text-xs text-zinc-400">({p.attendancePercent}%)</span>
+                        </span>
+                      ) : (
+                        <span className="text-zinc-500">—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {p.overallProgress !== undefined ? (
+                        <span className="font-medium text-yellow-300">{p.overallProgress}%</span>
+                      ) : (
+                        <span className="text-zinc-500">—</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

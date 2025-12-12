@@ -168,22 +168,22 @@ Each chapter includes:
    ```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 3. **Set up environment variables**
-   
+
    Create a `.env.local` file:
-   ```env
-   # Site Configuration
-   NEXT_PUBLIC_SITE_URL=https://panafricanbitcoin.com
-   
+```env
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=https://panafricanbitcoin.com
+
    # Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   ```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
 
 4. **Set up the database**
    
@@ -192,9 +192,9 @@ Each chapter includes:
    - Optional: Add sample data with `supabase/sample-data.sql`
 
 5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+```
 
 6. **Open your browser**
    
@@ -256,10 +256,10 @@ pan-africa-bitcoin-academy/
 The platform features a **futuristic Bitcoin-themed design**:
 
 - **Color Palette**
-  - Deep blue backgrounds (`#02000a`)
-  - Orange accents (`#f97602`)
-  - Cyan and purple highlights
-  - Glowing neon-style elements
+- Deep blue backgrounds (`#02000a`)
+- Orange accents (`#f97602`)
+- Cyan and purple highlights
+- Glowing neon-style elements
 
 - **Visual Elements**
   - Bitcoin network-inspired backgrounds
