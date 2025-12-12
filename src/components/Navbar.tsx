@@ -6,6 +6,7 @@ import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide
 import { AuthModal } from "./AuthModal";
 import { ChangePasswordModal } from "./ChangePasswordModal";
 import { ProfileModal } from "./ProfileModal";
+import { SessionExpiredModal } from "./SessionExpiredModal";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
@@ -20,7 +21,7 @@ export function Navbar() {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated, profile, loading, logout, SessionExpiredPopup } = useAuth();
+  const { isAuthenticated, profile, loading, logout, showSessionExpired, setShowSessionExpired } = useAuth();
 
   // Fetch profile data when modal opens
   useEffect(() => {
@@ -596,7 +597,14 @@ export function Navbar() {
       )}
 
       {/* Session Expired Modal */}
-      <SessionExpiredPopup />
+      <SessionExpiredModal
+        isOpen={showSessionExpired}
+        onClose={() => {
+          setShowSessionExpired(false);
+          window.location.replace('/');
+        }}
+        userType="student"
+      />
     </header>
   );
 }
