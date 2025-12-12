@@ -16,7 +16,10 @@ interface AdminSessionPayload {
 function getSecret(): string {
   const secret = process.env.ADMIN_SESSION_SECRET;
   if (!secret) {
-    throw new Error('ADMIN_SESSION_SECRET is not set');
+    console.error('ERROR: ADMIN_SESSION_SECRET is not set in environment variables.');
+    console.error('Add this to your .env.local file:');
+    console.error('ADMIN_SESSION_SECRET=your-random-secret-here');
+    throw new Error('ADMIN_SESSION_SECRET is not set. Check server console for instructions.');
   }
   return secret;
 }
