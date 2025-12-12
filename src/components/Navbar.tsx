@@ -191,6 +191,17 @@ export function Navbar() {
                     <div className="px-3 py-2 text-xs text-zinc-400 border-b border-zinc-700 mb-1">
                       {profile.email}
                     </div>
+                    <Link
+                      href="/dashboard"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAccountDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
                     <button
                       onClick={(e) => {
                         e.preventDefault();
@@ -306,6 +317,17 @@ export function Navbar() {
                     <div className="px-3 py-2 text-xs text-zinc-400 border-b border-zinc-700 mb-1">
                       {profile.email}
                     </div>
+                    <Link
+                      href="/dashboard"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAccountDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
                     <button
                       onClick={(e) => {
                         e.preventDefault();
