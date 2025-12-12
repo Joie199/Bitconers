@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
   try {
@@ -46,6 +46,46 @@ export async function GET() {
     return NextResponse.json({ cohorts: cohortsWithSeats }, { status: 200 });
   } catch (error: any) {
     console.error('Error in cohorts API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { name, start_date, end_date, seats_total, level, status, sessions } = await req.json();
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('cohorts')
+      .insert({
+        name: name.trim(),
+        start_date: start_date || null,
+        end_date: end_date || null,
+        seats_total: seats_total ?? null,
+        level: level || 'Beginner',
+        status: status || 'Upcoming',
+        sessions: sessions ?? 0,
+      })
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error('Error creating cohort:', error);
+      return NextResponse.json(
+        { error: 'Failed to create cohort', details: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, cohort: data }, { status: 200 });
+  } catch (error: any) {
+    console.error('Error in create cohort API:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
