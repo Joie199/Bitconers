@@ -258,7 +258,7 @@ export default function ApplyPage() {
     }
   };
 
-  // TODO: Fetch cohorts from Supabase
+  // Fetch cohorts from Supabase
   useEffect(() => {
     const fetchCohorts = async () => {
       try {
