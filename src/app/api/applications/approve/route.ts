@@ -103,41 +103,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (existingProfile) {
-      // Link to existing profile - update with application data
+      // Link to existing profile (basic profile already exists)
       profileId = existingProfile.id;
       isExistingProfile = true;
-
-      // Update profile with all application data
-      const updateData: any = {
-        name: fullName,
-        phone: application.phone || existingProfile.phone || null,
-        country: application.country || existingProfile.country || null,
-        city: application.city || existingProfile.city || null,
-      };
-
-      // Add student_id if generated and profile doesn't have one yet
-      if (generatedStudentId && !existingProfile.student_id) {
-        // Check if this student_id already exists (shouldn't happen, but safety check)
-        const { data: existingStudentId } = await supabaseAdmin
-          .from('profiles')
-          .select('id')
-          .eq('student_id', generatedStudentId)
-          .maybeSingle();
-        
-        if (!existingStudentId) {
-          updateData.student_id = generatedStudentId;
-        }
-      }
-
-      // Update status if it's 'New' (just signed up, now approved)
-      if (existingProfile.status === 'New') {
-        updateData.status = existingProfile.password_hash ? 'Active' : 'Pending Password Setup';
-      }
-
-      await supabaseAdmin
-        .from('profiles')
-        .update(updateData)
-        .eq('id', profileId);
+      // Profile will be updated from students data after students record is created/updated
     } else {
       // Create new profile (without password - they'll set it later)
       // Check if student_id already exists (if we're generating one)
@@ -373,16 +342,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update profile status to Active if password is already set
-    // (If status is 'Pending Password Setup', it means they need to set password)
-    if (existingProfile && existingProfile.status !== 'Pending Password Setup') {
-      await supabaseAdmin
-        .from('profiles')
-        .update({
-          status: 'Active',
-        })
-        .eq('id', profileId);
-    }
+    // Profile status is already updated from students data above
+    // No need for additional update here
 
     const res = NextResponse.json({
       success: true,
