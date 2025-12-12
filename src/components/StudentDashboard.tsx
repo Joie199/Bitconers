@@ -222,7 +222,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
     };
   }, [storedProfileEmail, profileEmail]);
 
-  // Fetch chapter status (same as chapters page)
+  // Fetch chapter status (same as chapters page) - refreshes automatically
   useEffect(() => {
     const fetchChapterStatus = async () => {
       const email = userData?.profile?.email || storedProfileEmail || profileEmail;
@@ -245,6 +245,29 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
     };
 
     fetchChapterStatus();
+    
+    // Refresh chapter status every 10 seconds to catch completed chapters
+    const interval = setInterval(fetchChapterStatus, 10000);
+    
+    // Also refresh when page becomes visible (user returns from chapter page)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchChapterStatus();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Refresh when window gains focus
+    const handleFocus = () => {
+      fetchChapterStatus();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [userData, storedProfileEmail, profileEmail]);
 
   const fetchProfileByEmail = async (lookupEmail: string) => {
@@ -352,11 +375,18 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
   const assignments = student.assignments || [];
   const resources = student.resources || [];
   const leaderboard = leaderboardData;
-  const courseProgress = student.progressPercent ?? student.courseProgress ?? 0;
+  
+  // Calculate chapters completed from chapterStatus (dynamic, updates in real-time)
+  const chaptersCompleted = Object.values(chapterStatus).filter(
+    (status) => status.isCompleted === true
+  ).length;
+  
+  // Calculate course progress from completed chapters (dynamic)
+  const courseProgress = Math.round((chaptersCompleted / 20) * 100);
+  
   const attendance = student.attendancePercent ?? student.attendanceRate ?? 0;
   const satsEarned = student.satsEarned ?? satsTotals.paid ?? 0;
   const satsPending = student.satsPending ?? satsTotals.pending ?? 0;
-  const chaptersCompleted = student.chaptersCompleted ?? 0;
   const assignmentsCompleted = student.assignmentsCompleted ?? 0;
 
   return (
@@ -564,7 +594,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
                       <div className="mb-2 text-2xl">📘</div>
                       <div className="text-sm text-zinc-400">Chapters</div>
                       <div className="text-lg font-semibold text-cyan-300">
-                            {chaptersCompleted}/{student.totalChapters ?? 20}
+                            {chaptersCompleted}/20
                       </div>
                     </div>
                     <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
