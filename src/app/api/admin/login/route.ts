@@ -57,12 +57,49 @@ export async function POST(req: NextRequest) {
       lastActive: now,
     };
 
-    const res = NextResponse.json({ success: true, admin: session });
-    setAdminCookie(res, session);
-    return res;
+    try {
+      const res = NextResponse.json({ success: true, admin: session });
+      setAdminCookie(res, session);
+      return res;
+    } catch (cookieError: any) {
+      console.error('Error setting admin cookie:', cookieError);
+      if (cookieError.message?.includes('ADMIN_SESSION_SECRET')) {
+        return NextResponse.json(
+          { 
+            error: 'Server configuration error',
+            details: 'ADMIN_SESSION_SECRET environment variable is not set. Please add it to .env.local and restart the server.'
+          },
+          { status: 500 }
+        );
+      }
+      throw cookieError; // Re-throw to be caught by outer catch
+    }
   } catch (error: any) {
     console.error('Admin login error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    
+    // Check if it's the ADMIN_SESSION_SECRET error
+    if (error.message?.includes('ADMIN_SESSION_SECRET')) {
+      return NextResponse.json(
+        { 
+          error: 'Server configuration error',
+          details: 'ADMIN_SESSION_SECRET environment variable is not set. Please contact the administrator.'
+        },
+        { status: 500 }
+      );
+    }
+    
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: 500 }
+    );
   }
 }
 
