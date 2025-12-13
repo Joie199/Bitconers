@@ -98,8 +98,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Password is valid - return profile (without password_hash)
-    return NextResponse.json(
+    // Password is valid - set cookie for cross-tab session sync
+    const res = NextResponse.json(
       {
         found: true,
         success: true,
@@ -116,6 +116,18 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
+
+    // Set cookie with email for cross-tab session detection (30 days expiry)
+    // This allows new tabs to detect existing session
+    res.cookies.set('studentEmail', profile.email.toLowerCase().trim(), {
+      httpOnly: false, // Allow client-side access for localStorage sync
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: '/',
+    });
+
+    return res;
   } catch (error: any) {
     console.error('Error in profile login API:', error);
     return NextResponse.json(

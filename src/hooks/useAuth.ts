@@ -53,6 +53,8 @@ export function useAuth() {
       try {
         localStorage.removeItem('profileEmail');
         localStorage.setItem('sessionExpired', 'true');
+        // Clear cookie on inactivity logout
+        document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       } catch (e) {
         // Ignore storage errors
       }
@@ -66,7 +68,24 @@ export function useAuth() {
 
     const checkAuth = async () => {
       try {
-        const storedEmail = localStorage.getItem('profileEmail');
+        // Check localStorage first (current tab)
+        let storedEmail = localStorage.getItem('profileEmail');
+        
+        // If no localStorage but cookie exists (new tab scenario), use cookie
+        if (!storedEmail) {
+          const cookies = document.cookie.split(';');
+          const emailCookie = cookies.find(c => c.trim().startsWith('studentEmail='));
+          if (emailCookie) {
+            storedEmail = emailCookie.split('=')[1].trim();
+            // Sync to localStorage for consistency
+            try {
+              localStorage.setItem('profileEmail', storedEmail);
+            } catch (e) {
+              // Ignore localStorage errors
+            }
+          }
+        }
+        
         if (storedEmail) {
           // Initialize activity timestamp if missing
           if (!localStorage.getItem(ACTIVITY_KEY)) {
@@ -102,19 +121,22 @@ export function useAuth() {
                 status: data.profile.status,
               });
             } else {
-              // Profile not found, clear storage
+              // Profile not found, clear storage and cookie
               localStorage.removeItem('profileEmail');
+              document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
               setIsAuthenticated(false);
               setProfile(null);
             }
           } else if (res.status === 401 || res.status === 403) {
             // Session expired or unauthorized
             localStorage.removeItem('profileEmail');
+            document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             setIsAuthenticated(false);
             setProfile(null);
             setShowSessionExpired(true);
           } else {
             localStorage.removeItem('profileEmail');
+            document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             setIsAuthenticated(false);
             setProfile(null);
           }
@@ -185,6 +207,9 @@ export function useAuth() {
       // Clear localStorage immediately
       localStorage.removeItem('profileEmail');
       
+      // Clear cookie for cross-tab logout
+      document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      
       // Update state immediately - this is critical
       setIsAuthenticated(false);
       setProfile(null);
@@ -201,6 +226,7 @@ export function useAuth() {
       // Fallback: clear everything and force redirect
       try {
         localStorage.removeItem('profileEmail');
+        document.cookie = 'studentEmail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       } catch (e) {
         // Ignore localStorage errors
       }

@@ -600,8 +600,9 @@ export function Navbar() {
       <SessionExpiredModal
         isOpen={showSessionExpired}
         onClose={() => {
+          // Logout student and redirect to home/sign in
           setShowSessionExpired(false);
-          window.location.replace('/');
+          logout();
         }}
         userType="student"
       />

@@ -2,6 +2,8 @@
 
 const ONCHAIN_ADDRESS = 'bc1q4pg073ws86qdnxac3y8zhk4t8vtkg2vx529jrj';
 const ONCHAIN_QR_SRC = '/images/onchain-btc-qr.jpeg'; // Using provided JPEG QR image
+const LIGHTNING_ADDRESS = 'panafricanbitcoin@blink.sv';
+const LNURL_QR_SRC = '/images/lunrl_qr.jpeg'; // Lightning QR code image
 
 export default function DonatePage() {
   return (
@@ -61,22 +63,29 @@ export default function DonatePage() {
             <div className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
               <h3 className="mb-4 text-lg font-semibold text-cyan-200">Lightning Network</h3>
               <div className="space-y-4">
-                {/* Lightning QR Code Placeholder */}
-                <div className="mx-auto flex h-48 w-48 items-center justify-center rounded-lg border-2 border-dashed border-cyan-400/30 bg-zinc-900/50">
-                  <div className="text-center">
-                    <svg className="mx-auto h-16 w-16 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                    </svg>
-                    <p className="mt-2 text-xs text-zinc-400">Lightning QR Code</p>
+                {/* Lightning QR Code */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="rounded-xl border border-cyan-400/30 bg-zinc-900/60 p-3">
+                    <img
+                      src={LNURL_QR_SRC}
+                      alt="Lightning Network donation QR code"
+                      className="h-48 w-48 rounded-lg object-contain"
+                    />
                   </div>
+                  <p className="text-xs text-zinc-400">Scan to donate via Lightning</p>
                 </div>
+                
+                {/* Paycode section */}
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-zinc-400">LNURL</label>
-                  <div className="rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-3 font-mono text-xs text-cyan-300 break-all">
-                    lnurl1dp68gurn8ghj7um9wfmxjcm99e3k7mf0v9cxj0m385ekvcenxc6r2c35xvukzef0venky
+                  <label className="text-xs font-medium text-zinc-400 text-center block">Paycode</label>
+                  <div className="rounded-lg border border-cyan-400/20 bg-zinc-900/50 p-3 font-mono text-xs text-cyan-300 break-all text-center">
+                    {LIGHTNING_ADDRESS}
                   </div>
-                  <button className="w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110">
-                    Copy LNURL
+                  <button 
+                    onClick={() => navigator.clipboard?.writeText(LIGHTNING_ADDRESS)}
+                    className="w-full rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                  >
+                    Copy Paycode
                   </button>
                 </div>
               </div>
@@ -99,8 +108,8 @@ export default function DonatePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-zinc-400">Bitcoin Address</label>
-                  <div className="rounded-lg border border-orange-500/20 bg-zinc-900/50 p-3 font-mono text-xs text-orange-300 break-all">
+                  <label className="text-xs font-medium text-zinc-400 text-center block">Bitcoin Address</label>
+                  <div className="rounded-lg border border-orange-500/20 bg-zinc-900/50 p-3 font-mono text-xs text-orange-300 break-all text-center">
                     {ONCHAIN_ADDRESS}
                   </div>
                   <button
@@ -112,7 +121,7 @@ export default function DonatePage() {
                 </div>
                 <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
                   <p className="text-xs text-zinc-400">
-                    <span className="font-semibold text-orange-300">Note:</span> On-chain transactions may take longer to confirm and have higher fees. Lightning is recommended for smaller donations.
+                    <span className="font-semibold text-orange-300">Note:</span> On-chain transactions may take longer to confirm and have higher fees.
                   </p>
                 </div>
               </div>

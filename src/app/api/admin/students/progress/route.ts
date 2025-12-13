@@ -15,6 +15,18 @@ export async function GET(_req: NextRequest) {
     let profiles: any[] = [];
     let error: any = null;
 
+    // First, fetch all cohorts to map cohort_id to cohort name
+    const { data: cohortsData } = await supabaseAdmin
+      .from('cohorts')
+      .select('id, name');
+    
+    const cohortsMap = new Map<string, string>();
+    if (cohortsData) {
+      cohortsData.forEach((c: any) => {
+        cohortsMap.set(c.id, c.name);
+      });
+    }
+
     try {
       const result = await supabaseAdmin
         .from('profiles')
@@ -97,13 +109,18 @@ export async function GET(_req: NextRequest) {
       // Overall progress: 50% chapters + 50% attendance
       const overallProgress = Math.round((completed / 20) * 50 + attendancePercent * 0.5);
 
+      const student = p.students?.[0];
+      const cohortId = student?.cohort_id || null;
+      const cohortName = cohortId ? cohortsMap.get(cohortId) || null : null;
+
       return {
         id: p.id,
         name: p.name || 'Unnamed',
         email: p.email,
         status: p.status,
-        cohortId: p.students?.[0]?.cohort_id || null,
-        studentId: p.students?.[0]?.id || null,
+        cohortId: cohortId,
+        cohortName: cohortName,
+        studentId: student?.id || null,
         completedChapters: completed,
         unlockedChapters: unlocked,
         totalChapters: 20, // Assuming 20 chapters total

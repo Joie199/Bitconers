@@ -188,3 +188,5 @@ Now includes attendance data in the response:
 - Overall progress is a weighted combination (50% chapters, 50% attendance)
 
 
+
+

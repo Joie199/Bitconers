@@ -18,3 +18,5 @@ SET password_hash = EXCLUDED.password_hash,
 SELECT id, email, role, created_at FROM admins WHERE email = 'your-email@example.com';
 
 
+
+

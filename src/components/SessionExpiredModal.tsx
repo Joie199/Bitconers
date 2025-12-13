@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 interface SessionExpiredModalProps {
   isOpen: boolean;
@@ -11,38 +10,46 @@ interface SessionExpiredModalProps {
 }
 
 export function SessionExpiredModal({ isOpen, onClose, userType = 'student' }: SessionExpiredModalProps) {
-  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
+      
+      // Handle Escape key press
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEscape);
+      
       return () => {
         document.body.style.overflow = 'unset';
+        document.removeEventListener('keydown', handleEscape);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const handleRedirect = () => {
-    if (userType === 'admin') {
-      router.push('/admin');
-    } else {
-      router.push('/');
-    }
+  const handleOK = () => {
+    // Call onClose which will handle logout and show login form
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={(e) => {
+        // Close modal when clicking on backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="relative mx-4 w-full max-w-md rounded-xl border border-orange-500/30 bg-zinc-900 p-6 shadow-2xl">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200"
-        >
-          <X className="h-5 w-5" />
-        </button>
-
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20">
             <AlertCircle className="h-6 w-6 text-orange-400" />
@@ -63,23 +70,19 @@ export function SessionExpiredModal({ isOpen, onClose, userType = 'student' }: S
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex justify-end">
           <button
-            onClick={handleRedirect}
-            className="flex-1 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600"
+            onClick={handleOK}
+            className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-orange-600"
           >
-            {userType === 'admin' ? 'Go to Login' : 'Go to Sign In'}
-          </button>
-          <button
-            onClick={onClose}
-            className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-300 transition hover:bg-zinc-700"
-          >
-            Close
+            OK
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 
