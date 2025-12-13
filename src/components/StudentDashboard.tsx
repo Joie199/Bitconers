@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Calendar } from './Calendar';
 import { chaptersContent } from '@/content/chaptersContent';
 import { Download, Book, FileText } from 'lucide-react';
+import { CertificateImageSection } from './CertificateImageSection';
 
 interface UserData {
   profile: {
@@ -1191,6 +1192,12 @@ function ProfileModal({
               )}
             </div>
           )}
+          
+          {/* Certificate Image Upload Section - Only show if student is registered */}
+          {isRegistered && profile && (
+            <CertificateImageSection profile={profile} />
+          )}
+          
           {!profile && !loading && !error && (
             <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-2 text-xs text-yellow-200">
               No profile data available.

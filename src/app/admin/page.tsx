@@ -144,8 +144,8 @@ export default function AdminDashboardPage() {
   const fetchWithAuth = async (url: string, options?: RequestInit) => {
     const res = await fetch(url, options);
     if (res.status === 401) {
-      // Session expired - handled by useSession hook
-      setShowSessionExpired(true);
+      // Session expired - trigger session check to properly handle logout
+      await checkSession();
       throw new Error('Unauthorized');
     }
     return res;
@@ -278,7 +278,10 @@ export default function AdminDashboardPage() {
       }
       setLoginForm({ email: '', password: '' }); // Clear form
       // Session is managed by useSession hook - check session to mark activity
-      await checkSession();
+      // Wait a bit for cookie to be set, then check session
+      setTimeout(() => {
+        checkSession();
+      }, 100);
     } catch (err: any) {
       setAuthError(err.message || 'Login failed');
     } finally {
@@ -307,6 +310,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        alert(`Application for ${email} approved successfully!`);
         await fetchApplications();
         await fetchOverview();
       } else {
@@ -331,6 +335,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        alert('Application rejected successfully!');
         await fetchApplications();
         await fetchOverview();
       } else {
@@ -367,6 +372,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create event');
+      alert('Event created successfully!');
       await fetchEvents();
       await fetchOverview();
       setEventForm({
@@ -400,6 +406,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create cohort');
+      alert('Cohort created successfully!');
       await fetchCohorts();
       await fetchOverview();
       setCohortForm({
@@ -427,6 +434,7 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to update status');
+      alert(`Mentorship application ${status.toLowerCase()} successfully!`);
       await fetchMentorships();
     } catch (err: any) {
       alert(err.message || 'Failed to update mentorship status');

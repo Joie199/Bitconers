@@ -81,6 +81,18 @@ export function clearActivity(userType: UserType) {
   try {
     localStorage.removeItem(ACTIVITY_KEY);
     localStorage.removeItem(`${ACTIVITY_KEY}_${userType}`);
+    
+    // Broadcast logout to other tabs
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'logout', userType });
+    } else {
+      // Fallback: trigger storage event
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: `${ACTIVITY_KEY}_${userType}_logout`,
+        newValue: null,
+        storageArea: localStorage,
+      }));
+    }
   } catch (e) {
     // Ignore storage errors
   }

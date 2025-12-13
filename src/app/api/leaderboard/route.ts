@@ -18,7 +18,10 @@ export async function GET() {
     if (error) {
       console.error('Error fetching leaderboard:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch leaderboard', details: error.message },
+        { 
+          error: 'Failed to fetch leaderboard',
+          ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+        },
         { status: 500 }
       );
     }
@@ -55,7 +58,10 @@ export async function GET() {
   } catch (error: any) {
     console.error('Error in leaderboard API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

@@ -211,7 +211,11 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error checking chapter access:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message, hasAccess: false },
+      { 
+        error: 'Internal server error',
+        hasAccess: false,
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

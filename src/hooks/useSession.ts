@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { markActivity, hasExpired, clearActivity, setupCrossTabActivityListener, INACTIVITY_LIMIT_MS, UserType } from '@/lib/sessionClient';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { markActivity, hasExpired, clearActivity, setupCrossTabActivityListener, INACTIVITY_LIMIT_MS, ACTIVITY_KEY, UserType } from '@/lib/sessionClient';
 
 interface UseSessionOptions {
   checkInterval?: number; // How often to check for expiration (default: 1 minute)
@@ -21,8 +21,47 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
   const [showSessionExpired, setShowSessionExpired] = useState(false);
   const logoutInProgressRef = useRef(false);
 
+  // Logout function
+  const logout = useCallback(async () => {
+    if (logoutInProgressRef.current) return;
+    logoutInProgressRef.current = true;
+    
+    try {
+      const endpoint = userType === 'admin' ? '/api/admin/logout' : '/api/profile/logout';
+      await fetch(endpoint, { method: 'POST' });
+    } catch (e) {
+      // Ignore errors
+    }
+    
+    clearActivity(userType);
+    setIsAuthenticated(false);
+    setEmail(null);
+    setRole(null);
+    setShowSessionExpired(false);
+    logoutInProgressRef.current = false;
+  }, [userType]);
+
+  // Force logout for inactivity
+  const forceLogoutForInactivity = useCallback(async () => {
+    if (logoutInProgressRef.current) return;
+    logoutInProgressRef.current = true;
+    
+    try {
+      await logout();
+      setShowSessionExpired(true);
+    } catch (e) {
+      // Ignore errors
+      setIsAuthenticated(false);
+      setEmail(null);
+      setRole(null);
+      setShowSessionExpired(true);
+    } finally {
+      logoutInProgressRef.current = false;
+    }
+  }, [logout]);
+
   // Check session from server
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       setLoading(true);
       const endpoint = userType === 'admin' ? '/api/admin/me' : '/api/profile/me';
@@ -67,55 +106,17 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
       console.error('Session check error:', err);
       setIsAuthenticated(false);
       setEmail(null);
+      setRole(null);
       return false;
     } finally {
       setLoading(false);
     }
-  };
-
-  // Logout function
-  const logout = async () => {
-    if (logoutInProgressRef.current) return;
-    logoutInProgressRef.current = true;
-    
-    try {
-      const endpoint = userType === 'admin' ? '/api/admin/logout' : '/api/profile/logout';
-      await fetch(endpoint, { method: 'POST' });
-    } catch (e) {
-      // Ignore errors
-    }
-    
-    clearActivity(userType);
-    setIsAuthenticated(false);
-    setEmail(null);
-    setRole(null);
-    setShowSessionExpired(false);
-    logoutInProgressRef.current = false;
-  };
-
-  // Force logout for inactivity
-  const forceLogoutForInactivity = async () => {
-    if (logoutInProgressRef.current) return;
-    logoutInProgressRef.current = true;
-    
-    try {
-      await logout();
-      setShowSessionExpired(true);
-    } catch (e) {
-      // Ignore errors
-      setIsAuthenticated(false);
-      setEmail(null);
-      setRole(null);
-      setShowSessionExpired(true);
-    } finally {
-      logoutInProgressRef.current = false;
-    }
-  };
+  }, [userType]);
 
   // Initial session check
   useEffect(() => {
     checkSession();
-  }, []);
+  }, [checkSession]);
 
   // Activity listeners and inactivity checking
   useEffect(() => {
@@ -143,6 +144,33 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
     const cleanupCrossTab = setupCrossTabActivityListener(userType, () => {
       // Activity detected in another tab - session is still active
     });
+    
+    // Listen for logout events from other tabs
+    let logoutCleanup: (() => void) | null = null;
+    if (typeof window !== 'undefined') {
+      const logoutChannel = new BroadcastChannel('session-activity');
+      const handleLogoutMessage = (e: MessageEvent) => {
+        if (e.data?.type === 'logout' && e.data?.userType === userType) {
+          // Another tab logged out - logout this tab too
+          logout();
+        }
+      };
+      
+      logoutChannel.addEventListener('message', handleLogoutMessage);
+      
+      // Also listen for storage-based logout events
+      const handleLogoutStorage = (e: StorageEvent) => {
+        if (e.key === `${ACTIVITY_KEY}_${userType}_logout` && e.newValue === null) {
+          logout();
+        }
+      };
+      window.addEventListener('storage', handleLogoutStorage);
+      
+      logoutCleanup = () => {
+        logoutChannel.removeEventListener('message', handleLogoutMessage);
+        window.removeEventListener('storage', handleLogoutStorage);
+      };
+    }
 
     // Periodic inactivity check
     const intervalId = window.setInterval(() => {
@@ -161,8 +189,11 @@ export function useSession(userType: UserType, options: UseSessionOptions = {}) 
       });
       cleanupCrossTab();
       window.clearInterval(intervalId);
+      if (logoutCleanup) {
+        logoutCleanup();
+      }
     };
-  }, [isAuthenticated, userType, checkInterval]);
+  }, [isAuthenticated, userType, checkInterval, forceLogoutForInactivity]);
 
   return {
     isAuthenticated,

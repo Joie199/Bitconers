@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, supabaseAdmin } from '@/lib/supabase';
-import { requireAdmin } from '@/lib/session';
+import { requireAdmin, attachRefresh } from '@/lib/adminSession';
 
 export async function GET() {
   try {
@@ -48,7 +48,10 @@ export async function GET() {
   } catch (error: any) {
     console.error('Error in cohorts API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }
@@ -84,16 +87,24 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('Error creating cohort:', error);
       return NextResponse.json(
-        { error: 'Failed to create cohort', details: error.message },
+        { 
+          error: 'Failed to create cohort',
+          ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+        },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true, cohort: data }, { status: 200 });
+    const res = NextResponse.json({ success: true, cohort: data }, { status: 200 });
+    attachRefresh(res, session);
+    return res;
   } catch (error: any) {
     console.error('Error in create cohort API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

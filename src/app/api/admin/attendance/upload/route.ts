@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       event: { id: event.id, name: event.name },
       processed,
@@ -126,10 +126,15 @@ export async function POST(req: NextRequest) {
       errors: errors.slice(0, 10), // Return first 10 errors
       totalErrors: errors.length,
     }, { status: 200 });
+    attachRefresh(res, session);
+    return res;
   } catch (error: any) {
     console.error('Error processing attendance CSV:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

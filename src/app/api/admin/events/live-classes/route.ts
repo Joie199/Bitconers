@@ -26,7 +26,10 @@ export async function GET(_req: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching live-class events:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

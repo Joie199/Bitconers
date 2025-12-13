@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { requireAdmin } from '@/lib/adminSession';
+import { requireAdmin, attachRefresh } from '@/lib/adminSession';
 
 /**
  * Create a new event
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       cohortName = cohort?.name || null;
     }
 
-    return NextResponse.json(
+    const res = NextResponse.json(
       {
         success: true,
         message: finalCohortId 
@@ -121,10 +121,15 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
+    attachRefresh(res, session);
+    return res;
   } catch (error: any) {
     console.error('Error in create event API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

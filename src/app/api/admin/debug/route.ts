@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import bcrypt from 'bcryptjs';
+import { requireAdmin } from '@/lib/adminSession';
 
 // Debug endpoint to check admin account status
-// Only use this in development - remove or secure in production
+// Only accessible in development or by authenticated admins
 export async function GET(req: NextRequest) {
+  // Block in production unless admin is authenticated
+  if (process.env.NODE_ENV === 'production') {
+    const session = requireAdmin(req);
+    if (!session) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+  }
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
@@ -23,8 +31,8 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       return NextResponse.json({ 
-        error: 'Database error', 
-        details: error.message 
+        error: 'Database error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
       }, { status: 500 });
     }
 
@@ -36,7 +44,7 @@ export async function GET(req: NextRequest) {
       }, { status: 200 });
     }
 
-    // Don't return the actual hash, just info about it
+    // Don't return any password hash information
     return NextResponse.json({
       found: true,
       id: admin.id,
@@ -44,19 +52,24 @@ export async function GET(req: NextRequest) {
       role: admin.role,
       created_at: admin.created_at,
       hasPasswordHash: !!admin.password_hash,
-      passwordHashLength: admin.password_hash?.length || 0,
-      passwordHashStarts: admin.password_hash?.substring(0, 7) || null,
-    }, { status: 200 });
+      }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ 
-      error: 'Internal error', 
-      details: error.message 
+      error: 'Internal error',
+      ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
     }, { status: 500 });
   }
 }
 
-// Test password endpoint
+// Test password endpoint - only in development
 export async function POST(req: NextRequest) {
+  // Block in production
+  if (process.env.NODE_ENV === 'production') {
+    const session = requireAdmin(req);
+    if (!session) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+  }
   try {
     const { email, password } = await req.json();
 
@@ -101,8 +114,8 @@ export async function POST(req: NextRequest) {
     }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ 
-      error: 'Internal error', 
-      details: error.message 
+      error: 'Internal error',
+      ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
     }, { status: 500 });
   }
 }

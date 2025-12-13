@@ -168,6 +168,7 @@ export async function POST(req: NextRequest) {
       totalChapters: chapterProgress.totalChapters,
       completedChapterNumbers: chapterProgress.completedChapterNumbers,
       chapters: chapterProgress.chapters,
+      certificateImageUrl: (student as any).certificate_image_url || null,
     } : null;
 
     return NextResponse.json(
@@ -201,7 +202,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error in user-data API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

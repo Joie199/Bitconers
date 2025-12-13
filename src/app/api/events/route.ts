@@ -133,7 +133,10 @@ export async function GET(request: NextRequest) {
       }
       
       return NextResponse.json(
-        { error: 'Failed to fetch events', details: error.message },
+        { 
+          error: 'Failed to fetch events',
+          ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+        },
         { status: 500 }
       );
     }
@@ -193,7 +196,10 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error in events API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

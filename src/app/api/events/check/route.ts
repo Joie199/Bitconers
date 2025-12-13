@@ -16,9 +16,9 @@ export async function GET() {
       return NextResponse.json(
         { 
           error: 'Failed to fetch events', 
-          details: error.message,
           hasData: false,
-          count: 0
+          count: 0,
+          ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
         },
         { status: 500 }
       );
@@ -38,10 +38,10 @@ export async function GET() {
     console.error('Error checking events:', error);
     return NextResponse.json(
       { 
-        error: 'Internal server error', 
-        details: error.message,
+        error: 'Internal server error',
         hasData: false,
-        count: 0
+        count: 0,
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
       },
       { status: 500 }
     );

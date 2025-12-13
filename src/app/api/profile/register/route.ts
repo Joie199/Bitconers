@@ -84,7 +84,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error in profile register API:', error);
     return NextResponse.json(
-      { error: 'Failed to create profile', details: error.message },
+      { 
+        error: 'Failed to create profile',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }

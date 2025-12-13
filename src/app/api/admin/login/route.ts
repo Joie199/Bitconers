@@ -63,11 +63,13 @@ export async function POST(req: NextRequest) {
       return res;
     } catch (cookieError: any) {
       console.error('Error setting admin cookie:', cookieError);
-      if (cookieError.message?.includes('ADMIN_SESSION_SECRET')) {
+      if (cookieError.message?.includes('SESSION_SECRET')) {
         return NextResponse.json(
           { 
             error: 'Server configuration error',
-            details: 'ADMIN_SESSION_SECRET environment variable is not set. Please add it to .env.local and restart the server.'
+            ...(process.env.NODE_ENV === 'development' 
+              ? { details: 'Session secret is not configured. Check server logs.' }
+              : {})
           },
           { status: 500 }
         );
@@ -82,12 +84,14 @@ export async function POST(req: NextRequest) {
       name: error.name,
     });
     
-    // Check if it's the ADMIN_SESSION_SECRET error
-    if (error.message?.includes('ADMIN_SESSION_SECRET')) {
+    // Check if it's the SESSION_SECRET error
+    if (error.message?.includes('SESSION_SECRET')) {
       return NextResponse.json(
         { 
           error: 'Server configuration error',
-          details: 'ADMIN_SESSION_SECRET environment variable is not set. Please contact the administrator.'
+          ...(process.env.NODE_ENV === 'development' 
+            ? { details: 'Session secret is not configured. Check server logs.' }
+            : {})
         },
         { status: 500 }
       );

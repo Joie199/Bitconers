@@ -184,7 +184,11 @@ export async function POST(req: NextRequest) {
       console.error('Error creating application:', error);
       console.error('Error details:', JSON.stringify(error, null, 2));
       return NextResponse.json(
-        { error: 'Failed to submit application', details: error.message, code: error.code },
+        { 
+          error: 'Failed to submit application',
+          code: error.code,
+          ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+        },
         { status: 500 }
       );
     }
@@ -196,7 +200,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error in submit-application API:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { 
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {})
+      },
       { status: 500 }
     );
   }
