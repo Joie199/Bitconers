@@ -1,5 +1,38 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+
+type BlogPostPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const postId = parseInt(id, 10);
+  const post = blogPosts[postId];
+  
+  if (!post) {
+    return {
+      title: 'Blog Post Not Found',
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.content.substring(0, 160) + '...',
+    alternates: {
+      canonical: `/blog/${id}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.content.substring(0, 160) + '...',
+      url: `/blog/${id}`,
+      type: 'article',
+      authors: [post.author],
+      publishedTime: post.date,
+    },
+  };
+}
 
 const blogPosts: Record<number, {
   id: number;
@@ -104,8 +137,9 @@ I believe African youth will be at the forefront of Bitcoin adoption. We underst
   // Add more posts as needed
 };
 
-export default function BlogPostPage({ params }: { params: { id: string } }) {
-  const postId = parseInt(params.id);
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { id } = await params;
+  const postId = parseInt(id, 10);
   const post = blogPosts[postId];
 
   if (!post) {
