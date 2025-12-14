@@ -7,8 +7,8 @@ export const metadata: Metadata = {
     canonical: '/admin',
   },
   robots: {
-    noindex: true,
-    nofollow: true,
+    index: false,
+    follow: false,
   },
 };
 
