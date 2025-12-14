@@ -235,7 +235,7 @@ export async function POST(req: NextRequest) {
         
         profileId = newProfile.id;
       }
-
+    }
 
     // STEP 2: Create/Update Students Record (SOURCE OF TRUTH)
     // Students database is the main database - all student data goes here
