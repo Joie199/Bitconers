@@ -123,6 +123,8 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [processing, setProcessing] = useState<string | null>(null);
+  const [cohortFilter, setCohortFilter] = useState<string | null>(null); // Filter by cohort
+  const [attendanceSort, setAttendanceSort] = useState<'asc' | 'desc' | null>(null); // Sort by attendance
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingCohort, setCreatingCohort] = useState(false);
   const [uploadingAttendance, setUploadingAttendance] = useState(false);
@@ -945,25 +947,140 @@ export default function AdminDashboardPage() {
 
         {/* Student Database */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-          <h3 className="mb-3 text-lg font-semibold text-zinc-50">Student Database</h3>
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-zinc-50">Student Database</h3>
+              {(cohortFilter || attendanceSort) && (
+                <div className="mt-1 flex items-center gap-2 text-xs text-zinc-400">
+                  {cohortFilter && (
+                    <span>
+                      Filtered: <span className="text-cyan-400">{progress.find(p => p.cohortId === cohortFilter)?.cohortName || 'Cohort'}</span>
+                    </span>
+                  )}
+                  {attendanceSort && (
+                    <span>
+                      Sorted by Attendance: <span className="text-cyan-400">{attendanceSort === 'desc' ? 'High to Low' : 'Low to High'}</span>
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            {(cohortFilter || attendanceSort) && (
+              <div className="flex items-center gap-2">
+                {cohortFilter && (
+                  <button
+                    onClick={() => setCohortFilter(null)}
+                    className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-700"
+                  >
+                    Clear Filter
+                  </button>
+                )}
+                {attendanceSort && (
+                  <button
+                    onClick={() => setAttendanceSort(null)}
+                    className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-700"
+                  >
+                    Clear Sort
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-900 text-left text-zinc-300">
                 <tr>
                   <th className="px-3 py-2">Name</th>
                   <th className="px-3 py-2">Email</th>
-                  <th className="px-3 py-2">Cohort</th>
+                  <th 
+                    className="px-3 py-2 cursor-pointer hover:bg-zinc-800 transition select-none"
+                    title="Click to filter by cohort"
+                    onClick={() => {
+                      // Get unique cohorts from progress (by ID)
+                      const uniqueCohorts = Array.from(new Set(progress.map(p => p.cohortId).filter(Boolean))) as string[];
+                      if (uniqueCohorts.length === 0) return;
+                      
+                      // Cycle through: null -> first cohort -> second cohort -> ... -> null
+                      if (!cohortFilter) {
+                        setCohortFilter(uniqueCohorts[0]);
+                      } else {
+                        const currentIndex = uniqueCohorts.indexOf(cohortFilter);
+                        if (currentIndex < uniqueCohorts.length - 1) {
+                          setCohortFilter(uniqueCohorts[currentIndex + 1]);
+                        } else {
+                          setCohortFilter(null);
+                        }
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      Cohort
+                      {cohortFilter && (
+                        <span className="text-cyan-400 text-xs" title={`Filtered: ${progress.find(p => p.cohortId === cohortFilter)?.cohortName || cohortFilter}`}>●</span>
+                      )}
+                    </div>
+                  </th>
                   <th className="px-3 py-2">Chapters</th>
-                  <th className="px-3 py-2">Attendance</th>
+                  <th 
+                    className="px-3 py-2 cursor-pointer hover:bg-zinc-800 transition select-none"
+                    title="Click to sort by attendance"
+                    onClick={() => {
+                      // Cycle through: null -> desc (high to low) -> asc (low to high) -> null
+                      if (!attendanceSort) {
+                        setAttendanceSort('desc'); // High to low
+                      } else if (attendanceSort === 'desc') {
+                        setAttendanceSort('asc'); // Low to high
+                      } else {
+                        setAttendanceSort(null); // No sort
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      Attendance
+                      {attendanceSort && (
+                        <span className="text-cyan-400 text-xs" title={attendanceSort === 'desc' ? 'High to Low' : 'Low to High'}>
+                          {attendanceSort === 'desc' ? '↓' : '↑'}
+                        </span>
+                      )}
+                    </div>
+                  </th>
                   <th className="px-3 py-2">Overall</th>
                 </tr>
               </thead>
               <tbody>
-                {progress.map((p) => (
-                  <tr key={p.id} className="border-b border-zinc-800">
+                {useMemo(() => {
+                  let filtered = progress;
+                  
+                  // Filter by cohort
+                  if (cohortFilter) {
+                    filtered = filtered.filter(p => p.cohortId === cohortFilter);
+                  }
+                  
+                  // Sort by attendance
+                  if (attendanceSort) {
+                    filtered = [...filtered].sort((a, b) => {
+                      const aPercent = a.attendancePercent ?? 0;
+                      const bPercent = b.attendancePercent ?? 0;
+                      return attendanceSort === 'desc' 
+                        ? bPercent - aPercent // High to low
+                        : aPercent - bPercent; // Low to high
+                    });
+                  }
+                  
+                  return filtered;
+                }, [progress, cohortFilter, attendanceSort]).map((p) => (
+                  <tr 
+                    key={p.id} 
+                    className={`border-b border-zinc-800 ${cohortFilter && p.cohortId === cohortFilter ? 'bg-zinc-800/30' : ''}`}
+                  >
                     <td className="px-3 py-2 text-zinc-50">{p.name}</td>
                     <td className="px-3 py-2 text-zinc-400">{p.email}</td>
-                    <td className="px-3 py-2 text-zinc-400">{p.cohortName || p.cohortId || '—'}</td>
+                    <td className="px-3 py-2 text-zinc-400">
+                      {p.cohortName || p.cohortId || '—'}
+                      {cohortFilter && p.cohortId === cohortFilter && (
+                        <span className="ml-2 text-cyan-400 text-xs">●</span>
+                      )}
+                    </td>
                     <td className="px-3 py-2">
                       <span className="text-green-300">{p.completedChapters}</span>
                       <span className="text-zinc-500">/{p.totalChapters || 20}</span>
@@ -992,6 +1109,15 @@ export default function AdminDashboardPage() {
             </table>
             {progress.length === 0 && (
               <p className="p-3 text-sm text-zinc-400">No progress data yet.</p>
+            )}
+            {progress.length > 0 && useMemo(() => {
+              let filtered = progress;
+              if (cohortFilter) {
+                filtered = filtered.filter(p => p.cohortId === cohortFilter);
+              }
+              return filtered;
+            }, [progress, cohortFilter]).length === 0 && (
+              <p className="p-3 text-sm text-zinc-400">No students found for the selected cohort filter.</p>
             )}
           </div>
         </div>
