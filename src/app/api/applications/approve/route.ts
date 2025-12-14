@@ -298,8 +298,17 @@ export async function POST(req: NextRequest) {
 
     // STEP 3: Update Profile from Students Data (Profile is for display)
     // Profile gets updated from students database (students is source of truth)
+    
+    // Get current profile to check password_hash
+    const { data: currentProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('password_hash, status')
+      .eq('id', profileId)
+      .single();
+
     const profileUpdateData: any = {
       name: studentRecord.name,
+      email: studentRecord.email, // Ensure email is synced
       phone: studentRecord.phone,
       country: studentRecord.country,
       city: studentRecord.city,
@@ -311,22 +320,57 @@ export async function POST(req: NextRequest) {
       profileUpdateData.student_id = generatedStudentId;
     }
 
-    // Update status based on password
-    if (existingProfile?.password_hash) {
+    // Update status based on password (check current profile, not existingProfile)
+    if (currentProfile?.password_hash) {
       profileUpdateData.status = 'Active';
     } else {
       profileUpdateData.status = 'Pending Password Setup';
     }
 
-    const { error: profileUpdateError } = await supabaseAdmin
+    const { data: updatedProfile, error: profileUpdateError } = await supabaseAdmin
       .from('profiles')
       .update(profileUpdateData)
-      .eq('id', profileId);
+      .eq('id', profileId)
+      .select()
+      .single();
 
     if (profileUpdateError) {
       console.error('Error updating profile from student data:', profileUpdateError);
-      // Don't fail - profile update is secondary
+      console.error('Profile update data:', profileUpdateData);
+      console.error('Profile ID:', profileId);
+      // This is critical - profile must be updated with student data
+      return NextResponse.json(
+        { 
+          error: 'Failed to update profile with student data', 
+          details: profileUpdateError.message,
+          code: profileUpdateError.code,
+          hint: profileUpdateError.hint,
+          profileId,
+          studentRecordId: studentRecord.id,
+        },
+        { status: 500 }
+      );
     }
+
+    if (!updatedProfile) {
+      console.error('Profile update returned no data - profile may not exist');
+      return NextResponse.json(
+        { 
+          error: 'Failed to update profile - profile not found',
+          details: 'Profile update returned no data. Profile may have been deleted.',
+          profileId,
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log('Profile updated successfully:', {
+      profileId: updatedProfile.id,
+      name: updatedProfile.name,
+      email: updatedProfile.email,
+      cohort_id: updatedProfile.cohort_id,
+      status: updatedProfile.status,
+    });
 
     // STEP 4: Enroll in Cohort (if cohort_id exists in students record)
     if (studentRecord.cohort_id) {
@@ -394,15 +438,56 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Profile status is already updated from students data above
-    // No need for additional update here
+    // Verify both profile and student records were updated
+    const { data: finalProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('id, name, email, cohort_id, status, student_id')
+      .eq('id', profileId)
+      .single();
+
+    const { data: finalStudent } = await supabaseAdmin
+      .from('students')
+      .select('id, name, email, cohort_id, status')
+      .eq('profile_id', profileId)
+      .single();
+
+    console.log('Approval completed - Verification:', {
+      profile: finalProfile ? {
+        id: finalProfile.id,
+        name: finalProfile.name,
+        email: finalProfile.email,
+        cohort_id: finalProfile.cohort_id,
+        status: finalProfile.status,
+        student_id: finalProfile.student_id,
+      } : 'NOT FOUND',
+      student: finalStudent ? {
+        id: finalStudent.id,
+        name: finalStudent.name,
+        email: finalStudent.email,
+        cohort_id: finalStudent.cohort_id,
+        status: finalStudent.status,
+      } : 'NOT FOUND',
+    });
 
     const res = NextResponse.json({
       success: true,
       message: 'Application approved successfully',
       profileId,
+      studentId: finalStudent?.id || null,
       isExistingProfile,
-      needsPasswordSetup: !existingProfile || existingProfile.status === 'Pending Password Setup',
+      needsPasswordSetup: !currentProfile?.password_hash,
+      profile: finalProfile ? {
+        name: finalProfile.name,
+        email: finalProfile.email,
+        cohort_id: finalProfile.cohort_id,
+        status: finalProfile.status,
+      } : null,
+      student: finalStudent ? {
+        name: finalStudent.name,
+        email: finalStudent.email,
+        cohort_id: finalStudent.cohort_id,
+        status: finalStudent.status,
+      } : null,
     });
     attachRefresh(res, session);
     return res;
