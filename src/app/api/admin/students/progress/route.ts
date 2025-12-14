@@ -42,9 +42,11 @@ export async function GET(_req: NextRequest) {
           name,
           email,
           status,
+          cohort_id,
           students:students(id, cohort_id, created_at),
           chapter_progress:chapter_progress(is_completed, is_unlocked, chapter_number),
-          attendance:attendance(event_id, join_time, duration_minutes)
+          attendance:attendance(event_id, join_time, duration_minutes),
+          cohort_enrollment:cohort_enrollment(cohort_id, cohorts(name))
         `)
         .limit(200);
 
@@ -54,7 +56,7 @@ export async function GET(_req: NextRequest) {
           console.warn('Some relationships may not exist, fetching profiles only:', result.error.message);
           const simpleResult = await supabaseAdmin
             .from('profiles')
-            .select('id, name, email, status')
+            .select('id, name, email, status, cohort_id')
             .limit(200);
           
           if (simpleResult.error) {
@@ -105,6 +107,33 @@ export async function GET(_req: NextRequest) {
       // Continue without attendance data
     }
 
+    // If we don't have cohort_enrollment data in the query, fetch it separately for profiles that need it
+    const profilesNeedingCohort: string[] = [];
+    profiles.forEach((p: any) => {
+      if (!p.cohort_id && (!p.students || !p.students[0]?.cohort_id) && (!p.cohort_enrollment || p.cohort_enrollment.length === 0)) {
+        profilesNeedingCohort.push(p.id);
+      }
+    });
+
+    // Fetch cohort_enrollment for profiles that don't have cohort info
+    const enrollmentMap = new Map<string, string>(); // profile_id -> cohort_id
+    if (profilesNeedingCohort.length > 0) {
+      try {
+        const { data: enrollments } = await supabaseAdmin
+          .from('cohort_enrollment')
+          .select('student_id, cohort_id')
+          .in('student_id', profilesNeedingCohort);
+        
+        if (enrollments) {
+          enrollments.forEach((e: any) => {
+            enrollmentMap.set(e.student_id, e.cohort_id);
+          });
+        }
+      } catch (enrollmentError) {
+        console.warn('Error fetching cohort enrollments (non-critical):', enrollmentError);
+      }
+    }
+
     // Map profiles to progress data
     const progress = profiles.map((p: any) => {
       const chapterData = p.chapter_progress || [];
@@ -122,8 +151,49 @@ export async function GET(_req: NextRequest) {
       const overallProgress = Math.round((completed / 20) * 50 + attendancePercent * 0.5);
 
       const student = p.students?.[0];
-      const cohortId = student?.cohort_id || null;
-      const cohortName = cohortId ? cohortsMap.get(cohortId) || null : null;
+      
+      // Get cohort from multiple sources (priority order):
+      // 1. From profile.cohort_id (direct assignment)
+      // 2. From students.cohort_id (if exists)
+      // 3. From cohort_enrollment (many-to-many relationship - from query)
+      // 4. From cohort_enrollment (many-to-many relationship - from fallback query)
+      let cohortId: string | null = null;
+      let cohortName: string | null = null;
+      
+      // First, check profile.cohort_id
+      if (p.cohort_id) {
+        cohortId = p.cohort_id;
+        cohortName = cohortsMap.get(cohortId) || null;
+      }
+      
+      // If not found, check students.cohort_id
+      if (!cohortId && student?.cohort_id) {
+        cohortId = student.cohort_id;
+        cohortName = cohortsMap.get(cohortId) || null;
+      }
+      
+      // If still not found, check cohort_enrollment from query
+      if (!cohortId && p.cohort_enrollment && Array.isArray(p.cohort_enrollment) && p.cohort_enrollment.length > 0) {
+        const enrollment = p.cohort_enrollment[0];
+        if (enrollment.cohort_id) {
+          cohortId = enrollment.cohort_id;
+          // Try to get name from the nested cohort data first
+          if (enrollment.cohorts && enrollment.cohorts.name) {
+            cohortName = enrollment.cohorts.name;
+          } else {
+            cohortName = cohortsMap.get(cohortId) || null;
+          }
+        }
+      }
+      
+      // Final fallback: check enrollmentMap from separate query
+      if (!cohortId) {
+        const fallbackCohortId = enrollmentMap.get(p.id);
+        if (fallbackCohortId) {
+          cohortId = fallbackCohortId;
+          cohortName = cohortsMap.get(cohortId) || null;
+        }
+      }
 
       return {
         id: p.id,

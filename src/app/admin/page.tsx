@@ -126,6 +126,7 @@ export default function AdminDashboardPage() {
   const [creatingCohort, setCreatingCohort] = useState(false);
   const [uploadingAttendance, setUploadingAttendance] = useState(false);
   const [selectedEventForUpload, setSelectedEventForUpload] = useState<string>('');
+  const [selectedCohortFilter, setSelectedCohortFilter] = useState<string>('all');
 
   const [eventForm, setEventForm] = useState({
     name: '',
@@ -925,7 +926,25 @@ export default function AdminDashboardPage() {
 
         {/* Student progress */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-          <h3 className="mb-3 text-lg font-semibold text-zinc-50">Student Progress</h3>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-zinc-50">Student Progress</h3>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-zinc-300">Filter by Cohort:</label>
+              <select
+                value={selectedCohortFilter}
+                onChange={(e) => setSelectedCohortFilter(e.target.value)}
+                className="rounded border border-zinc-700 bg-black px-3 py-1.5 text-sm text-zinc-100 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
+              >
+                <option value="all">All Cohorts</option>
+                <option value="no-cohort">No Cohort</option>
+                {cohorts.map((cohort) => (
+                  <option key={cohort.id} value={cohort.id}>
+                    {cohort.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-900 text-left text-zinc-300">
@@ -939,39 +958,55 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {progress.map((p) => (
-                  <tr key={p.id} className="border-b border-zinc-800">
-                    <td className="px-3 py-2 text-zinc-50">{p.name}</td>
-                    <td className="px-3 py-2 text-zinc-400">{p.email}</td>
-                    <td className="px-3 py-2 text-zinc-400">{p.cohortName || p.cohortId || '—'}</td>
-                    <td className="px-3 py-2">
-                      <span className="text-green-300">{p.completedChapters}</span>
-                      <span className="text-zinc-500">/{p.totalChapters || 20}</span>
-                    </td>
-                    <td className="px-3 py-2">
-                      {p.lecturesAttended !== undefined && p.totalLiveLectures !== undefined ? (
-                        <span>
-                          <span className="text-blue-300">{p.lecturesAttended}</span>
-                          <span className="text-zinc-500">/{p.totalLiveLectures}</span>
-                          <span className="ml-2 text-xs text-zinc-400">({p.attendancePercent}%)</span>
-                        </span>
-                      ) : (
-                        <span className="text-zinc-500">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
-                      {p.overallProgress !== undefined ? (
-                        <span className="font-medium text-yellow-300">{p.overallProgress}%</span>
-                      ) : (
-                        <span className="text-zinc-500">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {progress
+                  .filter((p) => {
+                    if (selectedCohortFilter === 'all') return true;
+                    if (selectedCohortFilter === 'no-cohort') return !p.cohortId;
+                    return p.cohortId === selectedCohortFilter;
+                  })
+                  .map((p) => (
+                    <tr key={p.id} className="border-b border-zinc-800">
+                      <td className="px-3 py-2 text-zinc-50">{p.name}</td>
+                      <td className="px-3 py-2 text-zinc-400">{p.email}</td>
+                      <td className="px-3 py-2 text-zinc-400">{p.cohortName || p.cohortId || '—'}</td>
+                      <td className="px-3 py-2">
+                        <span className="text-green-300">{p.completedChapters}</span>
+                        <span className="text-zinc-500">/{p.totalChapters || 20}</span>
+                      </td>
+                      <td className="px-3 py-2">
+                        {p.lecturesAttended !== undefined && p.totalLiveLectures !== undefined ? (
+                          <span>
+                            <span className="text-blue-300">{p.lecturesAttended}</span>
+                            <span className="text-zinc-500">/{p.totalLiveLectures}</span>
+                            <span className="ml-2 text-xs text-zinc-400">({p.attendancePercent}%)</span>
+                          </span>
+                        ) : (
+                          <span className="text-zinc-500">—</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        {p.overallProgress !== undefined ? (
+                          <span className="font-medium text-yellow-300">{p.overallProgress}%</span>
+                        ) : (
+                          <span className="text-zinc-500">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
-            {progress.length === 0 && (
-              <p className="p-3 text-sm text-zinc-400">No progress data yet.</p>
+            {progress.filter((p) => {
+              if (selectedCohortFilter === 'all') return true;
+              if (selectedCohortFilter === 'no-cohort') return !p.cohortId;
+              return p.cohortId === selectedCohortFilter;
+            }).length === 0 && (
+              <p className="p-3 text-sm text-zinc-400">
+                {selectedCohortFilter === 'all' 
+                  ? 'No progress data yet.' 
+                  : selectedCohortFilter === 'no-cohort'
+                  ? 'No students without a cohort.'
+                  : 'No students in this cohort.'}
+              </p>
             )}
           </div>
         </div>
