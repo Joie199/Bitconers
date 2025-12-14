@@ -728,10 +728,11 @@ export default function ApplyPage() {
             {/* First Name and Last Name */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-zinc-300">
                   First Name <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="firstName"
                   type="text"
                   required
                   value={formData.firstName}
@@ -741,10 +742,11 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="lastName" className="mb-2 block text-sm font-medium text-zinc-300">
                   Last Name <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="lastName"
                   type="text"
                   required
                   value={formData.lastName}
@@ -758,10 +760,11 @@ export default function ApplyPage() {
             {/* Email, Phone, Birth Date, Language */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-zinc-300">
                   Email <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="email"
                   type="email"
                   required
                   value={formData.email}
@@ -771,13 +774,18 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="phone" className="mb-2 block text-sm font-medium text-zinc-300">
                   Phone <span className="text-red-400">*</span>
                 </label>
                 <div className="flex gap-2">
+                  <label htmlFor="countryCode" className="sr-only">
+                    Country Code
+                  </label>
                   <select
+                    id="countryCode"
                     value={selectedCountryCode}
                     onChange={handleCountryCodeChange}
+                    aria-label="Country code"
                     className="flex-shrink-0 rounded-lg border border-cyan-400/30 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
                     style={{ minWidth: '90px' }}
                     title={selectedCountryCode ? africanCountries.find(c => c.code === selectedCountryCode)?.name : "Select country code"}
@@ -790,29 +798,32 @@ export default function ApplyPage() {
                     ))}
                   </select>
                   <input
+                    id="phone"
                     type="tel"
                     required
                     value={phoneNumber}
                     onChange={handlePhoneChange}
                     className="flex-1 rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
                     placeholder="1234567890"
+                    aria-describedby={phoneError ? "phone-error" : selectedCountry ? "phone-help" : undefined}
                   />
                 </div>
                 {selectedCountry && (
-                  <p className="mt-1 text-xs text-zinc-400">
+                  <p id="phone-help" className="mt-1 text-xs text-zinc-400">
                     Requires {getPhoneRule(selectedCountry).min}
                     {getPhoneRule(selectedCountry).min !== getPhoneRule(selectedCountry).max ? `-${getPhoneRule(selectedCountry).max}` : ''} digits (excluding country code).
                   </p>
                 )}
                 {phoneError && (
-                  <p className="mt-1 text-xs text-red-300">{phoneError}</p>
+                  <p id="phone-error" className="mt-1 text-xs text-red-300" role="alert">{phoneError}</p>
                 )}
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="birthDate" className="mb-2 block text-sm font-medium text-zinc-300">
                   Birth Date <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="birthDate"
                   type="date"
                   required
                   value={birthDate}
@@ -824,10 +835,11 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="preferredLanguage" className="mb-2 block text-sm font-medium text-zinc-300">
                   Preferred Language <span className="text-red-400">*</span>
                 </label>
                 <select
+                  id="preferredLanguage"
                   required
                   value={formData.preferredLanguage}
                   onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value })}
@@ -843,10 +855,11 @@ export default function ApplyPage() {
             {/* Country and City */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="country" className="mb-2 block text-sm font-medium text-zinc-300">
                   Country <span className="text-red-400">*</span>
                 </label>
                 <select
+                  id="country"
                   required
                   value={selectedCountry}
                   onChange={handleCountryChange}
@@ -861,8 +874,9 @@ export default function ApplyPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">City</label>
+                <label htmlFor="city" className="mb-2 block text-sm font-medium text-zinc-300">City</label>
                 <input
+                  id="city"
                   type="text"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -875,10 +889,11 @@ export default function ApplyPage() {
             {/* Experience Level and Preferred Cohort */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="experienceLevel" className="mb-2 block text-sm font-medium text-zinc-300">
                   Experience Level <span className="text-red-400">*</span>
                 </label>
                 <select
+                  id="experienceLevel"
                   required
                   value={formData.experienceLevel}
                   onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
@@ -892,10 +907,11 @@ export default function ApplyPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                <label htmlFor="preferredCohort" className="mb-2 block text-sm font-medium text-zinc-300">
                   Preferred Cohort <span className="text-red-400">*</span>
                 </label>
                 <select
+                  id="preferredCohort"
                   required
                   value={formData.preferredCohort}
                   onChange={(e) => {
