@@ -423,7 +423,7 @@ export default function Home() {
                   Read how our graduates are using Bitcoin, building the future, and contributing to the community.
                 </p>
               </div>
-              <AnimatedList animation="slideUp" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {[
                   {
                     title: "How I'm Using Bitcoin to Build Financial Sovereignty",
@@ -444,28 +444,29 @@ export default function Home() {
                     excerpt: "Starting a local Bitcoin meetup has changed how I see community building...",
                   },
                 ].map((post, index) => (
-                  <Link
-                    key={index}
-                    href="/blog"
-                    className="group rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
-                  >
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
-                        {post.category}
-                      </span>
-                    </div>
-                    <h3 className="mb-2 text-lg font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
-                      {post.title}
-                    </h3>
-                    <p className="mb-4 text-sm text-zinc-400">{post.excerpt}</p>
-                    <div className="flex items-center gap-2 text-xs text-zinc-500">
-                      <span>By {post.author}</span>
-                      <span>•</span>
-                      <span className="text-cyan-300">Read more →</span>
-                    </div>
-                  </Link>
+                  <AnimatedSection key={index} animation="slideUp" delay={index * 100}>
+                    <Link
+                      href="/blog"
+                      className="group block rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)] transition hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                    >
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-1 text-[10px] font-medium text-orange-300">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="mb-2 text-lg font-semibold text-zinc-50 group-hover:text-cyan-200 transition">
+                        {post.title}
+                      </h3>
+                      <p className="mb-4 text-sm text-zinc-400">{post.excerpt}</p>
+                      <div className="flex items-center gap-2 text-xs text-zinc-500">
+                        <span>By {post.author}</span>
+                        <span>•</span>
+                        <span className="text-cyan-300">Read more →</span>
+                      </div>
+                    </Link>
+                  </AnimatedSection>
                 ))}
-              </AnimatedList>
+              </div>
               <div className="text-center">
                 <Link
                   href="/blog"
