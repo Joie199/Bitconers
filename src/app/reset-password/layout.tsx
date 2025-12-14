@@ -7,8 +7,6 @@ export const metadata: Metadata = {
     canonical: '/reset-password',
   },
   robots: {
-    index: false,
-    follow: false,
     noindex: true,
     nofollow: true,
   },
