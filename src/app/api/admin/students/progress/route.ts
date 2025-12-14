@@ -44,7 +44,8 @@ export async function GET(_req: NextRequest) {
           status,
           students:students(id, cohort_id, created_at),
           chapter_progress:chapter_progress(is_completed, is_unlocked, chapter_number),
-          attendance:attendance(event_id, join_time, duration_minutes)
+          attendance:attendance(event_id, join_time, duration_minutes),
+          cohort_enrollment:cohort_enrollment(cohort_id, enrolled_at)
         `)
         .limit(200);
 
@@ -122,8 +123,24 @@ export async function GET(_req: NextRequest) {
       const overallProgress = Math.round((completed / 20) * 50 + attendancePercent * 0.5);
 
       const student = p.students?.[0];
-      const cohortId = student?.cohort_id || null;
-      const cohortName = cohortId ? cohortsMap.get(cohortId) || null : null;
+      // Get cohort from cohort_enrollment (source of truth) first, fallback to students.cohort_id
+      let cohortId = null;
+      let cohortName = null;
+      
+      // cohort_enrollment is the source of truth for student enrollments
+      const enrollments = p.cohort_enrollment || [];
+      if (enrollments.length > 0) {
+        // If multiple enrollments, use the most recent one
+        const latestEnrollment = enrollments.sort((a: any, b: any) => 
+          new Date(b.enrolled_at).getTime() - new Date(a.enrolled_at).getTime()
+        )[0];
+        cohortId = latestEnrollment.cohort_id;
+      } else {
+        // Fallback to students.cohort_id if no enrollment record exists
+        cohortId = student?.cohort_id || null;
+      }
+      
+      cohortName = cohortId ? cohortsMap.get(cohortId) || null : null;
 
       return {
         id: p.id,
