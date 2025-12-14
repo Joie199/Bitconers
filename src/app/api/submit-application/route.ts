@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       birthDate,
       experienceLevel,
       preferredCohort,
+      preferredLanguage,
     } = body;
 
     if (!firstName || !lastName || !email) {
@@ -174,6 +175,7 @@ export async function POST(req: NextRequest) {
         birth_date: birthDate || null,
         experience_level: experienceLevel || null,
         preferred_cohort_id: cohortId,
+        preferred_language: preferredLanguage || null,
         status: 'Pending',
         profile_id: existingProfile?.id || null, // Link to existing profile if found
       })

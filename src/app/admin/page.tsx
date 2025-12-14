@@ -29,6 +29,7 @@ interface Application {
   city: string | null;
   experience_level: string | null;
   preferred_cohort_id: string | null;
+  preferred_language: string | null;
   status: string;
   created_at: string;
   birth_date: string | null;
@@ -126,6 +127,9 @@ export default function AdminDashboardPage() {
   const [creatingCohort, setCreatingCohort] = useState(false);
   const [uploadingAttendance, setUploadingAttendance] = useState(false);
   const [selectedEventForUpload, setSelectedEventForUpload] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'overview' | 'applications' | 'students' | 'events' | 'mentorships' | 'attendance'>('overview');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   const [eventForm, setEventForm] = useState({
     name: '',
@@ -643,6 +647,12 @@ export default function AdminDashboardPage() {
                         <span className="text-zinc-200">
                           {cohorts.find((c) => c.id === app.preferred_cohort_id)?.name || 'N/A'}
                         </span>
+                      </div>
+                    )}
+                    {app.preferred_language && (
+                      <div>
+                        <span className="text-zinc-500">Language:</span>{' '}
+                        <span className="text-zinc-200 capitalize">{app.preferred_language}</span>
                       </div>
                     )}
                     <div>

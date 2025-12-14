@@ -201,6 +201,7 @@ export async function POST(req: NextRequest) {
       country: application.country || null,
       city: application.city || null,
       cohort_id: application.preferred_cohort_id || null,
+      preferred_language: application.preferred_language || null,
       status: 'Enrolled', // Student is enrolled after approval
       progress_percent: existingStudent?.progress_percent || 0,
       assignments_completed: existingStudent?.assignments_completed || 0,

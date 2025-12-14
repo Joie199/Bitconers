@@ -480,6 +480,7 @@ export default function ApplyPage() {
       birthDate: birthDate || null,
       phone: `${selectedCountryCode} ${phoneNumber}`.trim(),
       preferredCohort: cohortNumber, // Add preferredCohort (cohort ID) to the request
+      preferredLanguage: formData.preferredLanguage || null, // Include preferred language
     };
 
     try {
