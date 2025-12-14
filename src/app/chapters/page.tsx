@@ -599,32 +599,32 @@ export default function ChaptersPage() {
             <div className="relative flex items-center justify-between">
               <div className="relative flex flex-1 items-center">
                 {/* Level I */}
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/20 text-sm font-bold text-cyan-300 transition-all duration-500" id="level-1-circle">
-                  <div className="absolute inset-0 rounded-full bg-cyan-400/0 blur-md transition-all duration-500" id="level-1-glow"></div>
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/20 text-sm font-bold text-cyan-300 transition-all duration-1000" id="level-1-circle">
+                  <div className="absolute inset-0 rounded-full bg-cyan-400/0 blur-xl transition-all duration-1000" id="level-1-glow"></div>
                   <span className="relative z-10">I</span>
                 </div>
                 
                 {/* Path 1 (I to II) */}
-                <div className="relative flex-1 mx-2 h-0.5 bg-cyan-400/30 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 animate-shooting-star-1"></div>
-                  <div className="absolute top-1/2 left-0 h-2 w-2 -translate-y-1/2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)] animate-shooting-star-1"></div>
+                <div className="relative flex-1 mx-2 h-0.5 bg-cyan-400/30 overflow-visible">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/0 to-cyan-400/0 transition-all duration-1000 animate-path-glow-1"></div>
+                  <div className="absolute top-1/2 left-0 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,1)] animate-star-move-1"></div>
                 </div>
                 
                 {/* Level II */}
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20 text-sm font-bold text-orange-300 transition-all duration-500" id="level-2-circle">
-                  <div className="absolute inset-0 rounded-full bg-orange-400/0 blur-md transition-all duration-500" id="level-2-glow"></div>
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20 text-sm font-bold text-orange-300 transition-all duration-1000" id="level-2-circle">
+                  <div className="absolute inset-0 rounded-full bg-orange-400/0 blur-xl transition-all duration-1000" id="level-2-glow"></div>
                   <span className="relative z-10">II</span>
                 </div>
                 
                 {/* Path 2 (II to III) */}
-                <div className="relative flex-1 mx-2 h-0.5 bg-orange-400/30 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-0 animate-shooting-star-2"></div>
-                  <div className="absolute top-1/2 left-0 h-2 w-2 -translate-y-1/2 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.8)] animate-shooting-star-2"></div>
+                <div className="relative flex-1 mx-2 h-0.5 bg-orange-400/30 overflow-visible">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400/0 via-orange-400/0 to-orange-400/0 transition-all duration-1000 animate-path-glow-2"></div>
+                  <div className="absolute top-1/2 left-0 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full bg-orange-400 shadow-[0_0_15px_rgba(249,115,22,1)] animate-star-move-2"></div>
                 </div>
                 
                 {/* Level III */}
-                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/20 text-sm font-bold text-purple-300 transition-all duration-500" id="level-3-circle">
-                  <div className="absolute inset-0 rounded-full bg-purple-400/0 blur-md transition-all duration-500" id="level-3-glow"></div>
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/20 text-sm font-bold text-purple-300 transition-all duration-1000" id="level-3-circle">
+                  <div className="absolute inset-0 rounded-full bg-purple-400/0 blur-xl transition-all duration-1000" id="level-3-glow"></div>
                   <span className="relative z-10">III</span>
                 </div>
               </div>
@@ -636,120 +636,207 @@ export default function ChaptersPage() {
             </div>
             </div>
             <style jsx>{`
-              @keyframes shooting-star-1 {
+              /* Continuous star movement: I → II → III → back */
+              @keyframes star-move-1 {
                 0% {
-                  transform: translateX(0);
+                  transform: translate(-50%, -50%) translateX(0);
                   opacity: 1;
                 }
-                50% {
+                30% {
+                  transform: translate(-50%, -50%) translateX(100%);
                   opacity: 1;
+                }
+                35% {
+                  opacity: 0;
+                }
+                65% {
+                  opacity: 0;
                 }
                 100% {
-                  transform: translateX(100%);
+                  transform: translate(-50%, -50%) translateX(0);
+                  opacity: 1;
+                }
+              }
+              
+              @keyframes star-move-2 {
+                0%, 30% {
+                  transform: translate(-50%, -50%) translateX(0);
+                  opacity: 0;
+                }
+                35% {
+                  opacity: 1;
+                  transform: translate(-50%, -50%) translateX(0);
+                }
+                65% {
+                  transform: translate(-50%, -50%) translateX(100%);
+                  opacity: 1;
+                }
+                70% {
+                  opacity: 0;
+                }
+                100% {
+                  transform: translate(-50%, -50%) translateX(0);
                   opacity: 0;
                 }
               }
               
-              @keyframes shooting-star-2 {
+              /* Path glow animations */
+              @keyframes path-glow-1 {
                 0% {
-                  transform: translateX(0);
-                  opacity: 1;
+                  background: linear-gradient(to right, transparent 0%, rgba(34, 211, 238, 0.8) 0%, transparent 0%);
                 }
-                50% {
-                  opacity: 1;
+                30% {
+                  background: linear-gradient(to right, transparent 0%, rgba(34, 211, 238, 0.8) 50%, transparent 100%);
                 }
-                100% {
-                  transform: translateX(100%);
-                  opacity: 0;
+                35%, 100% {
+                  background: linear-gradient(to right, transparent 0%, rgba(34, 211, 238, 0.8) 0%, transparent 0%);
                 }
               }
               
-              @keyframes glow-pulse-1 {
-                0%, 100% { opacity: 0; }
-                33% { opacity: 1; }
-                66% { opacity: 0; }
+              @keyframes path-glow-2 {
+                0%, 30% {
+                  background: linear-gradient(to right, transparent 0%, rgba(249, 115, 22, 0.8) 0%, transparent 0%);
+                }
+                35% {
+                  background: linear-gradient(to right, transparent 0%, rgba(249, 115, 22, 0.8) 0%, transparent 0%);
+                }
+                65% {
+                  background: linear-gradient(to right, transparent 0%, rgba(249, 115, 22, 0.8) 50%, transparent 100%);
+                }
+                70%, 100% {
+                  background: linear-gradient(to right, transparent 0%, rgba(249, 115, 22, 0.8) 0%, transparent 0%);
+                }
               }
               
-              @keyframes glow-pulse-2 {
-                0%, 100% { opacity: 0; }
-                50% { opacity: 1; }
-              }
-              
-              @keyframes glow-pulse-3 {
-                0%, 100% { opacity: 0; }
-                66% { opacity: 1; }
-                100% { opacity: 0; }
-              }
-              
-              .animate-shooting-star-1 {
-                animation: shooting-star-1 3s ease-in-out infinite;
-                animation-delay: 0s;
-              }
-              
-              .animate-shooting-star-2 {
-                animation: shooting-star-2 3s ease-in-out infinite;
-                animation-delay: 1.5s;
-              }
-              
-              #level-1-glow {
-                animation: glow-pulse-1 6s ease-in-out infinite;
-              }
-              
-              #level-2-glow {
-                animation: glow-pulse-2 6s ease-in-out infinite;
-              }
-              
-              #level-3-glow {
-                animation: glow-pulse-3 6s ease-in-out infinite;
-              }
-              
+              /* Circle glow animations - activated when star reaches them */
               @keyframes level-glow-1 {
                 0%, 100% {
                   box-shadow: 0 0 0 rgba(34, 211, 238, 0);
                   background-color: rgba(34, 211, 238, 0.2);
                 }
-                33% {
-                  box-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+                5% {
+                  box-shadow: 0 0 30px rgba(34, 211, 238, 1), 0 0 50px rgba(34, 211, 238, 0.6);
+                  background-color: rgba(34, 211, 238, 0.6);
+                }
+                25% {
+                  box-shadow: 0 0 20px rgba(34, 211, 238, 0.7), 0 0 40px rgba(34, 211, 238, 0.4);
                   background-color: rgba(34, 211, 238, 0.4);
                 }
-                66% {
+                35% {
                   box-shadow: 0 0 0 rgba(34, 211, 238, 0);
                   background-color: rgba(34, 211, 238, 0.2);
                 }
               }
               
               @keyframes level-glow-2 {
-                0%, 100% {
+                0%, 30%, 70%, 100% {
                   box-shadow: 0 0 0 rgba(249, 115, 22, 0);
                   background-color: rgba(249, 115, 22, 0.2);
                 }
-                50% {
-                  box-shadow: 0 0 20px rgba(249, 115, 22, 0.8);
+                40% {
+                  box-shadow: 0 0 30px rgba(249, 115, 22, 1), 0 0 50px rgba(249, 115, 22, 0.6);
+                  background-color: rgba(249, 115, 22, 0.6);
+                }
+                60% {
+                  box-shadow: 0 0 20px rgba(249, 115, 22, 0.7), 0 0 40px rgba(249, 115, 22, 0.4);
                   background-color: rgba(249, 115, 22, 0.4);
                 }
               }
               
               @keyframes level-glow-3 {
-                0%, 100% {
+                0%, 65%, 100% {
                   box-shadow: 0 0 0 rgba(168, 85, 247, 0);
                   background-color: rgba(168, 85, 247, 0.2);
                 }
-                66% {
-                  box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+                70% {
+                  box-shadow: 0 0 30px rgba(168, 85, 247, 1), 0 0 50px rgba(168, 85, 247, 0.6);
+                  background-color: rgba(168, 85, 247, 0.6);
+                }
+                90% {
+                  box-shadow: 0 0 20px rgba(168, 85, 247, 0.7), 0 0 40px rgba(168, 85, 247, 0.4);
                   background-color: rgba(168, 85, 247, 0.4);
+                }
+                95% {
+                  box-shadow: 0 0 0 rgba(168, 85, 247, 0);
+                  background-color: rgba(168, 85, 247, 0.2);
                 }
               }
               
+              /* Glow overlay for circles */
+              @keyframes glow-overlay-1 {
+                0%, 35%, 100% { 
+                  opacity: 0; 
+                }
+                5% { 
+                  opacity: 1; 
+                }
+                25% { 
+                  opacity: 0.5; 
+                }
+              }
+              
+              @keyframes glow-overlay-2 {
+                0%, 30%, 70%, 100% { 
+                  opacity: 0; 
+                }
+                40% { 
+                  opacity: 1; 
+                }
+                60% { 
+                  opacity: 0.5; 
+                }
+              }
+              
+              @keyframes glow-overlay-3 {
+                0%, 65%, 100% { 
+                  opacity: 0; 
+                }
+                70% { 
+                  opacity: 1; 
+                }
+                90% { 
+                  opacity: 0.5; 
+                }
+              }
+              
+              .animate-star-move-1 {
+                animation: star-move-1 10s ease-in-out infinite;
+              }
+              
+              .animate-star-move-2 {
+                animation: star-move-2 10s ease-in-out infinite;
+              }
+              
+              .animate-path-glow-1 {
+                animation: path-glow-1 10s ease-in-out infinite;
+              }
+              
+              .animate-path-glow-2 {
+                animation: path-glow-2 10s ease-in-out infinite;
+              }
+              
               #level-1-circle {
-                animation: level-glow-1 6s ease-in-out infinite;
+                animation: level-glow-1 10s ease-in-out infinite;
               }
               
               #level-2-circle {
-                animation: level-glow-2 6s ease-in-out infinite;
+                animation: level-glow-2 10s ease-in-out infinite;
               }
               
               #level-3-circle {
-                animation: level-glow-3 6s ease-in-out infinite;
+                animation: level-glow-3 10s ease-in-out infinite;
+              }
+              
+              #level-1-glow {
+                animation: glow-overlay-1 10s ease-in-out infinite;
+              }
+              
+              #level-2-glow {
+                animation: glow-overlay-2 10s ease-in-out infinite;
+              }
+              
+              #level-3-glow {
+                animation: glow-overlay-3 10s ease-in-out infinite;
               }
             `}</style>
           </AnimatedSection>
