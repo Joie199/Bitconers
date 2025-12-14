@@ -943,9 +943,9 @@ export default function AdminDashboardPage() {
           </form>
         </div>
 
-        {/* Student progress */}
+        {/* Student Database */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-          <h3 className="mb-3 text-lg font-semibold text-zinc-50">Student Progress</h3>
+          <h3 className="mb-3 text-lg font-semibold text-zinc-50">Student Database</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-900 text-left text-zinc-300">
