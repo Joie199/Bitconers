@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Code, GitBranch, Users, Calendar, Award, BookOpen, Rocket, HelpCircle, Github, Mail, MessageCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { ExternalLink, Code, GitBranch, Users, Calendar, Award, BookOpen, Rocket, HelpCircle, Github, Mail } from 'lucide-react';
 
 interface DeveloperResource {
   id: string;
