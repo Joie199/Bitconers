@@ -4,6 +4,7 @@ import { PageContainer } from "@/components/PageContainer";
 import { getChapterBySlug, chaptersContent } from "@/content/chaptersContent";
 import { ChapterAccessCheck } from "./ChapterAccessCheck";
 import { ChapterCompletionTracker } from "./ChapterCompletionTracker";
+import { LiveBlockchainData } from "@/components/LiveBlockchainData";
 import type { Metadata } from "next";
 
 type ChapterPageProps = {
@@ -164,34 +165,77 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                     return null;
                   }
                   return (
-                    <div
-                      key={idx}
-                      className={`mt-4 rounded-lg border p-3 ${
-                        callout.type === "note"
-                          ? "border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
+                  <div
+                    key={idx}
+                    className={`mt-4 rounded-lg border p-3 ${
+                      callout.type === "note"
+                        ? "border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
+                        : callout.type === "tip"
+                        ? "border-green-400/30 bg-green-500/10 text-green-100"
+                        : callout.type === "warning"
+                        ? "border-red-400/30 bg-red-500/10 text-red-100"
+                        : "border-orange-400/30 bg-orange-500/10 text-orange-100"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="font-semibold">
+                        {callout.type === "note"
+                          ? "📝 Note:"
                           : callout.type === "tip"
-                          ? "border-green-400/30 bg-green-500/10 text-green-100"
+                          ? "💡 Tip:"
                           : callout.type === "warning"
-                          ? "border-red-400/30 bg-red-500/10 text-red-100"
-                          : "border-orange-400/30 bg-orange-500/10 text-orange-100"
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <span className="font-semibold">
-                          {callout.type === "note"
-                            ? "📝 Note:"
-                            : callout.type === "tip"
-                            ? "💡 Tip:"
-                            : callout.type === "warning"
-                            ? "⚠️ Warning:"
-                            : "📖 Example:"}
-                        </span>
-                        <p className="flex-1 text-sm">{callout.content}</p>
-                      </div>
+                          ? "⚠️ Warning:"
+                          : "📖 Example:"}
+                      </span>
+                      <p className="flex-1 text-sm">{callout.content}</p>
+                    </div>
                     </div>
                   );
                 })}
-                {section.images && section.images.length > 0 && (
+                {section.heading === "7.0 What Is a Block?" ? (
+                  // Special rendering for live blockchain data
+                  <div className="mt-6">
+                    <LiveBlockchainData />
+                  </div>
+                ) : section.heading === "6.1 Public/Private Keys Explained Simply" ? (
+                  // Special rendering for public/private key examples
+                  <div className="mt-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Public Key Example */}
+                      <div className="rounded-lg border border-cyan-400/30 bg-cyan-500/10 p-5">
+                        <h4 className="text-base font-semibold text-cyan-200 mb-3">Public Key Example</h4>
+                        <p className="text-xs text-cyan-300 mb-3">This is what others use to send you Bitcoin</p>
+                        <div className="bg-zinc-900 rounded-lg p-4 border border-cyan-400/20">
+                          <p className="text-xs text-cyan-100 font-mono break-all">
+                            02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0be551b5fb
+                          </p>
+                        </div>
+                        <p className="text-xs text-cyan-400 mt-2 italic">Or as a Bitcoin address:</p>
+                        <div className="bg-zinc-900 rounded-lg p-4 border border-cyan-400/20 mt-2">
+                          <p className="text-xs text-cyan-100 font-mono break-all">
+                            1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+                          </p>
+                        </div>
+                      </div>
+                      {/* Private Key Example */}
+                      <div className="rounded-lg border border-orange-400/30 bg-orange-500/10 p-5">
+                        <h4 className="text-base font-semibold text-orange-200 mb-3">Private Key Example</h4>
+                        <p className="text-xs text-orange-300 mb-3">Keep this secret and secure - never share it!</p>
+                        <div className="bg-zinc-900 rounded-lg p-4 border border-orange-400/20">
+                          <p className="text-xs text-orange-100 font-mono break-all">
+                            5KJvsngHeMooDxQjypVsHmNi6yFcd2PHYVvHdY8kVoDBNswkdXmi
+                          </p>
+                        </div>
+                        <p className="text-xs text-orange-400 mt-2 italic">Or in hex format:</p>
+                        <div className="bg-zinc-900 rounded-lg p-4 border border-orange-400/20 mt-2">
+                          <p className="text-xs text-orange-100 font-mono break-all">
+                            e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : section.images && section.images.length > 0 && (
                   section.heading === "Introduction" && section.images.length === 5 ? (
                     // Circular layout for Introduction section with 5 images
                     <div className="mt-4 flex items-center justify-center">
@@ -351,8 +395,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                                   {image.caption}
                                 </p>
                               )}
-                            </div>
-                          ))}
+                  </div>
+                ))}
                         </div>
                         {/* Example callout before Zimbabwe images for section 3.1 */}
                         {section.callouts?.find(c => c.type === "example") && (
@@ -369,18 +413,18 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {section.images.slice(3, 5).map((image, idx) => (
                               <div key={idx} className="flex flex-col items-center">
-                                <img
-                                  src={image.src}
-                                  alt={image.alt}
+                    <img
+                      src={image.src}
+                      alt={image.alt}
                                   className="w-full rounded-lg border border-orange-400/20 shadow-lg"
-                                />
-                                {image.caption && (
-                                  <p className="mt-2 text-center text-xs text-zinc-400 italic">
-                                    {image.caption}
-                                  </p>
-                                )}
-                              </div>
-                            ))}
+                    />
+                    {image.caption && (
+                      <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                        {image.caption}
+                      </p>
+                    )}
+                  </div>
+                ))}
                           </div>
                         )}
                       </div>

@@ -705,13 +705,7 @@ export const chaptersContent: ChapterContent[] = [
             content: "If you lose your private key, you lose access to your Bitcoin forever. There is no recovery. This is why backing up your seed phrase is critical.",
           },
         ],
-        images: [
-          {
-            src: "/images/public-private-keys.png",
-            alt: "Diagram showing public key (mailbox address) vs private key (mailbox key)",
-            caption: "Public key = mailbox address, Private key = mailbox key",
-          },
-        ],
+        images: [],
       },
       {
         heading: "6.2 Peer-to-Peer Transactions (P2P)",
@@ -727,7 +721,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/p2p-transaction-flow.png",
+            src: "/images/book_images/p2p.jpg",
             alt: "Diagram showing the flow: Alice creates transaction → broadcasts → nodes verify → miners confirm",
             caption: "Peer-to-peer transaction flow",
           },

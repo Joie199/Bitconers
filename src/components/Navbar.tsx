@@ -72,7 +72,7 @@ export function Navbar() {
       if (isInDesktop || isInTablet) {
         return; // clicks inside dropdown should not close it
       }
-      setAccountDropdownOpen(false);
+        setAccountDropdownOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -129,12 +129,12 @@ export function Navbar() {
             Developer Hub
           </Link>
           {!isRegistered && (
-            <Link
-              href="/apply"
-              className="rounded-full px-3 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
-            >
-              Apply
-            </Link>
+          <Link
+            href="/apply"
+            className="rounded-full px-3 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
+          >
+            Apply
+          </Link>
           )}
           <Link
             href="/mentorship"
@@ -264,12 +264,12 @@ export function Navbar() {
             Dev Hub
           </Link>
           {!isRegistered && (
-            <Link
-              href="/apply"
-              className="rounded-full px-3 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
-            >
-              Apply
-            </Link>
+          <Link
+            href="/apply"
+            className="rounded-full px-3 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
+          >
+            Apply
+          </Link>
           )}
           <Link
             href="/impact"
@@ -423,13 +423,13 @@ export function Navbar() {
               Developer Hub
             </Link>
             {!isRegistered && (
-              <Link
-                href="/apply"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block rounded-lg px-4 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
-              >
-                Apply
-              </Link>
+            <Link
+              href="/apply"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block rounded-lg px-4 py-2 text-sm font-medium text-orange-300 transition hover:bg-orange-400/10"
+            >
+              Apply
+            </Link>
             )}
             <Link
               href="/mentorship"
