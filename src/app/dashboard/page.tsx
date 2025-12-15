@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { useAuth } from '@/hooks/useAuth';
 
 // Lazy load heavy dashboard components
 const StudentDashboard = dynamic(() => import("@/components/StudentDashboard").then(mod => ({ default: mod.StudentDashboard })), {
@@ -21,6 +22,7 @@ const SessionExpiredModal = dynamic(() => import('@/components/SessionExpiredMod
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
   const [showSessionExpired, setShowSessionExpired] = useState(false);
@@ -105,8 +107,9 @@ export default function DashboardPage() {
       <StudentDashboard userData={userData} />
       <SessionExpiredModal
         isOpen={showSessionExpired}
-        onClose={() => {
+        onClose={async () => {
           setShowSessionExpired(false);
+          await logout();
           router.push('/');
         }}
         userType="student"

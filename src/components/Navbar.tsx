@@ -604,9 +604,8 @@ export function Navbar() {
           <SessionExpiredModal
             isOpen={showSessionExpired}
             onClose={() => {
-              // Logout student and redirect to home/sign in
-              setShowSessionExpired(false);
-              logout();
+              // Logout student and redirect to home
+              handleLogout();
             }}
             userType="student"
           />
