@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +13,7 @@ const ProfileModal = lazy(() => import("./ProfileModal").then(mod => ({ default:
 const SessionExpiredModal = lazy(() => import("./SessionExpiredModal").then(mod => ({ default: mod.SessionExpiredModal })));
 
 export function Navbar() {
+  const router = useRouter();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,6 +27,12 @@ export function Navbar() {
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const tabletDropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, profile, isRegistered, loading, logout, showSessionExpired, setShowSessionExpired } = useAuth();
+  const handleLogout = async () => {
+    await logout();
+    setAccountDropdownOpen(false);
+    setMobileMenuOpen(false);
+    router.push('/');
+  };
 
   // Fetch profile data when modal opens
   useEffect(() => {
@@ -217,9 +225,7 @@ export function Navbar() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setAccountDropdownOpen(false);
-                        // Call logout immediately - don't wait for state update
-                        logout();
+                        handleLogout();
                       }}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
                     >
@@ -497,9 +503,7 @@ export function Navbar() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setMobileMenuOpen(false);
-                    // Call logout immediately
-                    logout();
+                    handleLogout();
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
                 >
