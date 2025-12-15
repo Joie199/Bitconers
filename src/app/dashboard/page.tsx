@@ -22,12 +22,24 @@ const SessionExpiredModal = dynamic(() => import('@/components/SessionExpiredMod
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, isAuthenticated, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<any>(null);
   const [showSessionExpired, setShowSessionExpired] = useState(false);
 
+  // Redirect if not authenticated (after auth check completes)
   useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    // Don't proceed if not authenticated
+    if (!isAuthenticated || authLoading) {
+      return;
+    }
+
     // Check if user is authenticated and get user data
     const checkAuth = async () => {
       try {
@@ -89,9 +101,10 @@ export default function DashboardPage() {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, isAuthenticated, authLoading]);
 
-  if (loading) {
+  // Show loading while checking authentication or fetching user data
+  if (authLoading || loading || !isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-950">
         <div className="text-center">
