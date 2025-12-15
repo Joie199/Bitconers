@@ -59,6 +59,33 @@ export const chaptersContent: ChapterContent[] = [
           "Now you're stuck. To get bread, you must first find a shoemaker who wants bananas, trade with him, and then go back to the baker with shoes. This back-and-forth feels exhausting and uncertain. This problem has a name: the 'double coincidence of wants.' Both sides must want exactly what the other has, at the same time, in the correct quantity.",
           "This is why humans invented money. Not because they admired shiny coins or pretty paper, but because cash solved the headache of trade. Money became the bridge — a universal tool that allowed people to exchange value without endless searching or awkward swaps.",
         ],
+        images: [
+          {
+            src: "/images/book_images/bannana-bread.png",
+            alt: "Man exchanging bananas for shoes with baker",
+            caption: "The exchange process in barter trade",
+          },
+          {
+            src: "/images/book_images/banana-shoes.png",
+            alt: "Man with bananas desiring shoes, facing baker with bread",
+            caption: "You have bananas but the baker wants shoes",
+          },
+          {
+            src: "/images/book_images/bannana.png",
+            alt: "Man holding only bananas",
+            caption: "You have bananas but need bread",
+          },
+          {
+            src: "/images/book_images/barter_system.png",
+            alt: "Circular diagram showing bananas, bread, and shoes in barter system",
+            caption: "The barter system requires a double coincidence of wants",
+          },
+          {
+            src: "/images/book_images/shoes-bread.png",
+            alt: "Man with shoes, facing baker with bread",
+            caption: "Finally, you can trade shoes for bread",
+          },
+        ],
       },
       {
         heading: "1.1 Why Humans Created Money",
@@ -96,6 +123,13 @@ export const chaptersContent: ChapterContent[] = [
             content: "Zimbabwe once experienced such extreme inflation that a loaf of bread cost billions of Zimbabwean dollars. People who saved in cash lost everything. Even in Uganda, the shilling has weakened against the US dollar, making imported goods more expensive year after year.",
           },
         ],
+        images: [
+          {
+            src: "/images/book_images/money_usage.png",
+            alt: "Illustration showing the three functions of money: Medium of Exchange, Store of Value, and Unit of Account",
+            caption: "The three essential functions of money",
+          },
+        ],
       },
       {
         heading: "1.3 Properties of Sound Money",
@@ -117,9 +151,24 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/money-properties-diagram.png",
-            alt: "Diagram showing the five properties of sound money: Durable, Portable, Divisible, Recognizable, Scarce",
-            caption: "The five essential properties of sound money",
+            src: "/images/book_images/durable_money.png",
+            alt: "Illustration showing durable money - money that lasts over time",
+            caption: "Durable: Money should last. Gold and silver survive centuries",
+          },
+          {
+            src: "/images/book_images/portable.png",
+            alt: "Illustration showing portable money - easy to carry",
+            caption: "Portable: Easy to carry and move around",
+          },
+          {
+            src: "/images/book_images/divsible.png",
+            alt: "Illustration showing divisible money - can be split into smaller parts",
+            caption: "Divisible: Split into smaller parts without losing value",
+          },
+          {
+            src: "/images/book_images/recognazable.png",
+            alt: "Illustration showing recognizable money - people know it's real",
+            caption: "Recognizable: Easy to identify as genuine",
           },
         ],
       },
@@ -185,9 +234,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/barter-to-commodity.png",
-            alt: "Illustration showing the transition from barter trade to commodity money like cowrie shells",
-            caption: "From barter to commodity exchange",
+            src: "/images/book_images/salt_bartering.jpg",
+            alt: "Illustration showing salt bartering - an early form of commodity exchange",
+            caption: "Salt was used as an early form of commodity money",
+          },
+          {
+            src: "/images/book_images/massie_market.jpg",
+            alt: "Illustration showing a marketplace where commodity exchange took place",
+            caption: "Marketplaces facilitated commodity exchange",
           },
         ],
       },
@@ -201,9 +255,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/aksum-coins.png",
+            src: "/images/book_images/aksum_coins.jpg",
             alt: "Ancient Aksum coins from Ethiopia and Eritrea",
             caption: "Aksum coins enabled trade across regions",
+          },
+          {
+            src: "/images/book_images/aksum_coins_2.jpg",
+            alt: "Close-up of Aksum coinage showing detailed minting",
+            caption: "A closer look at Aksum coinage",
           },
         ],
       },
@@ -217,7 +276,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/jiaozi-first-fiat.png",
+            src: "/images/book_images/chinese_first_fiat_money.jpg",
             alt: "Jiaozi (交子) - the first fiat currency from ancient China",
             caption: "Jiaozi (交子) - the first fiat currency",
           },
@@ -242,9 +301,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/zimbabwe-inflation.png",
-            alt: "Zimbabwean dollar hyperinflation - wheelbarrows of cash for groceries",
-            caption: "Zimbabwe hyperinflation: wheelbarrows of cash for basic goods",
+            src: "/images/book_images/american_dollar.png",
+            alt: "American dollar - a modern fiat currency",
+            caption: "The US dollar became a fiat currency after 1971",
+          },
+          {
+            src: "/images/book_images/american_note.png",
+            alt: "American banknote showing fiat currency design",
+            caption: "American banknotes represent fiat money backed by government decree",
           },
         ],
       },
@@ -335,9 +399,29 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/uganda-inflation-comparison.png",
-            alt: "Comparison showing 40,000 UGX 20 years ago vs 4,000,000 UGX now for the same goods",
-            caption: "20 Years ago: 40,000 UGX → Now: 4,000,000 UGX",
+            src: "/images/book_images/animals.png",
+            alt: "Animals used in barter trade",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/arrow.png",
+            alt: "Arrow indicating progression",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/animals.png",
+            alt: "Animals used in barter trade",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/zimbabwe_inflation.png",
+            alt: "Zimbabwe hyperinflation showing wheelbarrows of money",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/zimbabwe_money.png",
+            alt: "Zimbabwean currency during hyperinflation",
+            caption: "",
           },
         ],
       },
@@ -355,9 +439,14 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/centralized-control-diagram.png",
-            alt: "Diagram showing how governments and central banks control money supply and access",
-            caption: "Centralized control over money",
+            src: "/images/book_images/printed_money.jpg",
+            alt: "Printed money showing government control over currency",
+            caption: "",
+          },
+          {
+            src: "/images/book_images/printing_money.jpg",
+            alt: "Money printing process showing centralized control",
+            caption: "",
           },
         ],
       },

@@ -158,47 +158,304 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                     ))}
                   </ul>
                 ) : null}
-                {section.callouts?.map((callout, idx) => (
-                  <div
-                    key={idx}
-                    className={`mt-4 rounded-lg border p-3 ${
-                      callout.type === "note"
-                        ? "border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
-                        : callout.type === "tip"
-                        ? "border-green-400/30 bg-green-500/10 text-green-100"
-                        : callout.type === "warning"
-                        ? "border-red-400/30 bg-red-500/10 text-red-100"
-                        : "border-orange-400/30 bg-orange-500/10 text-orange-100"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <span className="font-semibold">
-                        {callout.type === "note"
-                          ? "📝 Note:"
+                {section.callouts?.map((callout, idx) => {
+                  // Skip example callout for section 3.1 - it will be rendered after images
+                  if (section.heading === "3.1 Inflation and Loss of Purchasing Power" && callout.type === "example") {
+                    return null;
+                  }
+                  return (
+                    <div
+                      key={idx}
+                      className={`mt-4 rounded-lg border p-3 ${
+                        callout.type === "note"
+                          ? "border-cyan-400/30 bg-cyan-500/10 text-cyan-100"
                           : callout.type === "tip"
-                          ? "💡 Tip:"
+                          ? "border-green-400/30 bg-green-500/10 text-green-100"
                           : callout.type === "warning"
-                          ? "⚠️ Warning:"
-                          : "📖 Example:"}
-                      </span>
-                      <p className="flex-1 text-sm">{callout.content}</p>
+                          ? "border-red-400/30 bg-red-500/10 text-red-100"
+                          : "border-orange-400/30 bg-orange-500/10 text-orange-100"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="font-semibold">
+                          {callout.type === "note"
+                            ? "📝 Note:"
+                            : callout.type === "tip"
+                            ? "💡 Tip:"
+                            : callout.type === "warning"
+                            ? "⚠️ Warning:"
+                            : "📖 Example:"}
+                        </span>
+                        <p className="flex-1 text-sm">{callout.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {section.images?.map((image, idx) => (
-                  <div key={idx} className="mt-4">
-                    <img
-                      src={image.src}
-                      alt={image.alt}
-                      className="w-full rounded-lg border border-orange-400/20"
-                    />
-                    {image.caption && (
-                      <p className="mt-2 text-center text-xs text-zinc-400 italic">
-                        {image.caption}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
+                {section.images && section.images.length > 0 && (
+                  section.heading === "Introduction" && section.images.length === 5 ? (
+                    // Circular layout for Introduction section with 5 images
+                    <div className="mt-4 flex items-center justify-center">
+                      <div className="relative w-full max-w-3xl aspect-square">
+                        {/* Futuristic arrows showing the flow: Left (banana) → Right (banana→shoes) → Bottom (shoes→bread) */}
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-5" style={{ overflow: 'visible' }}>
+                          <defs>
+                            {/* Glow filter for futuristic effect */}
+                            <filter id="glow">
+                              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                              <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                              </feMerge>
+                            </filter>
+                            {/* Futuristic arrowhead */}
+                            <marker id="arrowhead-futuristic" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+                              <path d="M 0 0 L 12 6 L 0 12 L 3 6 Z" fill="#f97316" filter="url(#glow)" />
+                            </marker>
+                            {/* Animated gradient */}
+                            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="#f97316" stopOpacity="0.8" />
+                              <stop offset="50%" stopColor="#fb923c" stopOpacity="1" />
+                              <stop offset="100%" stopColor="#f97316" stopOpacity="0.8" />
+                            </linearGradient>
+                          </defs>
+                          {/* Arrow from Left (banana) to Right (banana→shoes) */}
+                          <path
+                            d="M 18% 50% L 82% 50%"
+                            stroke="url(#arrowGradient)"
+                            strokeWidth="4"
+                            fill="none"
+                            markerEnd="url(#arrowhead-futuristic)"
+                            filter="url(#glow)"
+                            className="drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
+                          />
+                          {/* Arrow from Right (banana→shoes) to Bottom (shoes→bread) */}
+                          <path
+                            d="M 50% 50% L 50% 82%"
+                            stroke="url(#arrowGradient)"
+                            strokeWidth="4"
+                            fill="none"
+                            markerEnd="url(#arrowhead-futuristic)"
+                            filter="url(#glow)"
+                            className="drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
+                          />
+                        </svg>
+                        
+                        {/* Center image (barter_system) */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-40 sm:w-48">
+                          <img
+                            src={section.images[3].src}
+                            alt={section.images[3].alt}
+                            className="w-full rounded-lg border border-orange-400/20"
+                          />
+                          {section.images[3].caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {section.images[3].caption}
+                            </p>
+                          )}
+                        </div>
+                        {/* Top image */}
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-36 sm:w-44 z-20">
+                          <img
+                            src={section.images[0].src}
+                            alt={section.images[0].alt}
+                            className="w-full rounded-lg border border-orange-400/20"
+                          />
+                          {section.images[0].caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {section.images[0].caption}
+                            </p>
+                          )}
+                        </div>
+                        {/* Right image */}
+                        <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-36 sm:w-44 z-20">
+                          <img
+                            src={section.images[1].src}
+                            alt={section.images[1].alt}
+                            className="w-full rounded-lg border border-orange-400/20"
+                          />
+                          {section.images[1].caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {section.images[1].caption}
+                            </p>
+                          )}
+                        </div>
+                        {/* Bottom image */}
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-36 sm:w-44 z-20">
+                          <img
+                            src={section.images[4].src}
+                            alt={section.images[4].alt}
+                            className="w-full rounded-lg border border-orange-400/20"
+                          />
+                          {section.images[4].caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {section.images[4].caption}
+                            </p>
+                          )}
+                        </div>
+                        {/* Left image */}
+                        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-36 sm:w-44 z-20">
+                          <img
+                            src={section.images[2].src}
+                            alt={section.images[2].alt}
+                            className="w-full rounded-lg border border-orange-400/20"
+                          />
+                          {section.images[2].caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {section.images[2].caption}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Default layout for other sections
+                    section.heading === "1.3 Properties of Sound Money" && section.images.length > 1 ? (
+                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {section.images.map((image, idx) => (
+                          <div key={idx} className="flex flex-col items-center space-y-3">
+                            <img
+                              src={image.src}
+                              alt={image.alt}
+                              className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                            />
+                            {image.caption && (
+                              <p className="text-center text-sm text-zinc-200 leading-relaxed px-2">
+                                {image.caption}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : section.heading === "3.1 Inflation and Loss of Purchasing Power" && section.images.length >= 4 ? (
+                      // Special layout: first 3 images (animals, arrow, animals) in a row, then the 4th image below, then Zimbabwe images side by side
+                      <div className="mt-6 space-y-6">
+                        <div className="flex flex-col items-center mb-4">
+                          <p className="text-lg font-semibold text-orange-200">20 Years ago: 40,000 UGX → Now: 4,000,000 UGX</p>
+                        </div>
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+                          {section.images.slice(0, 3).map((image, idx) => (
+                            <div key={idx} className="flex flex-col items-center">
+                              {idx === 0 && (
+                                <p className="mb-2 text-base font-semibold text-orange-200">20 Years ago</p>
+                              )}
+                              {idx === 2 && (
+                                <p className="mb-2 text-base font-semibold text-orange-200">Now</p>
+                              )}
+                              <img
+                                src={image.src}
+                                alt={image.alt}
+                                className={`rounded-lg border border-orange-400/20 shadow-lg ${image.src.includes('arrow') ? 'w-32 h-16 sm:w-40 sm:h-20 object-contain' : 'w-48 sm:w-64'}`}
+                              />
+                              {image.caption && (
+                                <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                                  {image.caption}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        {/* Example callout before Zimbabwe images for section 3.1 */}
+                        {section.callouts?.find(c => c.type === "example") && (
+                          <div className="rounded-lg border border-orange-400/30 bg-orange-500/10 p-3">
+                            <div className="flex items-start gap-2">
+                              <span className="font-semibold text-orange-100">📖 Example:</span>
+                              <p className="flex-1 text-sm text-orange-100">
+                                {section.callouts.find(c => c.type === "example")?.content}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {section.images.length >= 5 && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {section.images.slice(3, 5).map((image, idx) => (
+                              <div key={idx} className="flex flex-col items-center">
+                                <img
+                                  src={image.src}
+                                  alt={image.alt}
+                                  className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                                />
+                                {image.caption && (
+                                  <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                                    {image.caption}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : section.heading === "3.2 Centralized Control — Governments and Banks" && section.images.length === 2 ? (
+                      // Special layout for Centralized Control section with title below images
+                      <div className="mt-6 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {section.images.map((image, idx) => (
+                            <div key={idx} className="flex flex-col items-center">
+                              <img
+                                src={image.src}
+                                alt={image.alt}
+                                className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                              />
+                              {image.caption && (
+                                <p className="mt-3 text-center text-sm text-zinc-200 leading-relaxed px-2">
+                                  {image.caption}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-center">
+                          <p className="text-lg font-semibold text-orange-200">Centralized control over money</p>
+                        </div>
+                      </div>
+                    ) : section.images.length === 2 ? (
+                      // Side by side layout for sections with exactly 2 images
+                      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {section.images.map((image, idx) => (
+                          <div key={idx} className="flex flex-col items-center space-y-3">
+                            <img
+                              src={image.src}
+                              alt={image.alt}
+                              className="w-full rounded-lg border border-orange-400/20 shadow-lg"
+                            />
+                            {image.caption && (
+                              <p className="text-center text-sm text-zinc-200 leading-relaxed px-2">
+                                {image.caption}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      section.images.map((image, idx) => (
+                        <div key={idx} className={`mt-4 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') ? 'flex flex-col items-center' : ''}`}>
+                          <img
+                            src={image.src}
+                            alt={image.alt}
+                            className={`rounded-lg border border-orange-400/20 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') ? 'w-64 sm:w-80 max-w-full' : 'w-full'}`}
+                          />
+                          {image.caption && (
+                            <p className="mt-2 text-center text-xs text-zinc-400 italic">
+                              {image.caption}
+                            </p>
+                          )}
+                          {image.src.includes('money_usage') && section.bullets && (
+                            <div className="mt-4 w-full max-w-2xl space-y-3">
+                              <h4 className="text-base font-semibold text-orange-200 text-center">The three essential functions of money:</h4>
+                              <ul className="space-y-2 text-zinc-100 text-base leading-relaxed">
+                                {section.bullets.map((bullet, bulletIdx) => (
+                                  <li key={bulletIdx} className="flex items-start gap-2">
+                                    <span className="text-orange-400 mt-1">•</span>
+                                    <span>{bullet}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    )
+                  )
+                )}
               </div>
               );
             })}
