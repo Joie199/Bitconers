@@ -1,6 +1,40 @@
 'use client';
 
-import useMempoolWebsocket, { MempoolBlock, ConfirmedBlock } from '@/hooks/useMempoolWebsocket';
+import { useState, useEffect, useRef } from 'react';
+
+// Mempool block (unconfirmed) interface
+interface MempoolBlock {
+  blockSize: number;
+  nTx: number;
+  totalFees: number;
+  medianFee: number;
+  minFee: number;
+  maxFee: number;
+  feeRange: number[];
+  virtualSize: number;
+}
+
+// Confirmed block interface
+interface ConfirmedBlock {
+  height: number;
+  id: string;
+  timestamp: number;
+  tx_count: number;
+  size: number;
+  weight: number;
+  pool?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  extras?: {
+    feeRange: number[];
+    avgFee: number;
+    totalFees: number;
+  };
+  fee?: number;
+  fees?: number;
+}
 
 interface LiveBlockchainDataProps {
   className?: string;
@@ -39,11 +73,133 @@ function formatFeeRange(minFee: number, maxFee: number): string {
 }
 
 export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) {
-  // Use WebSocket hook for real-time data
-  const { mempoolBlocks, recentBlocks, loading, error } = useMempoolWebsocket();
-  
-  // Use recentBlocks as confirmedBlocks
-  const confirmedBlocks = recentBlocks;
+  const [mempoolBlocks, setMempoolBlocks] = useState<MempoolBlock[]>([]);
+  const [confirmedBlocks, setConfirmedBlocks] = useState<ConfirmedBlock[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const lastBlockHeightRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    let pollInterval: NodeJS.Timeout;
+
+    const fetchBlockData = async (isInitial = false) => {
+      try {
+        if (isInitial) {
+          setLoading(true);
+        }
+        setError(null);
+
+        // Fetch both endpoints in parallel with timeout
+        const fetchWithTimeout = (url: string, timeout = 10000) => {
+          return Promise.race([
+            fetch(url),
+            new Promise<Response>((_, reject) =>
+              setTimeout(() => reject(new Error('Request timeout')), timeout)
+            ),
+          ]);
+        };
+
+        const [mempoolResponse, blocksResponse] = await Promise.all([
+          fetchWithTimeout('https://mempool.space/api/v1/fees/mempool-blocks'),
+          fetchWithTimeout('https://mempool.space/api/blocks'),
+        ]);
+
+        if (!mempoolResponse.ok || !blocksResponse.ok) {
+          throw new Error('Failed to fetch blockchain data');
+        }
+
+        const mempoolData: MempoolBlock[] = await mempoolResponse.json();
+        const blocksData: ConfirmedBlock[] = await blocksResponse.json();
+
+        if (!isMounted) return;
+
+        // Validate data structure
+        if (!Array.isArray(mempoolData) || !Array.isArray(blocksData)) {
+          throw new Error('Invalid data format from API');
+        }
+
+        // Check if a new block was mined
+        const currentBlockHeight = blocksData[0]?.height;
+        const hasNewBlock = lastBlockHeightRef.current !== null && 
+                           currentBlockHeight !== null && 
+                           currentBlockHeight > lastBlockHeightRef.current;
+        
+        if (currentBlockHeight !== null) {
+          lastBlockHeightRef.current = currentBlockHeight;
+        }
+
+        // Fetch detailed block info including pool data for each block
+        // Only fetch if we have valid block IDs
+        const blocksWithPoolData = await Promise.all(
+          blocksData.slice(0, 4).map(async (block) => {
+            // Validate block has required properties
+            if (!block || !block.id) {
+              return block;
+            }
+
+            try {
+              const blockDetailResponse = await fetch(`https://mempool.space/api/block/${block.id}`, {
+                signal: AbortSignal.timeout(5000), // 5 second timeout
+              });
+              
+              if (blockDetailResponse.ok) {
+                const blockDetail = await blockDetailResponse.json();
+                return {
+                  ...block,
+                  pool: blockDetail?.pool || block.pool,
+                  extras: blockDetail?.extras || block.extras || {
+                    feeRange: blockDetail?.feeRange || [],
+                    avgFee: blockDetail?.avgFee || block.fee || 0,
+                    totalFees: blockDetail?.fees || block.fees || 0,
+                  },
+                };
+              }
+            } catch (err) {
+              // Silently fail and use original block data
+              if (err instanceof Error && err.name !== 'AbortError') {
+                console.error('Error fetching block detail:', err);
+              }
+            }
+            return block;
+          })
+        );
+
+        // Take first 4 mempool blocks and first 4 confirmed blocks
+        setMempoolBlocks(mempoolData.slice(0, 4));
+        setConfirmedBlocks(blocksWithPoolData);
+
+        if (isInitial) {
+          setLoading(false);
+        }
+
+        // If new block detected, briefly show a visual indicator (optional)
+        if (hasNewBlock) {
+          console.log('New block detected!', currentBlockHeight);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        setError(err instanceof Error ? err.message : 'Failed to load blockchain data');
+        console.error('Error fetching blockchain data:', err);
+        if (isInitial) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Initial fetch
+    fetchBlockData(true);
+
+    // Refresh every 15 seconds
+    pollInterval = setInterval(() => {
+      fetchBlockData(false);
+    }, 15000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -65,6 +221,10 @@ export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) 
     );
   }
 
+  // Safety check: ensure we have valid data arrays
+  const safeMempoolBlocks = Array.isArray(mempoolBlocks) ? mempoolBlocks : [];
+  const safeConfirmedBlocks = Array.isArray(confirmedBlocks) ? confirmedBlocks : [];
+
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Section Headers */}
@@ -77,17 +237,19 @@ export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) 
       <div className="relative flex items-start gap-4 overflow-x-auto pb-4 px-2">
         {/* MEMPOOL BLOCKS (Left Side - Unconfirmed) */}
         <div className="flex gap-4 flex-shrink-0">
-          {mempoolBlocks.map((block, index) => {
+          {safeMempoolBlocks.length > 0 ? safeMempoolBlocks.map((block, index) => {
+            if (!block) return null;
+            
             const etaMinutes = (index + 1) * 10;
             // Extract and format fee data from mempool block
             // feeRange is an array: [min, ..., max]
-            const feeRange = block.feeRange || [];
+            const feeRange = Array.isArray(block.feeRange) ? block.feeRange : [];
             const medianFee = Number(block.medianFee ?? 0).toFixed(0);
             const minFee = feeRange.length > 0 
-              ? Number(feeRange[0]).toFixed(2) 
+              ? Number(feeRange[0] ?? 0).toFixed(2) 
               : '0.00';
             const maxFee = feeRange.length > 0 
-              ? Number(feeRange[feeRange.length - 1]).toFixed(2) 
+              ? Number(feeRange[feeRange.length - 1] ?? 0).toFixed(2) 
               : '0.00';
             
             return (
@@ -156,7 +318,9 @@ export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) 
                 </div>
               </div>
             );
-          })}
+          }) : (
+            <div className="text-xs text-zinc-400 italic p-4">No mempool data available</div>
+          )}
         </div>
 
         {/* Divider Line with Arrows */}
@@ -179,22 +343,24 @@ export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) 
 
         {/* CONFIRMED BLOCKS (Right Side) */}
         <div className="flex gap-4 flex-shrink-0">
-          {confirmedBlocks.map((block, index) => {
+          {safeConfirmedBlocks.length > 0 ? safeConfirmedBlocks.map((block, index) => {
+            if (!block) return null;
+            
             // Extract and format fee data from confirmed block
-            const feeRange = block.extras?.feeRange || [];
+            const feeRange = Array.isArray(block.extras?.feeRange) ? block.extras.feeRange : [];
             // feeRange format: [min, median, max] or [min, max]
             const medianFee = feeRange.length >= 3 
-              ? Number(feeRange[1]).toFixed(0)
-              : (block.extras?.avgFee ? Number(block.extras.avgFee).toFixed(0) : '0');
+              ? Number(feeRange[1] ?? 0).toFixed(0)
+              : (block.extras?.avgFee ? Number(block.extras.avgFee ?? 0).toFixed(0) : '0');
             const minFee = feeRange.length > 0 
-              ? Number(feeRange[0]).toFixed(2)
-              : (block.extras?.avgFee ? Number(block.extras.avgFee).toFixed(2) : '0.00');
+              ? Number(feeRange[0] ?? 0).toFixed(2)
+              : (block.extras?.avgFee ? Number(block.extras.avgFee ?? 0).toFixed(2) : '0.00');
             const maxFee = feeRange.length >= 3
-              ? Number(feeRange[2]).toFixed(2)
+              ? Number(feeRange[2] ?? 0).toFixed(2)
               : (feeRange.length === 2 
-                  ? Number(feeRange[1]).toFixed(2)
-                  : (block.extras?.avgFee ? Number(block.extras.avgFee).toFixed(2) : '0.00'));
-            const timeAgo = getTimeAgo(block.timestamp);
+                  ? Number(feeRange[1] ?? 0).toFixed(2)
+                  : (block.extras?.avgFee ? Number(block.extras.avgFee ?? 0).toFixed(2) : '0.00'));
+            const timeAgo = block.timestamp ? getTimeAgo(block.timestamp) : 'Unknown';
             
             return (
               <div key={block.id} className="relative flex-shrink-0 flex flex-col" style={{ width: '200px' }}>
@@ -278,12 +444,14 @@ export function LiveBlockchainData({ className = '' }: LiveBlockchainDataProps) 
                 </div>
               </div>
             );
-          })}
+          }) : (
+            <div className="text-xs text-zinc-400 italic p-4">No confirmed blocks available</div>
+          )}
         </div>
       </div>
 
       <p className="text-xs text-orange-400/70 italic text-center mt-6">
-        Data from mempool.space • Live updates via WebSocket
+        Data from mempool.space • Updates every 15 seconds
       </p>
     </div>
   );

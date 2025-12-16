@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 
 // Lazy load modals - only load when needed (using React.lazy for better code splitting)
@@ -81,24 +82,29 @@ export function Navbar() {
   return (
     <header className="relative z-50 border-b border-cyan-400/20 bg-black/70 text-zinc-50 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative flex h-12 w-12 items-center justify-center">
-            {/* Outer glow rings */}
-            <div className="absolute inset-0 rounded-full bg-orange-400/20 blur-xl animate-pulse" />
-            <div className="absolute inset-0 rounded-full bg-orange-400/10 blur-2xl" />
+        <Link 
+          href="/" 
+          className="flex items-center gap-3 group"
+          aria-label="Pan-African Bitcoin Academy - Home"
+          title="Pan-African Bitcoin Academy - First Eritrea Based Bitcoin Academy"
+        >
+          <div className="relative flex h-16 w-16 items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-125">
+            {/* Outer glow effect for visibility */}
+            <div className="absolute inset-0 rounded-lg bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
-            {/* Geometric border */}
-            <div className="absolute inset-0 rounded-xl border-2 border-orange-400/50 rotate-45" />
-            <div className="absolute inset-[2px] rounded-xl border border-orange-300/30 -rotate-45" />
-            
-            {/* Main logo container */}
-            <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 via-orange-400 to-orange-600 shadow-[0_0_30px_rgba(249,115,22,0.8)] transition group-hover:shadow-[0_0_40px_rgba(249,115,22,1)]">
-              <span className="text-2xl font-black text-black tracking-tight">B</span>
-            </div>
-            
-            {/* Corner accents */}
-            <div className="absolute -top-1 -left-1 h-2 w-2 rounded-full bg-orange-400/60 blur-sm" />
-            <div className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full bg-orange-400/60 blur-sm" />
+            {/* Logo image with SEO optimization */}
+            <Image
+              src="/images/logo_3.png"
+              alt="Pan-African Bitcoin Academy - First Eritrea Based Bitcoin Academy Logo. Learn Bitcoin education in Eritrea, Uganda, and across Africa."
+              width={64}
+              height={64}
+              priority
+              loading="eager"
+              className="relative z-10 object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.6)] brightness-110 contrast-115 saturate-110"
+              quality={95}
+              sizes="(max-width: 768px) 48px, 64px"
+              fetchPriority="high"
+            />
           </div>
           <div className="hidden flex-col leading-tight sm:flex">
             <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-300">

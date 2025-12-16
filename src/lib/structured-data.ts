@@ -10,7 +10,13 @@ export const organizationStructuredData = {
   name: 'PanAfrican Bitcoin Academy',
   alternateName: 'Pan-African Bitcoin Academy',
   url: baseUrl,
-  logo: `${baseUrl}/icon.svg`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${baseUrl}/images/logo_3.png`,
+    width: 512,
+    height: 512,
+    caption: 'Pan-African Bitcoin Academy Logo - First Eritrea Based Bitcoin Academy',
+  },
   description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community.',
   address: {
     '@type': 'PostalAddress',
@@ -72,7 +78,10 @@ export function generateArticleStructuredData(article: {
       name: 'PanAfrican Bitcoin Academy',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/icon.svg`,
+        url: `${baseUrl}/images/logo_3.png`,
+        width: 512,
+        height: 512,
+        caption: 'Pan-African Bitcoin Academy Logo',
       },
     },
     image: article.image ? `${baseUrl}${article.image}` : `${baseUrl}/og-image.png`,

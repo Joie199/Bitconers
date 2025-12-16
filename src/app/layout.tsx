@@ -104,10 +104,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/images/logo_3.png', type: 'image/png' },
     ],
     apple: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/images/logo_3.png', type: 'image/png' },
     ],
   },
   verification: {

@@ -596,7 +596,7 @@ export default function Home() {
           name: 'Pan-African Bitcoin Academy',
           description: 'Learn Bitcoin the right way with clear, technical guidance. Comprehensive Bitcoin education, developer resources, and community support across Africa.',
           url: 'https://panafricanbitcoin.com',
-          logo: 'https://panafricanbitcoin.com/icon.svg',
+          logo: 'https://panafricanbitcoin.com/images/logo_3.png',
           sameAs: [
             'https://github.com/Joie199/pan-africa-bitcoin-academy',
             'https://chat.whatsapp.com/KpjlC90BGIj1EChMHsW6Ji',
