@@ -37,6 +37,8 @@ interface UserData {
       isCompleted: boolean;
       isUnlocked: boolean;
     }>;
+    satsPaid?: number;
+    satsPending?: number;
   } | null;
   cohort: {
     id: string;
@@ -162,7 +164,25 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
 
     const fetchSatsTotals = async () => {
       try {
-        const res = await fetch('/api/sats');
+        // Get student email or ID for filtering
+        const emailToUse = userData?.profile?.email || storedProfileEmail || profileEmail;
+        const studentIdToUse = userData?.profile?.id;
+        
+        // Build query string
+        let url = '/api/sats?';
+        if (studentIdToUse) {
+          url += `studentId=${encodeURIComponent(studentIdToUse)}`;
+        } else if (emailToUse) {
+          url += `email=${encodeURIComponent(emailToUse)}`;
+        } else {
+          // No identifier available - return zeros
+          if (mounted) {
+            setSatsTotals({ paid: 0, pending: 0 });
+          }
+          return;
+        }
+
+        const res = await fetch(url);
         if (!res.ok) {
           throw new Error(`Failed to load sats (${res.status})`);
         }
@@ -175,6 +195,9 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
         }
       } catch (err) {
         // Keep fallback zeros; no user-facing error needed here
+        if (mounted) {
+          setSatsTotals({ paid: 0, pending: 0 });
+        }
       }
     };
 
@@ -388,9 +411,9 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
   // Get assignments completed from userData if available
   const assignmentsCompleted = userData?.student?.assignmentsCompleted ?? student.assignmentsCompleted ?? 0;
   
-  // Get sats earned - use satsTotals (sats database will be added later)
-  const satsEarned = satsTotals.paid ?? 0;
-  const satsPending = student.satsPending ?? satsTotals.pending ?? 0;
+  // Get sats earned - prefer userData, then satsTotals
+  const satsEarned = userData?.student?.satsPaid ?? satsTotals.paid ?? 0;
+  const satsPending = userData?.student?.satsPending ?? satsTotals.pending ?? 0;
   
   // Certification requirements
   const totalChapters = 20;

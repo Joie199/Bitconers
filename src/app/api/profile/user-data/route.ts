@@ -189,6 +189,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Calculate sats totals for this student
+    let satsPaid = 0;
+    let satsPending = 0;
+    if (student) {
+      try {
+        const { data: satsRewards } = await supabaseAdmin
+          .from('sats_rewards')
+          .select('amount_paid, amount_pending')
+          .eq('student_id', profile.id);
+
+        if (satsRewards && satsRewards.length > 0) {
+          satsPaid = satsRewards.reduce(
+            (sum: number, reward: any) => sum + (reward.amount_paid || 0),
+            0
+          );
+          satsPending = satsRewards.reduce(
+            (sum: number, reward: any) => sum + (reward.amount_pending || 0),
+            0
+          );
+        }
+      } catch (err) {
+        console.error('Error calculating sats:', err);
+        // Keep defaults (0) if calculation fails
+      }
+    }
+
     // Get student progress data if student exists
     const studentData = student ? {
       progressPercent: chapterProgress.completedChapters > 0 
@@ -203,6 +229,8 @@ export async function POST(req: NextRequest) {
       completedChapterNumbers: chapterProgress.completedChapterNumbers,
       chapters: chapterProgress.chapters,
       certificateImageUrl: (student as any).certificate_image_url || null,
+      satsPaid: satsPaid,
+      satsPending: satsPending,
     } : null;
 
     return NextResponse.json(
