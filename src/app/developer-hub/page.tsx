@@ -960,51 +960,6 @@ export default function DeveloperHubPage() {
                 <h3 className="mb-4 text-xl font-semibold text-blue-300">📈 Current Industry & Market Developments</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   <a
-                    href="https://www.coindesk.com/tag/bitcoin-mining"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">CoinDesk - Mining News</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://bitcoinmagazine.com/tag/mining"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Bitcoin Magazine - Mining Coverage</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://www.theblock.co/bitcoin-mining"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">The Block - Mining Analysis</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://www.cointelegraph.com/tags/bitcoin-mining"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">CoinTelegraph - Mining News</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
-                    href="https://www.hashr8.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Hashr8 - Mining Industry News</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
                     href="https://www.miningpoolstats.stream/bitcoin"
                     target="_blank"
                     rel="noopener noreferrer"
