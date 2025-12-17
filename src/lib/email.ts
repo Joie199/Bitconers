@@ -190,7 +190,7 @@ Visit: ${SITE_URL}
     `.trim();
 
     // Send email via Resend
-    const { data, error } = await resend.emails.send({
+    const { data: emailResponse, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: studentEmail,
       subject: subject,
@@ -203,7 +203,7 @@ Visit: ${SITE_URL}
       return { success: false, error: error.message || 'Failed to send email' };
     }
 
-    console.log('Approval email sent successfully:', data);
+    console.log('Approval email sent successfully:', emailResponse);
     return { success: true };
   } catch (error: any) {
     console.error('Error in sendApprovalEmail:', error);
