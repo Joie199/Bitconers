@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Code, GitBranch, Users, Calendar, Award, BookOpen, Rocket, HelpCircle, Github, Mail } from 'lucide-react';
+import { ExternalLink, Code, GitBranch, Users, Calendar, Award, BookOpen, Rocket, HelpCircle, Github, Mail, Zap, Database, TrendingUp, FlaskConical } from 'lucide-react';
 import { AnimatedSection } from '@/components/AnimatedSection';
 
 interface DeveloperResource {
@@ -593,7 +593,596 @@ export default function DeveloperHubPage() {
             </div>
           </section>
 
-          {/* SECTION 4 — Mentors & Guest Developers */}
+          {/* SECTION 4 — Bitcoin Mining Resources */}
+          <AnimatedSection animation="slideRight">
+            <section className="mb-20 rounded-xl border border-orange-400/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-lg bg-orange-500/20 p-2">
+                <Zap className="h-6 w-6 text-orange-400" />
+              </div>
+              <h2 className="text-2xl font-semibold text-zinc-50">Bitcoin Mining Resources</h2>
+            </div>
+            <p className="mb-6 text-zinc-400">
+              Comprehensive resources, tools, and communities for students to study and research Bitcoin mining. Learn about mining technology, energy trends, practical experiments, and industry developments.
+            </p>
+
+            <div className="space-y-8">
+              {/* 1. Educational Resources & About Sites */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-orange-300">📚 Educational Resources & About Sites</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <a
+                    href="https://bitcoin.org/en/how-it-works"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin.org - How It Works</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://learnmeabitcoin.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Learn Me A Bitcoin</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoinmining.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">BitcoinMining.com</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoinmagazine.com/guides/what-is-bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Magazine - Mining Guide</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.coindesk.com/learn/what-is-bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">CoinDesk - Mining Explained</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoin.org/en/developer-guide#mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-orange-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Developer Guide - Mining</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                </div>
+              </div>
+
+              {/* 2. Environmental & Energy Trends */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-green-300">🌱 Environmental & Energy Trends</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <a
+                    href="https://bitcoinminingcouncil.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Mining Council</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://ccaf.io/cbeci/index"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Cambridge Bitcoin Electricity Consumption Index</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://digiconomist.net/bitcoin-energy-consumption"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Digiconomist - Bitcoin Energy Index</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.coindesk.com/tag/bitcoin-mining-energy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">CoinDesk - Mining Energy News</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoinmagazine.com/business/bitcoin-mining-renewable-energy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Magazine - Renewable Energy</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.energy.gov/articles/bitcoin-mining-energy-use"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-green-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">U.S. Energy Department - Mining Analysis</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                </div>
+              </div>
+
+              {/* 3. Practical Hands-On Mining Experiments */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-purple-300">🧪 Practical Hands-On Mining Experiments</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <a
+                    href="https://github.com/bitcoin/bitcoin/tree/master/src/miner"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Core Mining Code</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://github.com/bitcoin-mining/awesome-bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Awesome Bitcoin Mining (GitHub)</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://github.com/bitcoinjs/bitcoinjs-lib"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">BitcoinJS - JavaScript Mining Tools</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://github.com/btcd/btcd"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">btcd - Go Bitcoin Node (Mining Support)</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://github.com/rust-bitcoin/rust-bitcoin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Rust-Bitcoin - Mining Libraries</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoin.stackexchange.com/questions/tagged/mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Stack Exchange - Mining Q&A</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                </div>
+                <div className="mt-4 rounded-lg border border-purple-500/30 bg-purple-500/10 p-4">
+                  <p className="mb-2 text-sm font-medium text-purple-200">💡 Experiment Ideas:</p>
+                  <ul className="ml-4 space-y-1 text-sm text-zinc-300">
+                    <li>• Build a simple CPU miner using Python</li>
+                    <li>• Simulate mining difficulty adjustments</li>
+                    <li>• Create a mining pool simulator</li>
+                    <li>• Analyze block headers and nonces</li>
+                    <li>• Study Merkle tree construction</li>
+                    <li>• Experiment with different hashing algorithms</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* 4. Tools, APIs, and Data Sources for Developers */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-cyan-300">🛠️ Tools, APIs, and Data Sources for Developers</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Mining Pool APIs */}
+                  <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-cyan-200">Mining Pool APIs</h4>
+                      <Database className="h-5 w-5 text-cyan-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://www.blockchain.com/api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Blockchain.com API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://blockstream.info/api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Blockstream API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://mempool.space/api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-cyan-500/50"
+                      >
+                        <span>Mempool.space API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Mining Statistics & Analytics */}
+                  <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-orange-200">Mining Statistics & Analytics</h4>
+                      <TrendingUp className="h-5 w-5 text-orange-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://www.blockchain.com/charts/hash-rate"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-orange-500/50"
+                      >
+                        <span>Hash Rate Charts</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://btc.com/stats"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-orange-500/50"
+                      >
+                        <span>BTC.com Mining Stats</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.coinwarz.com/mining/bitcoin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-orange-500/50"
+                      >
+                        <span>CoinWarz Mining Calculator</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Mining Hardware Data */}
+                  <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-yellow-200">Mining Hardware Data</h4>
+                      <Zap className="h-5 w-5 text-yellow-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://www.asicminervalue.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>ASIC Miner Value</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.nicehash.com/profitability-calculator"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>NiceHash Profitability Calculator</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://whattomine.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>WhatToMine - Mining Calculator</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Block Explorer APIs */}
+                  <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-green-200">Block Explorer APIs</h4>
+                      <Code className="h-5 w-5 text-green-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://blockstream.info/api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Blockstream Explorer API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.blockchain.com/api/blockchain_api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Blockchain.com API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://mempool.space/api"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Mempool.space API</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5. Current Industry & Market Developments */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-blue-300">📈 Current Industry & Market Developments</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <a
+                    href="https://www.coindesk.com/tag/bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">CoinDesk - Mining News</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://bitcoinmagazine.com/tag/mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Bitcoin Magazine - Mining Coverage</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.theblock.co/bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">The Block - Mining Analysis</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.cointelegraph.com/tags/bitcoin-mining"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">CoinTelegraph - Mining News</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.hashr8.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Hashr8 - Mining Industry News</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                  <a
+                    href="https://www.miningpoolstats.stream/bitcoin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-blue-500/50 hover:bg-zinc-900"
+                  >
+                    <span className="text-zinc-300">Mining Pool Stats</span>
+                    <ExternalLink className="h-4 w-4 text-zinc-500" />
+                  </a>
+                </div>
+              </div>
+
+              {/* 6. Bitcoin Mining Communities */}
+              <div>
+                <h3 className="mb-4 text-xl font-semibold text-purple-300">👥 Bitcoin Mining Communities</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Reddit Communities */}
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-red-200">Reddit Communities</h4>
+                      <Users className="h-5 w-5 text-red-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://www.reddit.com/r/BitcoinMining"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
+                      >
+                        <span>r/BitcoinMining</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.reddit.com/r/Bitcoin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
+                      >
+                        <span>r/Bitcoin (Mining Discussions)</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.reddit.com/r/gpumining"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
+                      >
+                        <span>r/gpumining</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Discord & Telegram */}
+                  <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-blue-200">Discord & Telegram</h4>
+                      <Users className="h-5 w-5 text-blue-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://discord.gg/bitcoin"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>Bitcoin Discord Server</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://t.me/bitcoinmining"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>Bitcoin Mining Telegram</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://t.me/bitcoinminers"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
+                      >
+                        <span>Bitcoin Miners Community</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Mining Pool Communities */}
+                  <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-green-200">Mining Pool Communities</h4>
+                      <Users className="h-5 w-5 text-green-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://slushpool.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Slush Pool</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://f2pool.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>F2Pool</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://www.antpool.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Antpool</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://foundryusa.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
+                      >
+                        <span>Foundry USA Pool</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Forums & Discussion Boards */}
+                  <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-yellow-200">Forums & Discussion Boards</h4>
+                      <Users className="h-5 w-5 text-yellow-300" />
+                    </div>
+                    <div className="space-y-2">
+                      <a
+                        href="https://bitcointalk.org/index.php?board=14.0"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>BitcoinTalk - Mining Forum</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://bitcoin.stackexchange.com/questions/tagged/mining"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>Bitcoin Stack Exchange</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                      <a
+                        href="https://bitcoinmining.com/forum"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
+                      >
+                        <span>BitcoinMining.com Forum</span>
+                        <ExternalLink className="h-3 w-3 text-zinc-500" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          </AnimatedSection>
+
+          {/* SECTION 5 — Mentors & Guest Developers */}
           <section className="mb-20 rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
             <div className="mb-6 flex items-center gap-3">
               <div className="rounded-lg bg-cyan-500/20 p-2">
