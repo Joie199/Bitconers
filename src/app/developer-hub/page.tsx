@@ -743,15 +743,6 @@ export default function DeveloperHubPage() {
                     <ExternalLink className="h-4 w-4 text-zinc-500" />
                   </a>
                   <a
-                    href="https://github.com/bitcoin-mining/awesome-bitcoin-mining"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg border border-zinc-700 bg-zinc-900/50 p-4 transition hover:border-purple-500/50 hover:bg-zinc-900"
-                  >
-                    <span className="text-zinc-300">Awesome Bitcoin Mining (GitHub)</span>
-                    <ExternalLink className="h-4 w-4 text-zinc-500" />
-                  </a>
-                  <a
                     href="https://github.com/bitcoinjs/bitcoinjs-lib"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -975,84 +966,38 @@ export default function DeveloperHubPage() {
               <div>
                 <h3 className="mb-4 text-xl font-semibold text-purple-300">👥 Bitcoin Mining Communities</h3>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {/* Reddit Communities */}
-                  <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-5">
+                  {/* Official Forums & Discussion Boards */}
+                  <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-red-200">Reddit Communities</h4>
-                      <Users className="h-5 w-5 text-red-300" />
+                      <h4 className="text-lg font-semibold text-yellow-200">Official Forums & Discussion Boards</h4>
+                      <Users className="h-5 w-5 text-yellow-300" />
                     </div>
                     <div className="space-y-2">
                       <a
-                        href="https://www.reddit.com/r/BitcoinMining"
+                        href="https://bitcointalk.org/index.php?board=14.0"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
                       >
-                        <span>r/BitcoinMining</span>
+                        <span>BitcoinTalk - Mining Forum</span>
                         <ExternalLink className="h-3 w-3 text-zinc-500" />
                       </a>
                       <a
-                        href="https://www.reddit.com/r/Bitcoin"
+                        href="https://bitcoin.stackexchange.com/questions/tagged/mining"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
+                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
                       >
-                        <span>r/Bitcoin (Mining Discussions)</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                      <a
-                        href="https://www.reddit.com/r/gpumining"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-red-500/50"
-                      >
-                        <span>r/gpumining</span>
+                        <span>Bitcoin Stack Exchange</span>
                         <ExternalLink className="h-3 w-3 text-zinc-500" />
                       </a>
                     </div>
                   </div>
 
-                  {/* Discord & Telegram */}
-                  <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-5">
-                    <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-blue-200">Discord & Telegram</h4>
-                      <Users className="h-5 w-5 text-blue-300" />
-                    </div>
-                    <div className="space-y-2">
-                      <a
-                        href="https://discord.gg/bitcoin"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
-                      >
-                        <span>Bitcoin Discord Server</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                      <a
-                        href="https://t.me/bitcoinmining"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
-                      >
-                        <span>Bitcoin Mining Telegram</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                      <a
-                        href="https://t.me/bitcoinminers"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-blue-500/50"
-                      >
-                        <span>Bitcoin Miners Community</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Mining Pool Communities */}
+                  {/* Verified Mining Pools */}
                   <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-green-200">Mining Pool Communities</h4>
+                      <h4 className="text-lg font-semibold text-green-200">Verified Mining Pools</h4>
                       <Users className="h-5 w-5 text-green-300" />
                     </div>
                     <div className="space-y-2">
@@ -1090,43 +1035,6 @@ export default function DeveloperHubPage() {
                         className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-green-500/50"
                       >
                         <span>Foundry USA Pool</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Forums & Discussion Boards */}
-                  <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
-                    <div className="mb-3 flex items-center justify-between">
-                      <h4 className="text-lg font-semibold text-yellow-200">Forums & Discussion Boards</h4>
-                      <Users className="h-5 w-5 text-yellow-300" />
-                    </div>
-                    <div className="space-y-2">
-                      <a
-                        href="https://bitcointalk.org/index.php?board=14.0"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
-                      >
-                        <span>BitcoinTalk - Mining Forum</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                      <a
-                        href="https://bitcoin.stackexchange.com/questions/tagged/mining"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
-                      >
-                        <span>Bitcoin Stack Exchange</span>
-                        <ExternalLink className="h-3 w-3 text-zinc-500" />
-                      </a>
-                      <a
-                        href="https://bitcoinmining.com/forum"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded border border-zinc-700 bg-zinc-900/50 p-2 text-sm text-zinc-300 transition hover:border-yellow-500/50"
-                      >
-                        <span>BitcoinMining.com Forum</span>
                         <ExternalLink className="h-3 w-3 text-zinc-500" />
                       </a>
                     </div>
