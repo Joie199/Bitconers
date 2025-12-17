@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { BLOG_POST_REWARD_SATS, BLOG_REWARD_TYPE } from '@/lib/blog-rewards';
 
 /**
  * POST /api/admin/blog/approve
@@ -129,6 +130,52 @@ export async function POST(request: NextRequest) {
       // Don't fail - post is created, just log the error
     }
 
+    // Award sats to the author
+    let satsAwarded = false;
+    let satsError = null;
+    
+    if (submission.author_email) {
+      // Find author by email
+      const { data: authorProfile, error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', submission.author_email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error finding author profile:', profileError);
+        satsError = 'Failed to find author profile';
+      } else if (!authorProfile) {
+        // Author doesn't exist in profiles - they need to sign up first
+        satsError = 'Author not found in database. Please ask them to sign up first.';
+      } else {
+        // Author exists - award sats
+        const profileId = authorProfile.id;
+
+        // Create a new sats_rewards record for this blog post approval
+        // This allows tracking each blog post separately while still summing totals
+        const { error: insertRewardError } = await supabaseAdmin
+          .from('sats_rewards')
+          .insert({
+            student_id: profileId,
+            amount_paid: 0,
+            amount_pending: BLOG_POST_REWARD_SATS,
+            reward_type: BLOG_REWARD_TYPE,
+            related_entity_type: 'blog',
+            related_entity_id: blogPost.id,
+            reason: `Blog post approved: "${submission.title}"`,
+            status: 'pending',
+          });
+
+        if (insertRewardError) {
+          console.error('Error creating sats reward:', insertRewardError);
+          satsError = 'Failed to create sats reward';
+        } else {
+          satsAwarded = true;
+        }
+      }
+    }
+
     return NextResponse.json(
       {
         success: true,
@@ -137,6 +184,9 @@ export async function POST(request: NextRequest) {
           id: blogPost.id,
           slug: blogPost.slug,
         },
+        satsAwarded: satsAwarded,
+        satsAmount: satsAwarded ? BLOG_POST_REWARD_SATS : 0,
+        satsError: satsError || null,
       },
       { status: 200 }
     );

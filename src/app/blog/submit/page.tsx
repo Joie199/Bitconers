@@ -42,7 +42,21 @@ export default function SubmitBlogPage() {
         throw new Error(data.error || 'Failed to submit blog post');
       }
 
-      alert(data.message || "Thank you for your submission! We'll review it and get back to you within 5-7 business days.");
+      // Show success message with warning if needed
+      let message = data.message || "Thank you for your submission! We'll review it and get back to you within 5-7 business days.";
+      
+      if (data.warning && !data.profileExists) {
+        // User doesn't have a profile - offer to sign up
+        const shouldSignUp = confirm(
+          message + '\n\n⚠️ ' + data.warning.trim() + '\n\nWould you like to sign up now to receive sats rewards when your blog is approved?'
+        );
+        if (shouldSignUp) {
+          window.location.href = '/apply';
+          return; // Don't reset form if redirecting
+        }
+      } else {
+        alert(message);
+      }
       
       // Reset form
       setFormData({

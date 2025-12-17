@@ -84,9 +84,9 @@ CREATE TABLE IF NOT EXISTS sats_rewards (
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'paid', 'failed')),
   payment_date TIMESTAMP WITH TIME ZONE,
   awarded_by UUID REFERENCES profiles(id),
-  reward_type TEXT CHECK (reward_type IN ('assignment', 'chapter', 'discussion', 'peer_help', 'project', 'attendance', 'other')),
+  reward_type TEXT CHECK (reward_type IN ('assignment', 'chapter', 'discussion', 'peer_help', 'project', 'attendance', 'blog', 'other')),
   -- Option 3: Link to related entities
-  related_entity_type TEXT CHECK (related_entity_type IN ('assignment', 'chapter', 'event', 'discussion', 'project', 'other')),
+  related_entity_type TEXT CHECK (related_entity_type IN ('assignment', 'chapter', 'event', 'discussion', 'project', 'blog', 'other')),
   related_entity_id UUID,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

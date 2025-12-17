@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     let authorId = null;
     let isAcademyStudent = false;
     let studentCohort = null;
+    let profileExists = false;
     
     const { data: profile } = await supabaseAdmin
       .from('profiles')
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (profile) {
+      profileExists = true;
       authorId = profile.id;
       
       // Check if this profile is a student
@@ -128,13 +130,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Warn user if they don't have a profile (they won't receive sats if approved)
+    let warningMessage = '';
+    if (!profileExists) {
+      warningMessage = ' Note: To receive sats rewards when your blog is approved, please sign up first at /apply or /register.';
+    }
+
     return NextResponse.json(
       {
         success: true,
-        message: 'Blog post submitted successfully. We will review it and get back to you within 5-7 business days.',
+        message: 'Blog post submitted successfully. We will review it and get back to you within 5-7 business days.' + warningMessage,
         submissionId: submission.id,
         isAcademyStudent: isAcademyStudent,
         cohort: studentCohort,
+        profileExists: profileExists,
+        warning: warningMessage || null,
       },
       { status: 201 }
     );
