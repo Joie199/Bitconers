@@ -352,6 +352,7 @@ export default function BlogPage() {
             </div>
             </div>
           </AnimatedSection>
+          )}
 
           {/* Categories Filter */}
           <AnimatedSection animation="slideRight">
