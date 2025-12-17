@@ -544,9 +544,6 @@ export default function DeveloperHubPage() {
                 <div className="rounded-lg border border-zinc-700 bg-zinc-900/50 p-4">
                   <h4 className="mb-3 font-semibold text-cyan-300">Spiral (Block)</h4>
                   <div className="space-y-2 text-sm text-zinc-400">
-                    <a href="https://spiral.xyz" target="_blank" rel="noopener noreferrer" className="block hover:text-cyan-300">
-                      Grants Program →
-                    </a>
                     <a href="https://spiral.xyz/developers" target="_blank" rel="noopener noreferrer" className="block hover:text-cyan-300">
                       OSS Developers →
                     </a>
@@ -721,13 +718,10 @@ export default function DeveloperHubPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[
                 { name: 'Summer of Bitcoin', desc: 'Top programme for student internships', link: 'https://www.summerofbitcoin.org' },
-                { name: 'Spiral Grants', desc: 'Funding for Bitcoin OSS work', link: 'https://spiral.xyz' },
-                { name: 'Fedi Grants', desc: 'Funding opportunities', link: 'https://fedi.xyz' },
                 { name: 'Built with Bitcoin', desc: 'Internship programs', link: 'https://builtwithbitcoin.org' },
                 { name: 'Bolt.Fun Bounties', desc: 'Hackathon bounties', link: 'https://bolt.fun' },
                 { name: 'AfroBitcoinHack', desc: 'Africa-focused hackathons', link: '#' },
                 { name: 'Africa Bitcoin Conference', desc: 'Developer tracks', link: '#' },
-                { name: 'Geyser Grants', desc: 'Bitcoin project funding', link: 'https://geyser.fund' },
                 { name: 'BitDevs Events', desc: 'Local developer meetups', link: 'https://bitdevs.org' },
               ].map((opp, idx) => (
                 <a

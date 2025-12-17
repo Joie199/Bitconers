@@ -964,7 +964,7 @@ export default function ChaptersPage() {
                 }
                 87.5% { 
                   opacity: 0.7; 
-                }
+              }
                 95% { 
                   opacity: 1; 
                 }

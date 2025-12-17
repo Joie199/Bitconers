@@ -399,9 +399,6 @@ export default function ImpactPage() {
           <p className="mt-2 text-sm text-zinc-300 sm:text-base">
             Get our comprehensive 1–2 page PDF report with mission, results, charts, stats, photos, and quotes.
           </p>
-          <p className="mt-2 text-xs text-zinc-400">
-            Essential when applying for grants and partnerships.
-          </p>
           <button className="mt-6 rounded-lg bg-gradient-to-r from-cyan-400 to-orange-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110">
             Download PDF Report
           </button>

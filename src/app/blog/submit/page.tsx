@@ -19,14 +19,31 @@ export default function SubmitBlogPage() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // In production, this would submit to your backend or email service
-    // For now, we'll use a form service like Google Forms or Tally
-    const formUrl = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform";
-    
-    // Simulate submission
-    setTimeout(() => {
-      alert("Thank you for your submission! We'll review it and get back to you within 5-7 business days.");
-      setIsSubmitting(false);
+    try {
+      const res = await fetch('/api/blog/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          authorName: formData.name,
+          authorEmail: formData.email,
+          cohort: formData.cohort,
+          authorBio: formData.bio,
+          title: formData.title,
+          category: formData.category,
+          content: formData.content,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit blog post');
+      }
+
+      alert(data.message || "Thank you for your submission! We'll review it and get back to you within 5-7 business days.");
+      
       // Reset form
       setFormData({
         name: "",
@@ -37,7 +54,12 @@ export default function SubmitBlogPage() {
         content: "",
         bio: "",
       });
-    }, 1000);
+    } catch (error: any) {
+      console.error('Error submitting blog post:', error);
+      alert(error.message || 'Failed to submit blog post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -92,7 +114,7 @@ export default function SubmitBlogPage() {
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-zinc-300">
-                    Cohort <span className="text-red-400">*</span>
+                    Cohort / Status <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -100,8 +122,13 @@ export default function SubmitBlogPage() {
                     value={formData.cohort}
                     onChange={(e) => setFormData({ ...formData, cohort: e.target.value })}
                     className="w-full rounded-lg border border-cyan-400/20 bg-zinc-900/50 px-4 py-2 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
-                    placeholder="e.g., Cohort 1 - January 2025"
+                    placeholder={formData.category === "pre-education" ? "e.g., Prospective Student, Not Yet Enrolled, or leave blank" : "e.g., Cohort 1 - January 2025"}
                   />
+                  {formData.category === "pre-education" && (
+                    <p className="mt-1 text-xs text-zinc-400">
+                      Optional: If you're planning to enroll, mention it here. Otherwise, you can leave this blank or write "Prospective Student".
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -147,6 +174,17 @@ export default function SubmitBlogPage() {
                     className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
                   >
                     <option value="" className="bg-zinc-950 text-zinc-400">Select a category</option>
+                    <option value="pre-education" className="bg-zinc-950 text-zinc-50">💡 Pre-Education Ideas (Before Learning)</option>
+                    <option value="essays" className="bg-zinc-950 text-zinc-50">✍️ Student Essays</option>
+                    <option value="community" className="bg-zinc-950 text-zinc-50">🤝 Community Stories</option>
+                    <option value="africa" className="bg-zinc-950 text-zinc-50">🌍 Bitcoin in Africa</option>
+                    <option value="technical" className="bg-zinc-950 text-zinc-50">💻 Technical Deep Dives</option>
+                    <option value="lightning" className="bg-zinc-950 text-zinc-50">⚡ Lightning Experiments</option>
+                    <option value="future" className="bg-zinc-950 text-zinc-50">🔮 Ideas for the Future</option>
+                    <option value="beginner" className="bg-zinc-950 text-zinc-50">📖 Beginner Lessons</option>
+                    <option value="reflections" className="bg-zinc-950 text-zinc-50">💭 Reflections & Opinions</option>
+                    <option value="builders" className="bg-zinc-950 text-zinc-50">🛠️ Builder Showcases</option>
+                    <option value="projects" className="bg-zinc-950 text-zinc-50">🎓 Graduation Projects</option>
                     <option value="Use Cases" className="bg-zinc-950 text-zinc-50">Use Cases</option>
                     <option value="Development" className="bg-zinc-950 text-zinc-50">Development</option>
                     <option value="Community" className="bg-zinc-950 text-zinc-50">Community</option>
@@ -154,6 +192,11 @@ export default function SubmitBlogPage() {
                     <option value="Education" className="bg-zinc-950 text-zinc-50">Education</option>
                     <option value="Other" className="bg-zinc-950 text-zinc-50">Other</option>
                   </select>
+                  {formData.category === "pre-education" && (
+                    <p className="mt-2 text-xs text-purple-300">
+                      💡 Share your thoughts, questions, or ideas about Bitcoin before you start learning. This helps us understand what people think before education! (Minimum 300 words)
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -166,10 +209,12 @@ export default function SubmitBlogPage() {
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                     rows={15}
                     className="w-full rounded-lg border border-cyan-400/20 bg-zinc-900/50 px-4 py-2 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 font-mono"
-                    placeholder="Write your blog post here (minimum 500 words, maximum 2000 words)..."
+                    placeholder={formData.category === "pre-education" ? "Share your thoughts, questions, or ideas about Bitcoin. What do you think Bitcoin is? What questions do you have? What interests you? (minimum 300 words, maximum 2000 words)..." : "Write your blog post here (minimum 500 words, maximum 2000 words)..."}
                   />
                   <p className="mt-2 text-xs text-zinc-400">
                     Word count: {formData.content.split(/\s+/).filter(Boolean).length} words
+                    {formData.category === "pre-education" && " (minimum 300 words for pre-education posts)"}
+                    {formData.category !== "pre-education" && " (minimum 500 words)"}
                   </p>
                 </div>
               </div>
