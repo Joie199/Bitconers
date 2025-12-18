@@ -215,9 +215,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     href="https://jumble.social/users/npub1q659nzy6j3mn8nr8ljznzumplesd40276tefj6gjz72npmqqg5cqmh70vv"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-cyan-300 transition hover:text-cyan-200"
+                    className="flex items-center gap-2 text-xs text-cyan-300 transition hover:text-cyan-200"
+                    aria-label="Follow on Nostr"
                   >
-                    Follow on Nostr →
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M13.5 2L3 13h7.5l-1 9 10.5-11h-7.5l1-9z"/>
+                    </svg>
+                    <span>Nostr</span>
                   </a>
                 </div>
               </div>

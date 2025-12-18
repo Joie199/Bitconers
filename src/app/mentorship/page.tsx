@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { AnimatedSection } from "@/components/AnimatedSection";
 
 const roles = [
@@ -24,27 +25,6 @@ const roles = [
     description: "Help with community moderation, student onboarding, content creation, or administrative tasks. Flexible time commitment.",
     time: "Flexible",
     icon: "🤝",
-  },
-];
-
-const mentors = [
-  {
-    name: "Sarah N.",
-    role: "Lightning Developer",
-    description: "Led Week 3 Lightning session and mentored 12 students.",
-    type: "Mentor",
-  },
-  {
-    name: "Brian M.",
-    role: "Bitcoin Educator",
-    description: "Reviewed assignments and guided new learners.",
-    type: "Mentor",
-  },
-  {
-    name: "Aisha K.",
-    role: "Community Assistant",
-    description: "Helped answer student questions and supported onboarding.",
-    type: "Volunteer",
   },
 ];
 
@@ -290,7 +270,7 @@ export default function MentorshipPage() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-zinc-300">
-                      How many hours per week can you contribute? <span className="text-red-400">*</span>
+                      How many hours per month can you contribute? <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -298,7 +278,7 @@ export default function MentorshipPage() {
                       value={formData.hours}
                       onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
                       className="w-full rounded-lg border border-orange-400/20 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-50 placeholder:text-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20 transition"
-                      placeholder="e.g., 2-3 hours"
+                      placeholder="e.g., 8-12 hours"
                     />
                   </div>
                 </div>
@@ -429,7 +409,7 @@ export default function MentorshipPage() {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400">2.</span>
-              <span><strong className="text-purple-200">Short Interview / Call</strong> — 10-minute screening with our team.</span>
+              <span><strong className="text-purple-200">Quick Connect Call</strong> — A brief chat to get to know each other.</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400">3.</span>
@@ -458,23 +438,9 @@ export default function MentorshipPage() {
             <p className="mt-2 text-sm text-zinc-400">
               Our mentors, guest lecturers, and volunteers give their time, knowledge, and energy to build Bitcoin education in Africa.
             </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {mentors.map((mentor, index) => (
-              <div
-                key={index}
-                className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-              >
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                  <span className="text-2xl">👤</span>
-                </div>
-                <h3 className="text-lg font-semibold text-zinc-50">{mentor.name}</h3>
-                <p className="mt-1 text-sm font-medium text-cyan-300">{mentor.role}</p>
-                <p className="mt-2 text-xs text-zinc-400">{mentor.type}</p>
-                <p className="mt-3 text-sm text-zinc-300">{mentor.description}</p>
-              </div>
-            ))}
+            <p className="mt-4 text-xs text-zinc-500 italic">
+              View all mentors and contributors on our <Link href="/" className="text-cyan-400 hover:text-cyan-300 underline">home page</Link>. Approved mentors are automatically displayed from our mentorship database.
+            </p>
           </div>
           </section>
         </AnimatedSection>

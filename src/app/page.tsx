@@ -4,6 +4,7 @@ import { Facebook, Twitter, Instagram, Music2 } from "lucide-react";
 import { StructuredData } from "@/components/StructuredData";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { AnimatedList } from "@/components/AnimatedList";
+import { supabaseAdmin } from "@/lib/supabase";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -62,7 +63,8 @@ const howItWorksSteps = [
   { step: "4", title: "Earn sats + certificate", description: "Get rewarded with Bitcoin and earn your certificate" },
 ];
 
-const mentors = [
+// Fallback mentors (for initial display or if database fetch fails)
+const fallbackMentors = [
   {
     name: "Yohannes Amanuel",
     role: "Bitcoin Educator & Development Mentor",
@@ -81,7 +83,44 @@ const mentors = [
   },
 ];
 
-export default function Home() {
+async function getMentors() {
+  try {
+    const { data: mentors, error } = await supabaseAdmin
+      .from('mentors')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching mentors:', error);
+      return fallbackMentors;
+    }
+
+    // Transform database mentors to match the expected format
+    const transformedMentors = (mentors || []).map((mentor) => ({
+      name: mentor.name,
+      role: mentor.role,
+      description: mentor.description || '',
+      image: mentor.image_url || null,
+      github: mentor.github || null,
+      twitter: mentor.twitter || null,
+      type: mentor.type || null,
+    }));
+
+    // Merge with fallback mentors (for Yohannes and Semir who might not be in DB yet)
+    // Only add fallback if they're not already in the list
+    const mentorNames = new Set(transformedMentors.map(m => m.name.toLowerCase()));
+    const additionalMentors = fallbackMentors.filter(m => !mentorNames.has(m.name.toLowerCase()));
+    
+    return [...transformedMentors, ...additionalMentors];
+  } catch (error) {
+    console.error('Error fetching mentors:', error);
+    return fallbackMentors;
+  }
+}
+
+export default async function Home() {
+  const mentors = await getMentors();
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* Full-page Hero Section */}
@@ -372,9 +411,13 @@ export default function Home() {
                 href="https://jumble.social/users/npub1q659nzy6j3mn8nr8ljznzumplesd40276tefj6gjz72npmqqg5cqmh70vv"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-lg border border-purple-400/30 bg-purple-400/10 px-8 py-4 text-base font-semibold text-purple-300 transition hover:bg-purple-400/20"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-purple-400/30 bg-purple-400/10 px-8 py-4 text-base font-semibold text-purple-300 transition hover:bg-purple-400/20"
+                aria-label="Follow on Nostr"
               >
-                👉 Follow on Nostr
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13.5 2L3 13h7.5l-1 9 10.5-11h-7.5l1-9z"/>
+                </svg>
+                <span>Nostr</span>
               </a>
             </div>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row mt-6">
@@ -418,7 +461,10 @@ export default function Home() {
                       )}
                     </div>
                     <h3 className="mb-2 text-xl font-semibold text-zinc-50">{mentor.name}</h3>
-                    <p className="mb-4 text-base font-medium text-cyan-300">{mentor.role}</p>
+                    <p className="mb-2 text-base font-medium text-cyan-300">{mentor.role}</p>
+                    {mentor.type && (
+                      <p className="mb-3 text-xs font-medium text-orange-300">{mentor.type}</p>
+                    )}
                     <p className="mb-4 text-sm text-zinc-400">"{mentor.description}"</p>
                     {(mentor.github || mentor.twitter) && (
                       <div className="flex items-center gap-3 mt-4 pt-4 border-t border-zinc-700">
