@@ -35,6 +35,14 @@ interface ProgressMetrics {
   avgAssignmentScore: number;
 }
 
+interface Testimonial {
+  id: string;
+  name: string;
+  city: string;
+  quote: string;
+  photo: string | null;
+}
+
 const outcomes = [
   "50% now using Bitcoin daily",
   "4 students supporting local communities",
@@ -116,10 +124,12 @@ export default function ImpactPage() {
     const fetchData = async () => {
       try {
         // Fetch all data in parallel
-        const [metricsResponse, cohortsResponse, progressResponse] = await Promise.all([
+        const [metricsResponse, cohortsResponse, progressResponse, satsResponse, testimonialsResponse] = await Promise.all([
           fetch('/api/impact/metrics'),
           fetch('/api/impact/cohorts'),
           fetch('/api/impact/progress'),
+          fetch('/api/impact/sats-stats'),
+          fetch('/api/impact/testimonials'),
         ]);
 
         if (metricsResponse.ok) {
@@ -135,6 +145,16 @@ export default function ImpactPage() {
         if (progressResponse.ok) {
           const progressData = await progressResponse.json();
           setProgressMetrics(progressData);
+        }
+
+        if (satsResponse.ok) {
+          const satsData = await satsResponse.json();
+          setSatsStats(satsData);
+        }
+
+        if (testimonialsResponse.ok) {
+          const testimonialsData = await testimonialsResponse.json();
+          setTestimonials(testimonialsData.testimonials || []);
         }
       } catch (error) {
         console.error('Error fetching impact data:', error);
