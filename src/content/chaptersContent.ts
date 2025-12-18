@@ -618,7 +618,7 @@ export const chaptersContent: ChapterContent[] = [
         callouts: [
           {
             type: "note",
-            content: "Satoshi's anonymity was likely intentional — to prevent governments from targeting the creator and to let the technology speak for itself.",
+            content: "Satoshi's anonymity was likely intentional — to prevent governments from targeting the creator and to let the technology speak for itself. [Download the Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf) to read the original 9-page document.",
           },
         ],
       },

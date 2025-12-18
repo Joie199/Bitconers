@@ -191,7 +191,42 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                           ? "⚠️ Warning:"
                           : "📖 Example:"}
                       </span>
-                      <p className="flex-1 text-sm">{callout.content}</p>
+                      <div className="flex-1 text-sm">
+                        {(() => {
+                          const parts: React.ReactNode[] = [];
+                          const content = callout.content;
+                          const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                          let lastIndex = 0;
+                          let match;
+                          let key = 0;
+
+                          while ((match = linkRegex.exec(content)) !== null) {
+                            // Add text before the link
+                            if (match.index > lastIndex) {
+                              parts.push(<span key={key++}>{content.substring(lastIndex, match.index)}</span>);
+                            }
+                            // Add the link
+                            const [, linkText, linkUrl] = match;
+                            parts.push(
+                              <a
+                                key={key++}
+                                href={linkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cyan-300 underline hover:text-cyan-200"
+                              >
+                                {linkText}
+                              </a>
+                            );
+                            lastIndex = linkRegex.lastIndex;
+                          }
+                          // Add remaining text after last link
+                          if (lastIndex < content.length) {
+                            parts.push(<span key={key++}>{content.substring(lastIndex)}</span>);
+                          }
+                          return parts.length > 0 ? parts : <span>{content}</span>;
+                        })()}
+                      </div>
                     </div>
                     </div>
                   );
