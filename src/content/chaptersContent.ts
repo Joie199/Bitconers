@@ -594,12 +594,12 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/US-Median-Home-Prices.jpg",
+            src: "/images/book_images/US-Median-Home-Prices.jpg",
             alt: "US median home prices showing the impact of the 2008 financial crisis",
             caption: "US median home prices during the 2008 financial crisis",
           },
           {
-            src: "/images/2008.jpg",
+            src: "/images/book_images/2008.jpg",
             alt: "2008 financial crisis - banks collapsing, people losing homes",
             caption: "The 2008 financial crisis exposed the fragility of the banking system",
           },

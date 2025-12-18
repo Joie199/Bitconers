@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
@@ -22,15 +22,17 @@ export function NextChapterButton({
 }: NextChapterButtonProps) {
   const router = useRouter();
   const { isAuthenticated, profile } = useAuth();
+  const [isPending, startTransition] = useTransition();
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [isChapterCompleted, setIsChapterCompleted] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // Check if chapter is already completed
+  // Check if chapter is already completed - use requestIdleCallback to avoid blocking
   useEffect(() => {
-    const checkCompletion = async () => {
-      if (!isAuthenticated || !profile) return;
+    if (!isAuthenticated || !profile) return;
 
+    // Use requestIdleCallback to defer non-critical API call
+    const checkCompletion = async () => {
       try {
         const response = await fetch('/api/chapters/unlock-status', {
           method: 'POST',
@@ -50,7 +52,13 @@ export function NextChapterButton({
       }
     };
 
-    checkCompletion();
+    // Defer the API call to avoid blocking initial render
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(checkCompletion, { timeout: 2000 });
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(checkCompletion, 0);
+    }
   }, [isAuthenticated, profile, currentChapterNumber]);
 
   const handleNextClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -72,15 +80,16 @@ export function NextChapterButton({
     setShowConfirmDialog(true);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!profile) return;
     
     setShowConfirmDialog(false);
     setIsMarkingComplete(true);
 
-    try {
+    // Use startTransition for navigation and defer API call
+    startTransition(() => {
       // Mark current chapter as completed before navigating
-      const response = await fetch('/api/chapters/mark-completed', {
+      fetch('/api/chapters/mark-completed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -88,24 +97,23 @@ export function NextChapterButton({
           chapterNumber: currentChapterNumber,
           chapterSlug: currentChapterSlug,
         }),
-      });
-
-      if (response.ok) {
-        // Chapter marked as completed, now navigate
-        setIsChapterCompleted(true);
-        router.push(`/chapters/${nextChapterSlug}`);
-      } else {
-        // If marking fails, still try to navigate (access check will handle it)
-        console.warn('Failed to mark chapter as completed, navigating anyway');
-        router.push(`/chapters/${nextChapterSlug}`);
-      }
-    } catch (error) {
-      console.error('Error marking chapter as completed:', error);
-      // On error, still navigate (access check will handle it)
-      router.push(`/chapters/${nextChapterSlug}`);
-    } finally {
-      setIsMarkingComplete(false);
-    }
+      })
+        .then((response) => {
+          if (response.ok) {
+            setIsChapterCompleted(true);
+          }
+          // Navigate regardless of API response (access check will handle it)
+          router.push(`/chapters/${nextChapterSlug}`);
+        })
+        .catch((error) => {
+          console.error('Error marking chapter as completed:', error);
+          // On error, still navigate (access check will handle it)
+          router.push(`/chapters/${nextChapterSlug}`);
+        })
+        .finally(() => {
+          setIsMarkingComplete(false);
+        });
+    });
   };
 
   const handleCancel = () => {
@@ -127,7 +135,7 @@ export function NextChapterButton({
         href={`/chapters/${nextChapterSlug}`}
         onClick={handleNextClick}
         className={`${baseClasses} ${
-          isMarkingComplete ? 'opacity-70 cursor-wait' : ''
+          isMarkingComplete || isPending ? 'opacity-70 cursor-wait' : ''
         }`}
       >
         {isMarkingComplete ? (
