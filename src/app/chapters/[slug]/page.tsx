@@ -4,6 +4,7 @@ import { PageContainer } from "@/components/PageContainer";
 import { getChapterBySlug, chaptersContent } from "@/content/chaptersContent";
 import { ChapterAccessCheck } from "./ChapterAccessCheck";
 import { ChapterCompletionTracker } from "./ChapterCompletionTracker";
+import { NextChapterButton } from "./NextChapterButton";
 import { LiveBlockchainData } from "@/components/LiveBlockchainData";
 import { AdminModeWrapper } from "@/components/AdminModeWrapper";
 import type { Metadata } from "next";
@@ -113,12 +114,13 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 </Link>
               ) : null}
               {nextChapter ? (
-                <Link
-                  href={`/chapters/${nextChapter.slug}`}
-                  className="inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400/70 hover:bg-cyan-500/20"
-                >
-                  Chapter {nextChapter.number} →
-                </Link>
+                <NextChapterButton
+                  nextChapterSlug={nextChapter.slug}
+                  nextChapterNumber={nextChapter.number}
+                  currentChapterNumber={chapter.number}
+                  currentChapterSlug={chapter.slug}
+                  variant="top"
+                />
               ) : null}
             </div>
           </div>

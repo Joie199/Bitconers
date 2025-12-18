@@ -16,7 +16,7 @@ export function ChapterCompletionTracker({ chapterNumber, chapterSlug }: Chapter
     const trackCompletion = async () => {
       if (!isAuthenticated || !profile) return;
 
-      // Wait 30 seconds before marking as completed (user has had time to read)
+      // Wait 4 minutes before marking as completed (user has had time to read)
       const timer = setTimeout(async () => {
         try {
           await fetch('/api/chapters/mark-completed', {
@@ -31,7 +31,7 @@ export function ChapterCompletionTracker({ chapterNumber, chapterSlug }: Chapter
         } catch (error) {
           console.error('Error tracking chapter completion:', error);
         }
-      }, 30000); // 30 seconds
+      }, 240000); // 4 minutes (240000ms)
 
       return () => clearTimeout(timer);
     };
