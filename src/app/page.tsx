@@ -72,6 +72,7 @@ const fallbackMentors = [
     image: "/images/mentors/yohannes-amanuel.jpg",
     github: "https://github.com/Joie199",
     twitter: "https://twitter.com/joieama",
+    type: null as string | null,
   },
   {
     name: "Semir Omer",
@@ -80,6 +81,7 @@ const fallbackMentors = [
     image: "/images/mentors/semir-omer.jpg",
     github: "https://github.com/samiromer2",
     twitter: "https://twitter.com/samiromer",
+    type: null as string | null,
   },
 ];
 
