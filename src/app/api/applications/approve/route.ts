@@ -330,20 +330,51 @@ export async function POST(req: NextRequest) {
       // This is okay - table might not be migrated yet
     }
 
+    // Verify profile exists before linking
+    if (!profileId) {
+      console.error('Profile ID is missing - cannot link application to profile');
+      return NextResponse.json(
+        { error: 'Failed to create profile - cannot approve application', details: 'Profile creation failed' },
+        { status: 500 }
+      );
+    }
+
+    // Double-check that the profile actually exists in the database
+    const { data: verifyProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    if (!verifyProfile) {
+      console.error('Profile does not exist in database:', profileId);
+      return NextResponse.json(
+        { error: 'Profile not found - cannot link application', details: `Profile with ID ${profileId} does not exist` },
+        { status: 500 }
+      );
+    }
+
     // Update application status to Approved
-    // profile_id is set to the same ID (studentIdentifier = application.id)
+    // Only set profile_id if profile exists
     const { error: updateError } = await supabaseAdmin
       .from('applications')
       .update({
         status: 'Approved',
         approved_by: approvedBy || null,
         approved_at: new Date().toISOString(),
-        profile_id: studentIdentifier, // Same ID - applications.id = profiles.id
+        profile_id: profileId, // Use verified profileId
       })
       .eq('id', applicationId);
 
     if (updateError) {
       console.error('Error updating application status:', updateError);
+      console.error('Update error details:', {
+        applicationId,
+        profileId,
+        profileExists: !!verifyProfile,
+        errorCode: updateError.code,
+        errorMessage: updateError.message,
+      });
       return NextResponse.json(
         { error: 'Failed to update application status', details: updateError.message },
         { status: 500 }

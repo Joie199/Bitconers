@@ -838,12 +838,6 @@ export default function ApplyPage() {
                     aria-describedby={phoneError ? "phone-error" : selectedCountry ? "phone-help" : undefined}
                   />
                 </div>
-                {selectedCountry && (
-                  <p id="phone-help" className="mt-1 text-xs text-zinc-400">
-                    Requires {getPhoneRule(selectedCountry).min}
-                    {getPhoneRule(selectedCountry).min !== getPhoneRule(selectedCountry).max ? `-${getPhoneRule(selectedCountry).max}` : ''} digits (excluding country code).
-                  </p>
-                )}
                 {phoneError && (
                   <p id="phone-error" className="mt-1 text-xs text-red-300" role="alert">{phoneError}</p>
                 )}
