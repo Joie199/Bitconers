@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
 import { AnimatedSection } from '@/components/AnimatedSection';
 
 interface ImpactMetrics {
@@ -9,6 +10,12 @@ interface ImpactMetrics {
   countriesReached: number;
   assignmentsSubmitted: number;
   teachingHours: number;
+}
+
+interface SatsStats {
+  satsEarned: number;
+  satsSpent: number;
+  satsCirculated: number;
 }
 
 interface CohortData {
@@ -33,27 +40,6 @@ const outcomes = [
   "4 students supporting local communities",
   "3 students teaching Bitcoin in their schools",
   "Lightning payments used in real life: 120+ transactions",
-];
-
-const testimonials = [
-  {
-    name: "Amina K.",
-    city: "Lagos, Nigeria",
-    quote: "This academy changed my understanding of Bitcoin. I now run a Lightning node and help others in my community.",
-    photo: "👤",
-  },
-  {
-    name: "David M.",
-    city: "Nairobi, Kenya",
-    quote: "The hands-on approach and sats rewards made learning engaging. I've completed all assignments and earned 5,000 sats!",
-    photo: "👤",
-  },
-  {
-    name: "Fatima A.",
-    city: "Accra, Ghana",
-    quote: "Best Bitcoin education I've received. The mentors are knowledgeable and the community is supportive.",
-    photo: "👤",
-  },
 ];
 
 // Custom hook for animated counter
@@ -105,6 +91,8 @@ export default function ImpactPage() {
   const [metrics, setMetrics] = useState<ImpactMetrics | null>(null);
   const [cohorts, setCohorts] = useState<CohortData[]>([]);
   const [progressMetrics, setProgressMetrics] = useState<ProgressMetrics | null>(null);
+  const [satsStats, setSatsStats] = useState<SatsStats | null>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [shouldAnimate, setShouldAnimate] = useState(false);
 
   // Animated values for progress metrics
@@ -348,15 +336,30 @@ export default function ImpactPage() {
           <h2 className="text-xl font-semibold text-purple-200">Sats Reward Economy</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">150,000+</div>
+              <div className="text-2xl font-bold text-purple-400">
+                {satsStats 
+                  ? `${(satsStats.satsEarned / 1000).toFixed(0)}K+`
+                  : '0+'
+                }
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Earned</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">120,000+</div>
+              <div className="text-2xl font-bold text-purple-400">
+                {satsStats 
+                  ? `${(satsStats.satsSpent / 1000).toFixed(0)}K+`
+                  : '0+'
+                }
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Spent</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">270,000+</div>
+              <div className="text-2xl font-bold text-purple-400">
+                {satsStats 
+                  ? `${(satsStats.satsCirculated / 1000).toFixed(0)}K+`
+                  : '0+'
+                }
+              </div>
               <div className="mt-1 text-xs text-zinc-400">Sats Circulated</div>
             </div>
           </div>
@@ -370,25 +373,81 @@ export default function ImpactPage() {
         <AnimatedSection animation="slideRight">
           <section className="space-y-6">
           <h2 className="text-xl font-semibold text-zinc-50">Student Testimonials</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
-                    <span className="text-xl">{testimonial.photo}</span>
+          {testimonials.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    {testimonial.photo ? (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20 overflow-hidden">
+                        <Image 
+                          src={testimonial.photo} 
+                          alt={testimonial.name}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
+                        <span className="text-xl">👤</span>
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-semibold text-zinc-50">{testimonial.name}</div>
+                      {testimonial.city && (
+                        <div className="text-xs text-zinc-400">{testimonial.city}</div>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-zinc-50">{testimonial.name}</div>
-                    <div className="text-xs text-zinc-400">{testimonial.city}</div>
-                  </div>
+                  <p className="text-sm italic text-zinc-300">"{testimonial.quote}"</p>
                 </div>
-                <p className="text-sm italic text-zinc-300">"{testimonial.quote}"</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            // Fallback testimonials if database is empty
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  name: "Amina K.",
+                  city: "Lagos, Nigeria",
+                  quote: "This academy changed my understanding of Bitcoin. I now run a Lightning node and help others in my community.",
+                  photo: "👤",
+                },
+                {
+                  name: "David M.",
+                  city: "Nairobi, Kenya",
+                  quote: "The hands-on approach and sats rewards made learning engaging. I've completed all assignments and earned 5,000 sats!",
+                  photo: "👤",
+                },
+                {
+                  name: "Fatima A.",
+                  city: "Accra, Ghana",
+                  quote: "Best Bitcoin education I've received. The mentors are knowledgeable and the community is supportive.",
+                  photo: "👤",
+                },
+              ].map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20">
+                      <span className="text-xl">{testimonial.photo}</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-zinc-50">{testimonial.name}</div>
+                      <div className="text-xs text-zinc-400">{testimonial.city}</div>
+                    </div>
+                  </div>
+                  <p className="text-sm italic text-zinc-300">"{testimonial.quote}"</p>
+                </div>
+              ))}
+            </div>
+          )}
           </section>
         </AnimatedSection>
 
