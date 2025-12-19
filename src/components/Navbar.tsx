@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, lazy, Suspense, useTransition } from "reac
 import { Menu, X, User, LogOut, LayoutDashboard, Key, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
+import { SearchBar } from "./SearchBar";
 
 // Lazy load modals - only load when needed (using React.lazy for better code splitting)
 const AuthModal = lazy(() => import("./AuthModal").then(mod => ({ default: mod.AuthModal })));
@@ -114,6 +115,7 @@ export function Navbar() {
         
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-1 xl:flex">
+          <SearchBar />
           <Link
             href="/chapters"
             className="rounded-full px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
@@ -398,6 +400,9 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="border-t border-cyan-400/20 bg-black/95 lg:hidden">
           <nav className="mx-auto max-w-7xl space-y-1 px-4 py-4">
+            <div className="mb-4">
+              <SearchBar />
+            </div>
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
