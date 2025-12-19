@@ -324,31 +324,6 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
     fetchAssignments();
   }, [userData, storedProfileEmail, profileEmail]);
 
-  // Fetch assignments from API
-  useEffect(() => {
-    const fetchAssignments = async () => {
-      const email = userData?.profile?.email || storedProfileEmail || profileEmail;
-      if (!email) return;
-
-      try {
-        setLoadingAssignments(true);
-        const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          setAssignments(data.assignments || []);
-        }
-      } catch (error) {
-        console.error('Error fetching assignments:', error);
-        // Silently fail - user can refresh page if needed
-      } finally {
-        setLoadingAssignments(false);
-      }
-    };
-
-    fetchAssignments();
-  }, [userData, storedProfileEmail, profileEmail]);
-
   const fetchProfileByEmail = async (lookupEmail: string) => {
     if (!lookupEmail) {
       setProfileError('Email is required');
