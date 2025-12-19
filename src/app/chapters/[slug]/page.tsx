@@ -510,11 +510,11 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                       </div>
                     ) : (
                       section.images.map((image, idx) => (
-                        <div key={idx} className={`mt-4 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') ? 'flex flex-col items-center' : ''}`}>
+                        <div key={idx} className={`mt-4 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') || image.src.includes('jade.png') ? 'flex flex-col items-center' : ''}`}>
                           <img
                             src={image.src}
                             alt={image.alt}
-                            className={`rounded-lg border border-orange-400/20 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') ? 'w-64 sm:w-80 max-w-full' : 'w-full'}`}
+                            className={`rounded-lg border border-orange-400/20 ${image.src.includes('money_usage') || image.src.includes('chinese_first_fiat_money') ? 'w-64 sm:w-80 max-w-full' : image.src.includes('jade.png') ? 'w-48 sm:w-64 max-w-full' : 'w-full'}`}
                           />
                           {image.caption && (
                             <p className="mt-2 text-center text-xs text-zinc-400 italic">
