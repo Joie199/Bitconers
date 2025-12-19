@@ -775,7 +775,9 @@ export default function ApplyPage() {
                 </label>
                 <input
                   id="firstName"
+                  name="firstName"
                   type="text"
+                  autoComplete="given-name"
                   required
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -845,7 +847,9 @@ export default function ApplyPage() {
                   </select>
                   <input
                     id="phone"
+                    name="phone"
                     type="tel"
+                    autoComplete="tel-national"
                     required
                     value={phoneNumber}
                     onChange={handlePhoneChange}
@@ -902,6 +906,8 @@ export default function ApplyPage() {
                 </label>
                 <select
                   id="country"
+                  name="country"
+                  autoComplete="country-name"
                   required
                   value={selectedCountry}
                   onChange={handleCountryChange}

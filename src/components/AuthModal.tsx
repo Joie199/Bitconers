@@ -274,7 +274,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
           {!isSignIn && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -288,6 +288,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                   type="text"
                   id="firstName"
                   name="firstName"
+                  autoComplete="given-name"
                   value={formData.firstName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -308,6 +309,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                   type="text"
                   id="lastName"
                   name="lastName"
+                  autoComplete="family-name"
                   value={formData.lastName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
@@ -353,6 +355,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
+                autoComplete={isSignIn ? "current-password" : "new-password"}
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-orange-400/50 focus:outline-none focus:ring-2 focus:ring-orange-400/20"

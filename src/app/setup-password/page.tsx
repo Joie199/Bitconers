@@ -113,7 +113,7 @@ function SetupPasswordContent() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
           <div>
             <label className="mb-2 block text-sm font-medium text-zinc-300">
               Password <span className="text-red-400">*</span>
@@ -121,6 +121,8 @@ function SetupPasswordContent() {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -148,6 +150,8 @@ function SetupPasswordContent() {
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required

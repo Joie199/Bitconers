@@ -320,6 +320,8 @@ export function ProfileModal({
                     <label className="mb-1 block text-xs text-zinc-400">Name</label>
                     <input
                       type="text"
+                      name="name"
+                      autoComplete="name"
                       value={editFormData.name}
                       onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-500/50 focus:outline-none"
@@ -329,6 +331,8 @@ export function ProfileModal({
                     <label className="mb-1 block text-xs text-zinc-400">Email</label>
                     <input
                       type="email"
+                      name="email"
+                      autoComplete="email"
                       value={editFormData.email}
                       onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-500/50 focus:outline-none"
@@ -338,6 +342,8 @@ export function ProfileModal({
                     <label className="mb-1 block text-xs text-zinc-400">Phone</label>
                     <input
                       type="tel"
+                      name="phone"
+                      autoComplete="tel"
                       value={editFormData.phone}
                       onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-500/50 focus:outline-none"
@@ -356,6 +362,8 @@ export function ProfileModal({
                     <label className="mb-1 block text-xs text-zinc-400">City</label>
                     <input
                       type="text"
+                      name="city"
+                      autoComplete="address-level2"
                       value={editFormData.city}
                       onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
                       className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-500/50 focus:outline-none"

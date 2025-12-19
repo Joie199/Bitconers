@@ -99,7 +99,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             <p className="text-sm text-zinc-400">
               Enter your email address and we'll send you instructions to reset your password.
             </p>
@@ -110,6 +110,8 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
               </label>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);

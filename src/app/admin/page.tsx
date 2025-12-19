@@ -581,11 +581,13 @@ export default function AdminDashboardPage() {
               {authError}
             </div>
           )}
-          <form className="space-y-4" onSubmit={handleLogin}>
+          <form className="space-y-4" onSubmit={handleLogin} autoComplete="on">
             <div className="space-y-2">
               <label className="text-sm text-zinc-300">Email</label>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 required
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
@@ -596,6 +598,8 @@ export default function AdminDashboardPage() {
               <label className="text-sm text-zinc-300">Password</label>
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
                 required
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}

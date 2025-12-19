@@ -177,7 +177,7 @@ export default function SponsorPage() {
             <AnimatedSection animation="slideUp">
               <section className="space-y-6 rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
                 <h2 className="text-xl font-semibold text-orange-200">Sponsorship Details</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <label htmlFor="sponsorName" className="mb-2 block text-sm font-medium text-zinc-300">
@@ -187,6 +187,7 @@ export default function SponsorPage() {
                         id="sponsorName"
                         name="sponsorName"
                         type="text"
+                        autoComplete="name"
                         required={!formData.anonymous}
                         disabled={formData.anonymous}
                         value={formData.sponsorName}

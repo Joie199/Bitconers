@@ -293,6 +293,62 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
     fetchChapterStatus();
   }, [userData, storedProfileEmail, profileEmail]);
 
+  // Fetch assignments
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const email = userData?.profile?.email || storedProfileEmail || profileEmail;
+      if (!email) {
+        setAssignments([]);
+        return;
+      }
+
+      try {
+        setLoadingAssignments(true);
+        const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setAssignments(data.assignments || []);
+        } else {
+          // Silently fail - assignments are optional
+          setAssignments([]);
+        }
+      } catch (error) {
+        // Silently fail - assignments are optional
+        setAssignments([]);
+      } finally {
+        setLoadingAssignments(false);
+      }
+    };
+
+    fetchAssignments();
+  }, [userData, storedProfileEmail, profileEmail]);
+
+  // Fetch assignments from API
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const email = userData?.profile?.email || storedProfileEmail || profileEmail;
+      if (!email) return;
+
+      try {
+        setLoadingAssignments(true);
+        const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setAssignments(data.assignments || []);
+        }
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+        // Silently fail - user can refresh page if needed
+      } finally {
+        setLoadingAssignments(false);
+      }
+    };
+
+    fetchAssignments();
+  }, [userData, storedProfileEmail, profileEmail]);
+
   const fetchProfileByEmail = async (lookupEmail: string) => {
     if (!lookupEmail) {
       setProfileError('Email is required');
@@ -396,7 +452,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
     };
   });
   
-  // Use assignments from API state, fallback to empty array
+  // Assignments are now fetched from API and stored in state
   const resources = student.resources || [];
   const leaderboard = leaderboardData;
   
@@ -930,46 +986,74 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
             {/* Assignments & Tasks */}
             <div className="rounded-xl border border-orange-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
               <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Assignments & Tasks</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="mb-3 text-lg font-medium text-orange-300">Due Soon</h3>
-                  <div className="space-y-2">
-                    {assignments
-                      .filter((a: any) => a.status === 'pending')
-                      .map((assignment: any) => (
-                        <Link
-                          key={assignment.id}
-                          href={assignment.link}
-                          className="block rounded-lg border border-orange-500/30 bg-orange-500/10 p-4 transition hover:border-orange-500/50 hover:bg-orange-500/20"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-zinc-100">{assignment.title}</span>
-                            <span className="text-sm text-orange-300">Due: {assignment.dueDate}</span>
-                          </div>
-                        </Link>
-                      ))}
+              {loadingAssignments ? (
+                <div className="py-8 text-center text-zinc-400">Loading assignments...</div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="mb-3 text-lg font-medium text-orange-300">Due Soon</h3>
+                    <div className="space-y-2">
+                      {assignments.filter((a: any) => a.status === 'pending' || a.status === 'overdue').length > 0 ? (
+                        assignments
+                          .filter((a: any) => a.status === 'pending' || a.status === 'overdue')
+                          .map((assignment: any) => (
+                            <Link
+                              key={assignment.id}
+                              href={`/assignments/${assignment.id}`}
+                              className="block rounded-lg border border-orange-500/30 bg-orange-500/10 p-4 transition hover:border-orange-500/50 hover:bg-orange-500/20"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <span className="font-medium text-zinc-100">{assignment.title}</span>
+                                  {assignment.dueDate && (
+                                    <span className="ml-2 text-sm text-orange-300">
+                                      Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                                    </span>
+                                  )}
+                                </div>
+                                {assignment.status === 'overdue' && (
+                                  <span className="text-xs text-red-400">Overdue</span>
+                                )}
+                              </div>
+                            </Link>
+                          ))
+                      ) : (
+                        <p className="text-sm text-zinc-500">No assignments due soon</p>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="mb-3 text-lg font-medium text-green-300">Completed</h3>
+                    <div className="space-y-2">
+                      {assignments.filter((a: any) => a.status === 'completed').length > 0 ? (
+                        assignments
+                          .filter((a: any) => a.status === 'completed')
+                          .map((assignment: any) => (
+                            <Link
+                              key={assignment.id}
+                              href={`/assignments/${assignment.id}`}
+                              className="block rounded-lg border border-green-500/30 bg-green-500/10 p-4 transition hover:border-green-500/50"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-400">✔</span>
+                                  <span className="font-medium text-zinc-100">{assignment.title}</span>
+                                </div>
+                                {assignment.submission?.pointsEarned > 0 && (
+                                  <span className="text-sm text-green-300">
+                                    +{assignment.submission.pointsEarned} pts
+                                  </span>
+                                )}
+                              </div>
+                            </Link>
+                          ))
+                      ) : (
+                        <p className="text-sm text-zinc-500">No completed assignments yet</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <h3 className="mb-3 text-lg font-medium text-green-300">Completed</h3>
-                  <div className="space-y-2">
-                    {assignments
-                      .filter((a: any) => a.status === 'completed')
-                      .map((assignment: any) => (
-                        <Link
-                          key={assignment.id}
-                          href={assignment.link}
-                          className="block rounded-lg border border-green-500/30 bg-green-500/10 p-4 transition hover:border-green-500/50"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-green-400">✔</span>
-                            <span className="font-medium text-zinc-100">{assignment.title}</span>
-                          </div>
-                        </Link>
-                      ))}
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
 

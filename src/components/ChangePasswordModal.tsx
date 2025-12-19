@@ -143,7 +143,7 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
             <p className="text-sm text-green-200">Password updated successfully!</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             <div>
               <label className="mb-2 block text-sm font-medium text-zinc-300">
                 Old Password
@@ -152,6 +152,7 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
                 <input
                   type={showOldPassword ? "text" : "password"}
                   name="oldPassword"
+                  autoComplete="current-password"
                   value={formData.oldPassword}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
@@ -183,6 +184,7 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
                 <input
                   type={showNewPassword ? "text" : "password"}
                   name="newPassword"
+                  autoComplete="new-password"
                   value={formData.newPassword}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
@@ -217,6 +219,7 @@ export function ChangePasswordModal({ isOpen, onClose, userEmail }: ChangePasswo
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
+                  autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-zinc-700 bg-zinc-900/50 px-4 py-3 pr-10 text-zinc-100 placeholder-zinc-500 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"

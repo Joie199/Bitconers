@@ -204,6 +204,8 @@ export default function MentorshipPage() {
                       </label>
                       <input
                         type="text"
+                        name="name"
+                        autoComplete="name"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -217,6 +219,8 @@ export default function MentorshipPage() {
                       </label>
                       <input
                         type="email"
+                        name="email"
+                        autoComplete="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -245,6 +249,8 @@ export default function MentorshipPage() {
                       </label>
                       <input
                         type="text"
+                        name="whatsapp"
+                        autoComplete="tel"
                         value={formData.whatsapp}
                         onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                         className="w-full rounded-lg border border-cyan-400/20 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition"

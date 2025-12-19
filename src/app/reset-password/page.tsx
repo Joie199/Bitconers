@@ -131,7 +131,7 @@ function ResetPasswordForm() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             {error && (
               <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
                 {error}
@@ -145,6 +145,8 @@ function ResetPasswordForm() {
               <div className="relative">
                 <input
                   type={showNewPassword ? "text" : "password"}
+                  name="newPassword"
+                  autoComplete="new-password"
                   value={formData.newPassword}
                   onChange={(e) => {
                     setFormData({ ...formData, newPassword: e.target.value });
@@ -182,6 +184,8 @@ function ResetPasswordForm() {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={(e) => {
                     setFormData({ ...formData, confirmPassword: e.target.value });
