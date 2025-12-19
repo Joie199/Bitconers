@@ -36,9 +36,12 @@ export default function AssignmentPage() {
         if (chapterMatch) {
           setReturnUrl(`/chapters/${chapterMatch[1]}`);
         }
+      } else if (assignment?.chapterSlug) {
+        // Fallback: use assignment's chapter slug if no referrer
+        setReturnUrl(`/chapters/${assignment.chapterSlug}`);
       }
     }
-  }, []);
+  }, [assignment]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {

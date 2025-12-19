@@ -360,6 +360,14 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                     <p className="mt-4 text-xs text-zinc-400 italic">
                       (Issuance continues with the same halving logic until the subsidy reaches 0 satoshis around the year 2140.)
                     </p>
+                    <div className="mt-4 rounded-lg border border-orange-400/30 bg-orange-500/10 p-4">
+                      <h4 className="mb-2 text-sm font-semibold text-orange-200">Warning: Important Precision Notes</h4>
+                      <div className="space-y-2 text-sm text-orange-100">
+                        <p>Blocks define supply, not dates.</p>
+                        <p>Dates are an observation. Block height is the law.</p>
+                        <p>Every number above can be verified by multiplying: blocks in period × subsidy per block = BTC created in period.</p>
+                      </div>
+                    </div>
                   </div>
                 ) : section.images && section.images.length > 0 && (
                   section.heading === "Introduction" && section.images.length === 5 ? (

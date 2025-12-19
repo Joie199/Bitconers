@@ -1601,10 +1601,6 @@ export const chaptersContent: ChapterContent[] = [
             type: "note",
             content: "Bitcoin's supply is fixed at 21 million coins. The halving schedule ensures predictable, declining inflation until 2140.",
           },
-          {
-            type: "warning",
-            content: "Important Precision Notes: Blocks define supply, not dates. Dates are an observation, block height is the law. Every number above can be verified by multiplying: blocks in period × subsidy per block = BTC created in period.",
-          },
         ],
         images: [],
       },
