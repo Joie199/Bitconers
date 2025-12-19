@@ -829,7 +829,7 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/blockchain-chain.png",
+            src: "/images/why_chain.jpg",
             alt: "Diagram showing blocks linked in a chain, each pointing to the previous block",
             caption: "Blocks linked in a chain - each depends on the previous",
           },
