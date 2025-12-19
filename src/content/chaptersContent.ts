@@ -2056,6 +2056,16 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
+            src: "/images/book_images/script.png",
+            alt: "P2PKH (Pay-to-Public-Key-Hash) script diagram",
+            caption: "P2PKH (Pay-to-Public-Key-Hash): The original script type",
+          },
+          {
+            src: "/images/book_images/p2sh.png",
+            alt: "P2SH (Pay-to-Script-Hash) script diagram",
+            caption: "P2SH (Pay-to-Script-Hash): Allows complex scripts to be hidden behind a hash",
+          },
+          {
             src: "/images/script-types.png",
             alt: "Diagram comparing P2PKH, P2WPKH, P2SH, and P2TR script types",
             caption: "Different script types offer different features and efficiency",
