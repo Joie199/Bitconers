@@ -34,9 +34,11 @@ export default function AssignmentPage() {
   }, [email, assignmentId, isAuthenticated, authLoading]);
 
   const fetchAssignment = async () => {
+    if (!email) return;
+    
     try {
       setLoading(true);
-      const response = await fetch(`/api/assignments?email=${encodeURIComponent(email!)}`);
+      const response = await fetch(`/api/assignments?email=${encodeURIComponent(email)}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -61,6 +63,11 @@ export default function AssignmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email) {
+      setMessage({ type: 'error', text: 'Please sign in to submit assignments' });
+      return;
+    }
     
     if (!answer.trim()) {
       setMessage({ type: 'error', text: 'Please enter an answer' });
@@ -92,11 +99,10 @@ export default function AssignmentPage() {
         // Refresh assignment data
         await fetchAssignment();
         
-        // If correct, update assignments completed count
+        // If correct, redirect back to previous page after showing success message
         if (data.submission.isCorrect) {
-          // Trigger a page refresh to update dashboard stats
           setTimeout(() => {
-            window.location.reload();
+            router.push(returnUrl);
           }, 2000);
         }
       } else {
@@ -109,11 +115,24 @@ export default function AssignmentPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <PageContainer title="Assignment" subtitle="Loading...">
         <div className="flex items-center justify-center py-12">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <PageContainer title="Access Denied" subtitle="Please sign in to view assignments">
+        <div className="text-center py-12">
+          <p className="text-zinc-400 mb-4">You must be signed in to view assignments</p>
+          <Link href="/" className="text-cyan-400 hover:text-cyan-300">
+            Go to Home
+          </Link>
         </div>
       </PageContainer>
     );
