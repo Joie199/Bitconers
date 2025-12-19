@@ -947,17 +947,6 @@ export const chaptersContent: ChapterContent[] = [
             caption: "Example seed phrase - write it down carefully on paper",
           },
         ],
-        examples: [
-          {
-            title: "Example of a 24-word seed phrase written on paper",
-            content: `1. toe    7. little   13. globe   19. cousin
-2. miss   8. Wink    14. Thank   20. vibrant
-3. arrive 9. any     15. clump   21. hockey
-4. bonus  10. knee   16. connect 22. wave
-5. gallery 11. exhaust 17. second 23. fragile
-6. fan     12. below  18. bicycle 24. cricket`,
-          },
-        ],
       },
       {
         heading: "8.2 Complete a First Transaction (send/receive)",
@@ -1235,8 +1224,8 @@ export const chaptersContent: ChapterContent[] = [
         ],
         images: [
           {
-            src: "/images/hardware-wallet.png",
-            alt: "Hardware wallet device showing secure key storage",
+            src: "/images/book_images/jade.png",
+            alt: "Jade hardware wallet device",
             caption: "Hardware wallets keep your keys offline and secure",
           },
         ],
