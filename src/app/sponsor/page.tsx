@@ -180,10 +180,10 @@ export default function SponsorPage() {
               <section className="space-y-6 rounded-xl border border-orange-500/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(249,115,22,0.2)]">
                 <h2 className="text-xl font-semibold text-orange-200">Sponsorship Details</h2>
                 <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
-                  <FormGrid>
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="sponsorName" className={labelStyles.base}>
-                        Your Name {!formData.anonymous && <span className={labelStyles.requiredStar}>*</span>}
+                      <label htmlFor="sponsorName" className="mb-2 block text-sm font-medium text-zinc-300">
+                        Your Name {!formData.anonymous && <span className="text-red-400">*</span>}
                       </label>
                       <input
                         id="sponsorName"
@@ -194,13 +194,13 @@ export default function SponsorPage() {
                         disabled={formData.anonymous}
                         value={formData.sponsorName}
                         onChange={(e) => setFormData({ ...formData, sponsorName: e.target.value })}
-                        className={cn(inputStyles.base, "py-2 text-sm", formData.anonymous && "disabled:opacity-50")}
+                        className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 disabled:opacity-50"
                         placeholder="John Doe"
                       />
                     </div>
                     <div>
-                      <label htmlFor="sponsorEmail" className={labelStyles.required}>
-                        Your Email <span className={labelStyles.requiredStar}>*</span>
+                      <label htmlFor="sponsorEmail" className="mb-2 block text-sm font-medium text-zinc-300">
+                        Your Email <span className="text-red-400">*</span>
                       </label>
                       <input
                         id="sponsorEmail"
@@ -210,11 +210,11 @@ export default function SponsorPage() {
                         required
                         value={formData.sponsorEmail}
                         onChange={(e) => setFormData({ ...formData, sponsorEmail: e.target.value })}
-                        className={cn(inputStyles.base, "py-2 text-sm")}
+                        className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-2 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
                         placeholder="john@example.com"
                       />
                     </div>
-                  </FormGrid>
+                  </div>
 
                   <div className="flex items-center gap-2">
                     <input
@@ -316,7 +316,7 @@ export default function SponsorPage() {
                             navigator.clipboard?.writeText(address);
                             alert('Copied to clipboard!');
                           }}
-                          className="w-full rounded-lg bg-gradient-to-r from-purple-400 to-cyan-400 px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                          className={cn(buttonStyles.primary, "w-full px-4 py-2 text-sm")}
                         >
                           Copy {formData.paymentMethod === 'lightning' ? 'Paycode' : 'Address'}
                         </button>
@@ -333,9 +333,7 @@ export default function SponsorPage() {
                   <button
                     type="submit"
                     disabled={sponsorType === 'student' && !selectedStudent}
-                    className={`w-full rounded-lg bg-gradient-to-r from-orange-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 ${
-                      sponsorType === 'student' && !selectedStudent ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+                    className={cn(buttonStyles.primary, "w-full text-sm", sponsorType === 'student' && !selectedStudent && 'opacity-50 cursor-not-allowed')}
                   >
                     Submit Sponsorship
                   </button>
