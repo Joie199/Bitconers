@@ -35,6 +35,23 @@ export default function ApplyPage() {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Calculate carousel transform value accounting for gaps
+  const getCarouselTransform = () => {
+    if (itemsPerView === 1) {
+      return `translateX(-${carouselIndex * 100}%)`;
+    }
+    // For multiple items: each item width is (100% - gaps) / itemsPerView
+    // To move one position, we move by: itemWidth + gap
+    // gap-4 = 1rem, but we calculate in percentage relative to container
+    // Since gap is fixed (1rem), we use calc() for precise positioning
+    const gapsCount = itemsPerView - 1;
+    const gapRem = 1; // gap-4 = 1rem
+    // Each item width: (100% - gapsCount * 1rem) / itemsPerView
+    // Move distance per step: itemWidth + 1rem = (100% - gapsCount * 1rem) / itemsPerView + 1rem
+    // Simplified: (100% - gapsCount * 1rem + itemsPerView * 1rem) / itemsPerView = (100% + 1rem) / itemsPerView
+    return `translateX(calc(-${carouselIndex} * ((100% + 1rem) / ${itemsPerView})))`;
+  };
+
   // Calculate items per view based on screen size
   useEffect(() => {
     const updateItemsPerView = () => {
@@ -505,16 +522,16 @@ export default function ApplyPage() {
             >
               <div 
                 ref={carouselRef}
-                className="flex transition-transform duration-300 ease-in-out gap-4"
+                className="flex transition-transform duration-500 ease-out gap-4"
                 style={{
-                  transform: `translateX(-${carouselIndex * (100 / itemsPerView)}%)`,
+                  transform: getCarouselTransform(),
                   pointerEvents: isDragging ? 'none' : 'auto',
                 }}
               >
                 {cohorts.map((cohort) => (
                   <div
                     key={cohort.id}
-                    className={`min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-0.5rem)] lg:flex-[0_0_calc(33.333%-0.67rem)] rounded-xl border p-6 transition ${
+                    className={`min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc((100%-1rem)/2)] lg:flex-[0_0_calc((100%-2rem)/3)] rounded-xl border p-6 transition ${
                       selectedCohort === cohort.id
                         ? "border-orange-400/50 bg-orange-500/10 shadow-[0_0_30px_rgba(249,115,22,0.3)]"
                         : "border-cyan-400/25 bg-black/80 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
