@@ -65,11 +65,12 @@ const eventTypeLabels = {
 
 interface CalendarProps {
   cohortId?: string | null;
+  studentId?: string | null; // Student profile ID for fetching their sessions
   showCohorts?: boolean; // Show cohort start/end dates as events (admin mode)
-  email?: string; // Student email for fetching their sessions
+  email?: string; // Student email for fetching their sessions (fallback)
 }
 
-export function Calendar({ cohortId, showCohorts = false, email }: CalendarProps) {
+export function Calendar({ cohortId, studentId, showCohorts = false, email }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [view, setView] = useState<'month' | 'list'>('month');
@@ -307,7 +308,7 @@ export function Calendar({ cohortId, showCohorts = false, email }: CalendarProps
     }
 
     fetchEvents();
-  }, [cohortId, showCohorts, email]);
+  }, [cohortId, studentId, showCohorts, email]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();

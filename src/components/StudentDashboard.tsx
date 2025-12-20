@@ -700,7 +700,8 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
               <div className="lg:col-span-1">
                 <Suspense fallback={<div className="flex h-64 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900/50"><div className="text-zinc-400">Loading calendar...</div></div>}>
                   <Calendar 
-                    cohortId={userData?.cohort?.id || null} 
+                    cohortId={userData?.cohort?.id || null}
+                    studentId={userData?.profile?.id || null}
                     email={userData?.profile?.email || storedProfileEmail || profileEmail || undefined}
                   />
                 </Suspense>
