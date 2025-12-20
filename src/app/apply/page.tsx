@@ -357,10 +357,9 @@ export default function ApplyPage() {
     setSubmitting(true);
     setPhoneError(null);
 
-    // Validate phone length and starting digit based on country rules
+    // Validate phone length based on country rules
     const phoneDigits = phoneNumber.replace(/\D/g, '');
-    const rule = getPhoneRule(selectedCountry);
-    const { min, max, startsWith } = rule;
+    const { min, max } = getPhoneRule(selectedCountry);
     
     if (!selectedCountry) {
       setSubmitError('Please select your country.');
@@ -376,14 +375,6 @@ export default function ApplyPage() {
     }
     if (phoneDigits.length < min || phoneDigits.length > max) {
       const msg = `Phone number should have ${min}${min !== max ? `-${max}` : ''} digits for ${selectedCountry}.`;
-      setSubmitError(msg);
-      setPhoneError(msg);
-      setSubmitting(false);
-      return;
-    }
-    // Validate starting digit if required
-    if (startsWith && !phoneDigits.startsWith(startsWith)) {
-      const msg = `Phone number for ${selectedCountry} must start with ${startsWith} after the country code.`;
       setSubmitError(msg);
       setPhoneError(msg);
       setSubmitting(false);
@@ -722,10 +713,10 @@ export default function ApplyPage() {
                     aria-label="Country code"
                     className="flex-shrink-0 rounded-lg border border-cyan-400/30 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
                     style={{ minWidth: '90px' }}
-                    title={selectedCountryCode ? sortedAfricanCountries.find(c => c.code === selectedCountryCode)?.name : "Select country code"}
+                    title={selectedCountryCode ? sortedCountries.find(c => c.code === selectedCountryCode)?.name : "Select country code"}
                   >
                     <option value="" className="bg-zinc-950 text-zinc-400">Code</option>
-                    {sortedAfricanCountries.map((country) => (
+                    {sortedCountries.map((country) => (
                       <option key={country.code} value={country.code} className="bg-zinc-950 text-zinc-50">
                         {country.flag} {country.code}
                       </option>
@@ -739,6 +730,7 @@ export default function ApplyPage() {
                     required
                     value={phoneNumber}
                     onChange={handlePhoneChange}
+                    maxLength={selectedCountry ? getPhoneRule(selectedCountry).max : 13}
                     className="flex-1 rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
                     placeholder="1234567890"
                     aria-describedby={phoneError ? "phone-error" : selectedCountry ? "phone-help" : undefined}
