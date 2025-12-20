@@ -671,7 +671,7 @@ export default function ApplyPage() {
           )}
           <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
             {/* First Name and Last Name */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <FormGrid>
               <div>
                 <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-zinc-300">
                   First Name <span className="text-red-400">*</span>
@@ -767,8 +767,8 @@ export default function ApplyPage() {
                 )}
               </div>
               <div>
-                <label htmlFor="birthDate" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Birth Date <span className="text-red-400">*</span>
+                <label htmlFor="birthDate" className={labelStyles.required}>
+                  Birth Date <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -782,7 +782,7 @@ export default function ApplyPage() {
                       setBirthDate(e.target.value);
                       setFormData({ ...formData, birthDate: e.target.value });
                     }}
-                    className="w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 pr-10 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer"
+                    className={inputStyles.date}
                   />
                   <button
                     type="button"
@@ -820,13 +820,13 @@ export default function ApplyPage() {
                   <option value="tigrigna" className="bg-zinc-950 text-zinc-50">Tigrinya (ትግርኛ)</option>
                 </select>
               </div>
-            </div>
+            </FormGrid>
 
             {/* Country and City */}
-            <div className="grid gap-4 sm:grid-cols-2">
+            <FormGrid>
               <div>
-                <label htmlFor="country" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Country <span className="text-red-400">*</span>
+                <label htmlFor="country" className={labelStyles.required}>
+                  Country <span className={labelStyles.requiredStar}>*</span>
                 </label>
                 <select
                   id="country"
