@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Download } from 'lucide-react';
+import { downloadICalFile } from '@/lib/icalExport';
 
 interface CalendarEvent {
   id: string;
@@ -160,9 +162,10 @@ export function Calendar({ cohortId, showCohorts = false, email }: CalendarProps
                       title: `${cohortName} - Session ${session.session_number}${session.topic ? `: ${session.topic}` : ''}`,
                       date: sessionDate,
                       type: 'live-class' as const,
-                      time: session.duration_minutes ? `${session.duration_minutes} min` : '',
+                      time: session.duration_minutes ? `${session.duration_minutes} min` : '90 min',
                       link: session.link || '#',
                       description: session.topic || `Cohort session ${session.session_number}`,
+                      duration: session.duration_minutes || 90, // Duration in minutes for iCal export
                     };
                   });
                 
@@ -339,6 +342,25 @@ export function Calendar({ cohortId, showCohorts = false, email }: CalendarProps
           </p>
         </div>
         <div className="flex gap-1.5">
+          {/* Download Calendar button - only for students */}
+          {email && !showCohorts && events.length > 0 && (
+            <button
+              onClick={() => {
+                const sessionEvents = events.filter(e => e.type === 'live-class' && e.id.startsWith('session-'));
+                if (sessionEvents.length > 0) {
+                  downloadICalFile(sessionEvents, 'cohort-sessions.ics');
+                } else {
+                  // Download all events if no sessions found
+                  downloadICalFile(events, 'calendar-events.ics');
+                }
+              }}
+              className="flex items-center gap-1 rounded border border-cyan-500/50 bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-300 transition hover:bg-cyan-500/20"
+              title="Download calendar (iCal format)"
+            >
+              <Download className="h-3 w-3" />
+              Download
+            </button>
+          )}
           <button
             onClick={() => setView(view === 'month' ? 'list' : 'month')}
             className="rounded border border-zinc-700 bg-zinc-900/50 px-1.5 py-0.5 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800"

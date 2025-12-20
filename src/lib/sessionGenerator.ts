@@ -33,13 +33,11 @@ export function generateCohortSessions(
   let sessionsThisWeek = 0;
   let currentWeekStart: Date | null = null;
   
-  // Helper function to get next session date (add 1 day, skip 1 day, skip Sunday if hit)
+  // Helper function to get next session date (add 2 days, but skip Sunday if hit)
   const getNextSessionDate = (current: Date): Date => {
     let next = new Date(current);
-    // Add 1 day
-    next.setDate(next.getDate() + 1);
-    // Skip 1 day (so effectively +2 days total)
-    next.setDate(next.getDate() + 1);
+    // Add 2 days
+    next.setDate(next.getDate() + 2);
     // If it's Sunday, skip to Monday
     if (next.getDay() === 0) {
       next.setDate(next.getDate() + 1); // Move to Monday
