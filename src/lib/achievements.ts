@@ -11,8 +11,8 @@ export interface Achievement {
   description: string;
   satsReward: number; // Sats awarded when achievement is unlocked
   unlockCondition: {
-    type: 'chapter' | 'assignment_count' | 'assignment_specific' | 'manual';
-    value?: number | string; // chapter number, assignment count, or assignment ID
+    type: 'chapter' | 'assignment_count' | 'assignment_specific' | 'chapter_count' | 'manual';
+    value?: number | string; // chapter number, assignment count, assignment ID, or chapter count
   };
 }
 
@@ -167,6 +167,18 @@ export async function checkAchievementUnlock(
         .maybeSingle();
 
       return !!submission;
+    }
+
+    case 'chapter_count': {
+      // Check if student completed required number of chapters
+      const requiredCount = unlockCondition.value as number;
+      const { count } = await supabaseAdmin
+        .from('chapter_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('student_id', studentId)
+        .eq('is_completed', true);
+
+      return (count || 0) >= requiredCount;
     }
 
     case 'manual':
