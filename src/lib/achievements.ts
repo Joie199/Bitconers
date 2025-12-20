@@ -191,13 +191,13 @@ export async function checkAchievementUnlock(
 }
 
 /**
- * Unlock an achievement for a student
+ * Unlock an achievement for a student and award sats
  */
 export async function unlockAchievement(
   studentId: string,
   badgeName: string,
   supabaseAdmin: any
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; achievement?: Achievement }> {
   try {
     // Check if achievement already exists
     const { data: existing } = await supabaseAdmin
@@ -209,7 +209,8 @@ export async function unlockAchievement(
 
     if (existing) {
       // Achievement already unlocked
-      return { success: true };
+      const achievement = getAchievementByBadgeName(badgeName);
+      return { success: true, achievement };
     }
 
     // Get achievement details
@@ -222,7 +223,7 @@ export async function unlockAchievement(
     const { error } = await supabaseAdmin.from('achievements').insert({
       student_id: studentId,
       badge_name: badgeName,
-      points: 0, // Can be customized per achievement
+      points: 0, // Keep for backward compatibility, but we use sats now
       description: achievement.description,
       earned_at: new Date().toISOString(),
     });
@@ -232,7 +233,36 @@ export async function unlockAchievement(
       return { success: false, error: error.message };
     }
 
-    return { success: true };
+    // Award sats reward for unlocking achievement
+    if (achievement.satsReward > 0) {
+      const { data: existingReward } = await supabaseAdmin
+        .from('sats_rewards')
+        .select('*')
+        .eq('student_id', studentId)
+        .maybeSingle();
+
+      if (existingReward) {
+        await supabaseAdmin
+          .from('sats_rewards')
+          .update({
+            amount_pending: (existingReward.amount_pending || 0) + achievement.satsReward,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingReward.id);
+      } else {
+        await supabaseAdmin.from('sats_rewards').insert({
+          student_id: studentId,
+          amount_pending: achievement.satsReward,
+          reward_type: 'other',
+          related_entity_type: 'achievement',
+          related_entity_id: achievement.id,
+          reason: `Achievement unlocked: "${achievement.title}"`,
+          status: 'pending',
+        });
+      }
+    }
+
+    return { success: true, achievement };
   } catch (error: any) {
     console.error('Error in unlockAchievement:', error);
     return { success: false, error: error.message };
