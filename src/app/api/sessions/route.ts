@@ -53,21 +53,33 @@ export async function GET(request: NextRequest) {
     }
 
     // Get student's profile to find enrolled cohorts
-    const { data: profile, error: profileError } = await supabase
+    // Use supabaseAdmin to bypass RLS and ensure we can find the profile
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id')
-      .eq('email', email)
-      .single();
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
 
-    if (profileError || !profile) {
+    if (profileError) {
+      console.error('Error fetching profile:', profileError);
       return NextResponse.json(
-        { error: 'Student not found' },
+        { error: 'Failed to fetch profile', details: profileError.message },
+        { status: 500 }
+      );
+    }
+
+    if (!profile) {
+      console.log(`Profile not found for email: ${email}`);
+      return NextResponse.json(
+        { error: 'Student not found', sessions: [] },
         { status: 404 }
       );
     }
 
+    console.log(`Found profile for ${email}:`, profile.id);
+
     // Get enrolled cohort IDs
-    const { data: enrollments, error: enrollmentError } = await supabase
+    const { data: enrollments, error: enrollmentError } = await supabaseAdmin
       .from('cohort_enrollment')
       .select('cohort_id')
       .eq('student_id', profile.id);
@@ -75,19 +87,23 @@ export async function GET(request: NextRequest) {
     if (enrollmentError) {
       console.error('Error fetching enrollments:', enrollmentError);
       return NextResponse.json(
-        { error: 'Failed to fetch enrollments' },
+        { error: 'Failed to fetch enrollments', details: enrollmentError.message },
         { status: 500 }
       );
     }
 
+    console.log(`Found ${enrollments?.length || 0} enrollments for profile ${profile.id}`);
+
     if (!enrollments || enrollments.length === 0) {
+      console.log(`No enrollments found for student ${profile.id}`);
       return NextResponse.json({ sessions: [] }, { status: 200 });
     }
 
     const cohortIds = enrollments.map((e) => e.cohort_id);
+    console.log(`Fetching sessions for cohorts:`, cohortIds);
 
     // Fetch sessions for enrolled cohorts
-    const { data: sessions, error: sessionsError } = await supabase
+    const { data: sessions, error: sessionsError } = await supabaseAdmin
       .from('cohort_sessions')
       .select(`
         *,
@@ -109,6 +125,8 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    console.log(`Found ${sessions?.length || 0} sessions for student ${profile.id}`);
 
     return NextResponse.json({ sessions: sessions || [] }, { status: 200 });
   } catch (error: any) {
