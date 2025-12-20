@@ -598,7 +598,6 @@ export default function ApplyPage() {
                     </button>
                   </div>
                 ))}
-                </div>
               </div>
             </div>
 

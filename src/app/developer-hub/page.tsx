@@ -679,8 +679,8 @@ export default function DeveloperHubPage() {
                     <span className="text-zinc-300">Bitcoin Developer Guide - Mining</span>
                     <ExternalLink className="h-4 w-4 text-zinc-500" />
                   </a>
-                </div>
-              </div>
+                  </div>
+                  </div>
 
               {/* 2. Environmental & Energy Trends */}
               <div>
@@ -797,7 +797,7 @@ export default function DeveloperHubPage() {
                     <div className="mb-3 flex items-center justify-between">
                       <h4 className="text-lg font-semibold text-cyan-200">Mining Pool APIs</h4>
                       <Database className="h-5 w-5 text-cyan-300" />
-                    </div>
+                  </div>
                     <div className="space-y-2">
                       <a
                         href="https://www.blockchain.com/api"
@@ -826,8 +826,8 @@ export default function DeveloperHubPage() {
                         <span>Mempool.space API</span>
                         <ExternalLink className="h-3 w-3 text-zinc-500" />
                       </a>
-                    </div>
                   </div>
+                </div>
 
                   {/* Mining Statistics & Analytics */}
                   <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5">
@@ -863,8 +863,8 @@ export default function DeveloperHubPage() {
                         <span>CoinWarz Mining Calculator</span>
                         <ExternalLink className="h-3 w-3 text-zinc-500" />
                       </a>
-                    </div>
-                  </div>
+                </div>
+              </div>
 
                   {/* Mining Hardware Data */}
                   <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-5">
@@ -1063,7 +1063,7 @@ export default function DeveloperHubPage() {
                     key={index}
                     className="rounded-lg border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
                   >
-                    <div className="mb-4 flex items-center gap-4">
+                <div className="mb-4 flex items-center gap-4">
                       <div className="h-16 w-16 flex-shrink-0 rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20 overflow-hidden flex items-center justify-center">
                         {mentor.image_url ? (
                           <Image
@@ -1078,17 +1078,17 @@ export default function DeveloperHubPage() {
                             {mentor.name?.charAt(0)?.toUpperCase() || '👤'}
                           </span>
                         )}
-                      </div>
-                      <div className="flex-1">
+                  </div>
+                  <div className="flex-1">
                         <h3 className="font-semibold text-zinc-100">{mentor.name}</h3>
                         <p className="text-sm text-cyan-300">{mentor.role}</p>
                         {mentor.type && (
                           <p className="text-xs text-orange-300">{mentor.type}</p>
                         )}
-                      </div>
-                    </div>
+                  </div>
+                </div>
                     {mentor.description && (
-                      <p className="mb-4 text-sm text-zinc-300">
+                <p className="mb-4 text-sm text-zinc-300">
                         {mentor.description}
                       </p>
                     )}
@@ -1096,8 +1096,8 @@ export default function DeveloperHubPage() {
                       {mentor.type && (
                         <span className="rounded-full bg-orange-500/20 px-3 py-1 text-xs text-orange-300">{mentor.type}</span>
                       )}
-                      <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs text-cyan-300">Mentor</span>
-                    </div>
+                  <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs text-cyan-300">Mentor</span>
+                </div>
                     {(mentor.github || mentor.twitter) && (
                       <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
                         {mentor.github && (
@@ -1126,9 +1126,9 @@ export default function DeveloperHubPage() {
                             </svg>
                           </a>
                         )}
-                      </div>
+              </div>
                     )}
-                  </div>
+            </div>
                 ))}
               </AnimatedList>
             ) : (

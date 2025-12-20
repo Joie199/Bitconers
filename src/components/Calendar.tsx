@@ -13,6 +13,7 @@ interface CalendarEvent {
   time?: string;
   link?: string;
   description?: string;
+  duration?: number; // Duration in minutes for iCal export
 }
 
 // Fallback mock events (dated relative to "now") used if API fails
@@ -162,10 +163,9 @@ export function Calendar({ cohortId, showCohorts = false, email }: CalendarProps
                       title: `${cohortName} - Session ${session.session_number}${session.topic ? `: ${session.topic}` : ''}`,
                       date: sessionDate,
                       type: 'live-class' as const,
-                      time: session.duration_minutes ? `${session.duration_minutes} min` : '90 min',
+                      time: session.duration_minutes ? `${session.duration_minutes} min` : '',
                       link: session.link || '#',
                       description: session.topic || `Cohort session ${session.session_number}`,
-                      duration: session.duration_minutes || 90, // Duration in minutes for iCal export
                     };
                   });
                 
