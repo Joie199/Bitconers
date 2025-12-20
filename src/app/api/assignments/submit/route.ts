@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
           .eq('student_id', profile.id)
           .maybeSingle();
 
-        const rewardAmount = 50; // 50 sats for completing an assignment
+        const rewardAmount = 500; // 500 sats for completing an assignment
 
         if (existingReward) {
           await supabaseAdmin

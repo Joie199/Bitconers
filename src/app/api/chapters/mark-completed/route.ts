@@ -48,6 +48,9 @@ export async function POST(req: NextRequest) {
       .eq('chapter_number', chapterNumber)
       .single();
 
+    // Check if chapter was already completed to avoid duplicate rewards
+    const wasAlreadyCompleted = existingProgress?.is_completed === true;
+
     if (existingProgress) {
       // Update existing record
       const { error: updateError } = await supabaseAdmin
