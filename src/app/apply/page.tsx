@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from '@/hooks/useAuth';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { sortedCountries, getPhoneRule, type Country } from '@/lib/countries';
 
 interface Cohort {
   id: string;
@@ -19,121 +20,6 @@ interface Cohort {
   enrolled: number;
 }
 
-const africanCountries = [
-  { name: "Algeria", code: "+213", flag: "🇩🇿" },
-  { name: "Angola", code: "+244", flag: "🇦🇴" },
-  { name: "Benin", code: "+229", flag: "🇧🇯" },
-  { name: "Botswana", code: "+267", flag: "🇧🇼" },
-  { name: "Burkina Faso", code: "+226", flag: "🇧🇫" },
-  { name: "Burundi", code: "+257", flag: "🇧🇮" },
-  { name: "Cabo Verde", code: "+238", flag: "🇨🇻" },
-  { name: "Cameroon", code: "+237", flag: "🇨🇲" },
-  { name: "Central African Republic", code: "+236", flag: "🇨🇫" },
-  { name: "Chad", code: "+235", flag: "🇹🇩" },
-  { name: "Comoros", code: "+269", flag: "🇰🇲" },
-  { name: "Côte d'Ivoire", code: "+225", flag: "🇨🇮" },
-  { name: "Djibouti", code: "+253", flag: "🇩🇯" },
-  { name: "Egypt", code: "+20", flag: "🇪🇬" },
-  { name: "Equatorial Guinea", code: "+240", flag: "🇬🇶" },
-  { name: "Eritrea", code: "+291", flag: "🇪🇷" },
-  { name: "Eswatini", code: "+268", flag: "🇸🇿" },
-  { name: "Ethiopia", code: "+251", flag: "🇪🇹" },
-  { name: "Gabon", code: "+241", flag: "🇬🇦" },
-  { name: "Gambia", code: "+220", flag: "🇬🇲" },
-  { name: "Ghana", code: "+233", flag: "🇬🇭" },
-  { name: "Guinea", code: "+224", flag: "🇬🇳" },
-  { name: "Guinea-Bissau", code: "+245", flag: "🇬🇼" },
-  { name: "Kenya", code: "+254", flag: "🇰🇪" },
-  { name: "Lesotho", code: "+266", flag: "🇱🇸" },
-  { name: "Liberia", code: "+231", flag: "🇱🇷" },
-  { name: "Libya", code: "+218", flag: "🇱🇾" },
-  { name: "Madagascar", code: "+261", flag: "🇲🇬" },
-  { name: "Malawi", code: "+265", flag: "🇲🇼" },
-  { name: "Mali", code: "+223", flag: "🇲🇱" },
-  { name: "Mauritania", code: "+222", flag: "🇲🇷" },
-  { name: "Mauritius", code: "+230", flag: "🇲🇺" },
-  { name: "Morocco", code: "+212", flag: "🇲🇦" },
-  { name: "Mozambique", code: "+258", flag: "🇲🇿" },
-  { name: "Namibia", code: "+264", flag: "🇳🇦" },
-  { name: "Niger", code: "+227", flag: "🇳🇪" },
-  { name: "Nigeria", code: "+234", flag: "🇳🇬" },
-  { name: "Rwanda", code: "+250", flag: "🇷🇼" },
-  { name: "São Tomé and Príncipe", code: "+239", flag: "🇸🇹" },
-  { name: "Senegal", code: "+221", flag: "🇸🇳" },
-  { name: "Seychelles", code: "+248", flag: "🇸🇨" },
-  { name: "Sierra Leone", code: "+232", flag: "🇸🇱" },
-  { name: "Somalia", code: "+252", flag: "🇸🇴" },
-  { name: "South Africa", code: "+27", flag: "🇿🇦" },
-  { name: "South Sudan", code: "+211", flag: "🇸🇸" },
-  { name: "Tanzania", code: "+255", flag: "🇹🇿" },
-  { name: "Togo", code: "+228", flag: "🇹🇬" },
-  { name: "Tunisia", code: "+216", flag: "🇹🇳" },
-  { name: "Uganda", code: "+256", flag: "🇺🇬" },
-  { name: "Zambia", code: "+260", flag: "🇿🇲" },
-  { name: "Zimbabwe", code: "+263", flag: "🇿🇼" },
-];
-
-// Sort countries alphabetically by name for consistent display (case-insensitive)
-// This ensures both the Country dropdown and Phone Code dropdown are alphabetically ordered
-const sortedAfricanCountries = [...africanCountries].sort((a, b) => {
-  const nameA = a.name.toLowerCase().trim();
-  const nameB = b.name.toLowerCase().trim();
-  return nameA.localeCompare(nameB, undefined, { sensitivity: 'base', numeric: true });
-});
-
-const phoneRules: Record<string, { min: number; max: number }> = {
-  Nigeria: { min: 10, max: 10 },
-  Ghana: { min: 9, max: 9 },
-  Kenya: { min: 9, max: 9 },
-  "South Africa": { min: 9, max: 9 },
-  Egypt: { min: 9, max: 10 },
-  Ethiopia: { min: 9, max: 9 },
-  Tanzania: { min: 9, max: 9 },
-  Uganda: { min: 9, max: 9 },
-  Algeria: { min: 9, max: 9 },
-  Morocco: { min: 9, max: 9 },
-  Angola: { min: 9, max: 9 },
-  Mozambique: { min: 9, max: 9 },
-  Madagascar: { min: 9, max: 9 },
-  Cameroon: { min: 9, max: 9 },
-  "Côte d'Ivoire": { min: 8, max: 9 },
-  Niger: { min: 8, max: 8 },
-  "Burkina Faso": { min: 8, max: 8 },
-  Mali: { min: 8, max: 8 },
-  Malawi: { min: 8, max: 9 },
-  Zambia: { min: 9, max: 9 },
-  Senegal: { min: 9, max: 9 },
-  Chad: { min: 8, max: 8 },
-  Somalia: { min: 8, max: 9 },
-  Zimbabwe: { min: 9, max: 9 },
-  Guinea: { min: 8, max: 9 },
-  Rwanda: { min: 9, max: 9 },
-  Benin: { min: 8, max: 8 },
-  Burundi: { min: 8, max: 8 },
-  Tunisia: { min: 8, max: 8 },
-  "South Sudan": { min: 9, max: 9 },
-  Togo: { min: 8, max: 8 },
-  "Sierra Leone": { min: 8, max: 8 },
-  Libya: { min: 9, max: 9 },
-  Liberia: { min: 8, max: 8 },
-  "Central African Republic": { min: 8, max: 8 },
-  Mauritania: { min: 8, max: 8 },
-  Eritrea: { min: 7, max: 7 },
-  Gambia: { min: 7, max: 7 },
-  Botswana: { min: 8, max: 8 },
-  Namibia: { min: 9, max: 9 },
-  Gabon: { min: 8, max: 8 },
-  Lesotho: { min: 8, max: 8 },
-  "Guinea-Bissau": { min: 7, max: 7 },
-  "Equatorial Guinea": { min: 9, max: 9 },
-  Mauritius: { min: 8, max: 8 },
-  Eswatini: { min: 8, max: 8 },
-  Djibouti: { min: 6, max: 6 },
-  Comoros: { min: 7, max: 7 },
-  "Cabo Verde": { min: 7, max: 7 },
-  "São Tomé and Príncipe": { min: 7, max: 7 },
-  Seychelles: { min: 7, max: 7 },
-};
 
 export default function ApplyPage() {
   const router = useRouter();
