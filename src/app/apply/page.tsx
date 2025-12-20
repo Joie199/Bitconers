@@ -704,7 +704,7 @@ export default function ApplyPage() {
                   placeholder="Doe"
                 />
               </div>
-            </div>
+            </FormGrid>
 
             {/* Email, Phone, Birth Date, Language */}
             <FormGrid>
