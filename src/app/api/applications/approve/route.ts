@@ -405,6 +405,13 @@ export async function POST(req: NextRequest) {
       }
 
       // Send approval email
+      console.log('📧 Attempting to send approval email:', {
+        studentEmail: emailLower,
+        studentName: fullName,
+        cohortName: cohortName || 'None',
+        needsPasswordSetup: !existingProfile || existingProfile.status === 'Pending Password Setup',
+      });
+
       const emailResult = await sendApprovalEmail({
         studentName: fullName,
         studentEmail: emailLower,
@@ -416,14 +423,16 @@ export async function POST(req: NextRequest) {
       emailError = emailResult.error || null;
       
       if (!emailSent) {
-        console.warn('Failed to send approval email:', {
+        console.error('❌ Failed to send approval email:', {
           error: emailError,
+          errorDetails: emailResult.errorDetails,
           studentEmail: emailLower,
           studentName: fullName,
+          cohortName: cohortName || 'None',
         });
         // Don't fail the approval if email fails - just log it
       } else {
-        console.log('Approval email sent successfully to:', emailLower);
+        console.log('✅ Approval email sent successfully to:', emailLower);
       }
     }
 

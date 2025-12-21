@@ -401,10 +401,17 @@ export default function AdminDashboardPage() {
         let message = `Application for ${email} approved successfully!`;
         if (data.emailSent) {
           message += `\n\n✅ Approval email sent to ${email}`;
-        } else if (data.emailError) {
-          message += `\n\n⚠️ Email not sent: ${data.emailError}`;
+        } else {
+          // Always show email status, even if not sent
+          if (data.emailError) {
+            message += `\n\n⚠️ Email not sent: ${data.emailError}`;
+            message += `\n\nCheck server console for details.`;
+          } else {
+            message += `\n\n⚠️ Email status unknown - check server console for details.`;
+          }
         }
         alert(message);
+        console.log('Approval response:', data); // Log full response for debugging
         await fetchApplications();
         await fetchOverview();
       } else {
