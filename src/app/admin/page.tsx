@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import { useSession } from '@/hooks/useSession';
 
@@ -135,6 +135,7 @@ export default function AdminDashboardPage() {
   const [loadingExamAccess, setLoadingExamAccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const [eventForm, setEventForm] = useState({
     name: '',
