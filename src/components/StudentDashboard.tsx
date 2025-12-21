@@ -642,14 +642,55 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
               <div className="lg:col-span-2 space-y-6">
                 {/* Next Action Block */}
                 <div className="rounded-xl border-2 border-orange-400/50 bg-gradient-to-r from-orange-500/20 via-orange-400/15 to-cyan-400/20 p-6 shadow-[0_0_40px_rgba(249,115,22,0.3)]">
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex-1">
                       <h2 className="text-xl font-semibold text-orange-200">Your Next Step</h2>
-                      <p className="mt-2 text-lg text-zinc-100">Check assignments and upcoming events.</p>
+                      {(() => {
+                        // Determine next action based on student progress
+                        const pendingAssignments = assignments.filter((a: any) => a.status === 'pending' || a.status === 'overdue');
+                        const nextChapter = chapters.find((ch) => !ch.isCompleted && ch.isUnlocked);
+                        const upcomingSessions = liveSessions.filter((s: any) => {
+                          const sessionDate = new Date(s.date);
+                          return sessionDate >= new Date();
+                        }).slice(0, 1);
+
+                        if (pendingAssignments.length > 0) {
+                          return (
+                            <p className="mt-2 text-lg text-zinc-100">
+                              Complete pending assignments to earn sats rewards.
+                            </p>
+                          );
+                        } else if (nextChapter) {
+                          return (
+                            <p className="mt-2 text-lg text-zinc-100">
+                              Continue with Chapter {nextChapter.number}: {nextChapter.title}
+                            </p>
+                          );
+                        } else if (upcomingSessions.length > 0) {
+                          return (
+                            <p className="mt-2 text-lg text-zinc-100">
+                              Upcoming session: {upcomingSessions[0].title}
+                            </p>
+                          );
+                        } else {
+                          return (
+                            <p className="mt-2 text-lg text-zinc-100">
+                              Check assignments and upcoming events.
+                            </p>
+                          );
+                        }
+                      })()}
                     </div>
                     <Link
                       href="#assignments"
-                      className="rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 font-semibold text-white transition hover:brightness-110 whitespace-nowrap ml-4"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const element = document.getElementById('assignments');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }}
+                      className="rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 font-semibold text-white transition hover:brightness-110 whitespace-nowrap sm:ml-4"
                     >
                       View Tasks
                     </Link>
@@ -965,7 +1006,7 @@ export function StudentDashboard({ userData }: StudentDashboardProps) {
             </div>
 
             {/* Assignments & Tasks */}
-            <div className="rounded-xl border border-orange-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
+            <div id="assignments" className="rounded-xl border border-orange-400/25 bg-black/80 p-6 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
               <h2 className="mb-4 text-2xl font-semibold text-zinc-50">Assignments & Tasks</h2>
               {loadingAssignments ? (
                 <div className="py-8 text-center text-zinc-400">Loading assignments...</div>
