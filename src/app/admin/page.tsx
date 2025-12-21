@@ -449,6 +449,19 @@ export default function AdminDashboardPage() {
       return;
     }
 
+    // First check email configuration
+    try {
+      const configRes = await fetchWithAuth('/api/test-email');
+      const configData = await configRes.json();
+      if (!configData.emailConfigured) {
+        alert(`⚠️ Email service not configured!\n\nPlease set RESEND_API_KEY in your environment variables.\n\nCurrent status: ${configData.message || 'Email service unavailable'}\n\nWithout email configuration, emails cannot be sent.`);
+        return;
+      }
+    } catch (err) {
+      console.error('Error checking email config:', err);
+      // Continue anyway - let the API handle the error
+    }
+
     if (!confirm(`Send approval emails to ${approvedCount} approved student(s)?`)) {
       return;
     }
@@ -468,12 +481,16 @@ export default function AdminDashboardPage() {
           total: data.total || 0,
           results: data.results || [],
         });
-        alert(`Email sending completed!\n✅ Sent: ${data.sent}\n❌ Failed: ${data.failed}`);
+        if (data.failed > 0) {
+          alert(`Email sending completed!\n✅ Sent: ${data.sent}\n❌ Failed: ${data.failed}\n\nCheck the results section below for details.`);
+        } else {
+          alert(`✅ Successfully sent ${data.sent} email(s)!`);
+        }
       } else {
         alert(`Error: ${data.error || 'Failed to send emails'}`);
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to send emails');
+      alert(`Error: ${err.message || 'Failed to send emails'}`);
     } finally {
       setSendingEmails(false);
     }
@@ -778,7 +795,7 @@ export default function AdminDashboardPage() {
                     if (!testEmail) return;
                     const testName = prompt('Enter test name (optional):') || 'Test Student';
                     try {
-                      const res = await fetch('/api/test-email', {
+                      const res = await fetchWithAuth('/api/test-email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

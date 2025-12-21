@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendApprovalEmail } from '@/lib/email';
+import { requireAdmin } from '@/lib/adminSession';
 
 /**
  * Test endpoint for email sending functionality
  * This allows testing email sending without needing to approve an actual application
+ * Admin only endpoint - works in both development and production
  * 
  * Usage:
  * POST /api/test-email
@@ -16,11 +18,12 @@ import { sendApprovalEmail } from '@/lib/email';
  */
 export async function POST(req: NextRequest) {
   try {
-    // Only allow in development mode for security
-    if (process.env.NODE_ENV === 'production') {
+    // Require admin authentication
+    const session = requireAdmin(req);
+    if (!session) {
       return NextResponse.json(
-        { error: 'Test endpoint is only available in development mode' },
-        { status: 403 }
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
       );
     }
 
@@ -94,18 +97,38 @@ export async function POST(req: NextRequest) {
 }
 
 // GET endpoint to check email configuration
-export async function GET() {
-  const hasApiKey = !!process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'PanAfrican Bitcoin Academy <onboarding@resend.dev>';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
+export async function GET(req: NextRequest) {
+  try {
+    // Require admin authentication
+    const session = requireAdmin(req);
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
 
-  return NextResponse.json({
-    emailConfigured: hasApiKey,
-    fromEmail,
-    siteUrl,
-    environment: process.env.NODE_ENV,
-    message: hasApiKey
-      ? '✅ Email service is configured. Use POST to send a test email.'
-      : '⚠️ RESEND_API_KEY is not configured. Email sending will not work.',
-  });
+    const hasApiKey = !!process.env.RESEND_API_KEY;
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'PanAfrican Bitcoin Academy <onboarding@resend.dev>';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.com';
+
+    return NextResponse.json({
+      emailConfigured: hasApiKey,
+      fromEmail,
+      siteUrl,
+      environment: process.env.NODE_ENV,
+      message: hasApiKey
+        ? '✅ Email service is configured. Use POST to send a test email.'
+        : '⚠️ RESEND_API_KEY is not configured. Email sending will not work.',
+    });
+  } catch (error: any) {
+    console.error('Error in test email GET endpoint:', error);
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' ? { details: error.message } : {}),
+      },
+      { status: 500 }
+    );
+  }
 }
