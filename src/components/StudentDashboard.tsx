@@ -40,6 +40,15 @@ interface UserData {
     }>;
     satsPaid?: number;
     satsPending?: number;
+    achievements?: Array<{
+      id: string;
+      title: string;
+      icon: string;
+      description: string;
+      unlocked: boolean;
+      satsReward: number;
+      earnedAt: string | null;
+    }>;
   } | null;
   cohort: {
     id: string;
