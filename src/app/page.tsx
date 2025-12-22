@@ -200,7 +200,7 @@ export default async function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* Full-page Hero Section */}
-      <section className="relative flex min-h-screen flex-col items-start justify-center pl-16 sm:pl-20 lg:pl-24 xl:pl-28 2xl:pl-32 text-left">
+      <section className="relative flex min-h-screen flex-col items-start justify-center pl-24 sm:pl-28 lg:pl-32 xl:pl-36 2xl:pl-40 text-left">
         {/* Background effects */}
         <div className="absolute inset-0 bitcoin-network-lines" />
         <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -348,7 +348,7 @@ export default async function Home() {
                   </Link>
                 </div>
                 <div className="flex items-center justify-start">
-                  <div className="relative flex h-64 w-64 items-center justify-center ml-12 sm:ml-16 lg:ml-20 xl:ml-24">
+                  <div className="relative flex h-64 w-64 items-center justify-center -ml-12 sm:-ml-16 lg:-ml-20 xl:-ml-24">
                     {/* Logo image with SEO optimization - positioned further left */}
                     <Image
                       src="/images/logo_3.png"
