@@ -347,9 +347,9 @@ export default async function Home() {
                     👉 Read Our Mission
                   </Link>
                 </div>
-                <div className="flex items-center justify-center">
-                  <div className="relative flex h-64 w-64 items-center justify-center">
-                    {/* Logo image with SEO optimization */}
+                <div className="flex items-center justify-start">
+                  <div className="relative flex h-64 w-64 items-center justify-center -ml-8 sm:-ml-12 lg:-ml-16">
+                    {/* Logo image with SEO optimization - positioned further left */}
                     <Image
                       src="/images/logo_3.png"
                       alt="Pan-African Bitcoin Academy Logo - First Eritrea Based Bitcoin Academy"

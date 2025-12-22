@@ -188,7 +188,7 @@ export default function RootLayout({
         
         <div className="flex min-h-screen flex-col">
           <Navbar />
-          <main className="flex-1 relative z-10 pl-8 sm:pl-12 lg:pl-16 xl:pl-20">{children}</main>
+          <main className="flex-1 relative z-10 pl-12 sm:pl-16 lg:pl-20 xl:pl-24 2xl:pl-28">{children}</main>
           <Footer />
         </div>
       </body>
