@@ -154,7 +154,7 @@ export default function EmailComposer({
     e: KeyboardEvent<HTMLInputElement>,
     recipients: RecipientChip[],
     setRecipients: (recipients: RecipientChip[]) => void,
-    inputRef: React.RefObject<HTMLInputElement>
+    inputRef: React.RefObject<HTMLInputElement | null>
   ) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
