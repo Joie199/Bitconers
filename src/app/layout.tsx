@@ -48,6 +48,16 @@ export const metadata: Metadata = {
     "convert Bitcoin to Nakfa",
     "Habesha Bitcoin",
     "Uganda Bitcoin education",
+    "Bitcoin education Uganda",
+    "Bitcoin Kampala",
+    "Bitcoin in Uganda",
+    "African Bitcoin",
+    "Bitcoin Africa",
+    "East Africa Bitcoin",
+    "Bitcoin education East Africa",
+    "Eritrea cryptocurrency",
+    "Uganda cryptocurrency",
+    "Africa cryptocurrency education",
     "Bitcoin education",
     "Bitcoin learning",
     "Bitcoin developer",
@@ -56,10 +66,14 @@ export const metadata: Metadata = {
     "cryptocurrency education",
     "blockchain education",
     "Bitcoin training",
-    "Bitcoin Africa",
     "African Bitcoin education",
     "Bitcoin in Eritrea",
     "Eritrean cryptocurrency",
+    "Bitcoin Asmara",
+    "Bitcoin Nakfa exchange",
+    "Eritrean Bitcoin community",
+    "Ugandan Bitcoin community",
+    "African Bitcoin community",
   ],
   authors: [{ name: "Pan-African Bitcoin Academy" }],
   creator: "Pan-African Bitcoin Academy",
@@ -80,15 +94,30 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Pan-African Bitcoin Academy',
+        alt: 'Pan-African Bitcoin Academy - First Eritrea Based Bitcoin Academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa.',
+      },
+      {
+        url: '/images/bitcoin-bg.jpg',
+        width: 1920,
+        height: 1080,
+        alt: 'Bitcoin education background - PanAfrican Bitcoin Academy serving Eritrea, Uganda, and Africa',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'PanAfrican Bitcoin Academy - First Eritrea Based Bitcoin Academy',
-    description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education, convert Bitcoin to Nakfa, join Eritrean Bitcoiners. Clear lessons, real security, and developer pathways.',
-    images: ['/og-image.png'],
+    description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners. Clear lessons, real security, and developer pathways.',
+    images: [
+      {
+        url: '/og-image.png',
+        alt: 'Pan-African Bitcoin Academy - Bitcoin Education in Eritrea, Uganda, and Africa',
+      },
+      {
+        url: '/images/bitcoin-bg.jpg',
+        alt: 'Bitcoin education background - Eritrea, Uganda, Africa Bitcoin Academy',
+      },
+    ],
   },
   robots: {
     index: true,
@@ -125,12 +154,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preload critical background image for faster loading */}
+        {/* Preload critical background image for faster loading - SEO optimized */}
         <link
           rel="preload"
           href="/images/bitcoin-bg.jpg"
           as="image"
           fetchPriority="high"
+          type="image/jpeg"
+        />
+        {/* SEO: Background image meta for Eritrea, Uganda, Africa Bitcoin education */}
+        <meta
+          name="image"
+          content="/images/bitcoin-bg.jpg"
+        />
+        <meta
+          property="og:image"
+          content="/images/bitcoin-bg.jpg"
         />
         {/* Favicon links */}
         <link rel="icon" href="/favicon.png" sizes="any" />

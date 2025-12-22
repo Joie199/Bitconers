@@ -6,24 +6,51 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://panafricanbitcoin.c
 
 export const organizationStructuredData = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': 'EducationalOrganization',
   name: 'PanAfrican Bitcoin Academy',
-  alternateName: 'Pan-African Bitcoin Academy',
+  alternateName: ['Pan-African Bitcoin Academy', 'Eritrea Bitcoin Academy', 'Uganda Bitcoin Academy', 'Africa Bitcoin Academy'],
   url: baseUrl,
   logo: {
     '@type': 'ImageObject',
     url: `${baseUrl}/images/logo_3.png`,
     width: 512,
     height: 512,
-    caption: 'Pan-African Bitcoin Academy Logo - First Eritrea Based Bitcoin Academy',
+    caption: 'Pan-African Bitcoin Academy Logo - First Eritrea Based Bitcoin Academy serving Eritrea, Uganda, and Africa',
   },
-  description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community.',
-  address: {
-    '@type': 'PostalAddress',
-    addressCountry: 'ER', // Eritrea
-    addressLocality: 'Asmara',
-    addressRegion: 'Maekel',
+  image: {
+    '@type': 'ImageObject',
+    url: `${baseUrl}/images/bitcoin-bg.jpg`,
+    caption: 'Bitcoin education background - PanAfrican Bitcoin Academy for Eritrea, Uganda, and Africa',
   },
+  description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community. Serving Asmara, Kampala, and communities across East Africa.',
+  address: [
+    {
+      '@type': 'PostalAddress',
+      addressCountry: 'ER', // Eritrea
+      addressLocality: 'Asmara',
+      addressRegion: 'Maekel',
+    },
+    {
+      '@type': 'PostalAddress',
+      addressCountry: 'UG', // Uganda
+      addressLocality: 'Kampala',
+    },
+  ],
+  areaServed: [
+    {
+      '@type': 'Country',
+      name: 'Eritrea',
+    },
+    {
+      '@type': 'Country',
+      name: 'Uganda',
+    },
+    {
+      '@type': 'Continent',
+      name: 'Africa',
+    },
+  ],
+  keywords: 'Bitcoin education, Eritrea Bitcoin, Uganda Bitcoin, Africa Bitcoin, Bitcoin Nakfa, Bitcoin Asmara, Bitcoin Kampala, Eritrean Bitcoiners, African Bitcoin education, East Africa Bitcoin',
   sameAs: [
     // Add social media links when available
     // 'https://twitter.com/panafricanbitcoin',
@@ -33,6 +60,7 @@ export const organizationStructuredData = {
     '@type': 'ContactPoint',
     contactType: 'Educational Support',
     email: 'info@panafricanbitcoin.com', // Update with actual email
+    areaServed: ['ER', 'UG', 'Africa'],
   },
 };
 
@@ -40,8 +68,11 @@ export const websiteStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'PanAfrican Bitcoin Academy',
+  alternateName: ['Eritrea Bitcoin Academy', 'Uganda Bitcoin Academy', 'Africa Bitcoin Education'],
   url: baseUrl,
-  description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community.',
+  description: 'PanAfrican Bitcoin Academy - first Eritrea based Bitcoin academy in Asmara. Learn Bitcoin education in Eritrea, Uganda, and across Africa. Convert Bitcoin to Nakfa, join Eritrean Bitcoiners community. Serving Asmara, Kampala, and communities across East Africa.',
+  keywords: 'Bitcoin education Eritrea, Bitcoin education Uganda, Bitcoin education Africa, Eritrea Bitcoin academy, Uganda Bitcoin academy, Africa Bitcoin academy, Bitcoin Nakfa, Bitcoin Asmara, Bitcoin Kampala',
+  inLanguage: 'en',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
