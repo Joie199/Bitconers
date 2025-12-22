@@ -22,6 +22,7 @@ export default function EmailComposer({
   initialSubject = '', 
   initialBody = '' 
 }: EmailComposerProps) {
+  const [fromName, setFromName] = useState('PanAfrican Bitcoin Academy');
   const [fromEmail, setFromEmail] = useState('noreply@panafricanbitcoin.com');
   const [toRecipients, setToRecipients] = useState<RecipientChip[]>(() => {
     if (initialTo) {
@@ -77,6 +78,8 @@ export default function EmailComposer({
   const saveDraft = async () => {
     try {
       const draft = {
+        fromName,
+        fromEmail,
         to: toRecipients.map(r => r.email).join(','),
         cc: ccRecipients.map(r => r.email).join(','),
         bcc: bccRecipients.map(r => r.email).join(','),
@@ -96,6 +99,8 @@ export default function EmailComposer({
       const draftStr = localStorage.getItem('email-draft');
       if (draftStr) {
         const draft = JSON.parse(draftStr);
+        if (draft.fromName) setFromName(draft.fromName);
+        if (draft.fromEmail) setFromEmail(draft.fromEmail);
         if (draft.to) {
           setToRecipients(draft.to.split(',').map((email: string, idx: number) => ({
             id: `to-${idx}`,
@@ -246,8 +251,11 @@ export default function EmailComposer({
     setSuccess(null);
 
     try {
+      // Format from as "Name <email>"
+      const fromFormatted = `${fromName.trim()} <${fromEmail.trim()}>`;
+
       const payload = {
-        from: fromEmail,
+        from: fromFormatted,
         to: toRecipients.map(r => r.email),
         cc: ccRecipients.map(r => r.email),
         bcc: bccRecipients.map(r => r.email),
@@ -303,6 +311,8 @@ export default function EmailComposer({
       setBccRecipients([]);
       setSubject('');
       setBody('');
+      setFromName('PanAfrican Bitcoin Academy');
+      setFromEmail('noreply@panafricanbitcoin.com');
       if (bodyRef.current) {
         bodyRef.current.innerHTML = '';
       }
@@ -408,12 +418,24 @@ export default function EmailComposer({
         <div className="px-4 py-2 border-b border-zinc-700">
           <div className="flex items-center gap-2">
             <label className="text-xs font-medium text-zinc-400 w-12">From:</label>
-            <input
-              type="email"
-              value={fromEmail}
-              onChange={(e) => setFromEmail(e.target.value)}
-              className="flex-1 text-sm text-zinc-100 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="text"
+                value={fromName}
+                onChange={(e) => setFromName(e.target.value)}
+                placeholder="Sender Name"
+                className="flex-1 text-sm text-zinc-100 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <span className="text-zinc-500 text-sm">&lt;</span>
+              <input
+                type="email"
+                value={fromEmail}
+                onChange={(e) => setFromEmail(e.target.value)}
+                placeholder="email@domain.com"
+                className="flex-1 text-sm text-zinc-100 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <span className="text-zinc-500 text-sm">&gt;</span>
+            </div>
           </div>
         </div>
 
