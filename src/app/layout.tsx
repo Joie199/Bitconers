@@ -125,6 +125,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preload critical background image for faster loading */}
+        <link
+          rel="preload"
+          href="/images/bitcoin-bg.jpg"
+          as="image"
+          fetchPriority="high"
+        />
         {/* Favicon links */}
         <link rel="icon" href="/favicon.png" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

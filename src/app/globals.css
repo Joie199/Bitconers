@@ -20,9 +20,12 @@ html {
   background: url('/images/bitcoin-bg.jpg') center center / cover no-repeat fixed;
   background-color: #020617;
   min-height: 100vh;
+  /* Optimize background image loading */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
-/* Heavily blurred background image layer */
+/* Blurred background image layer - optimized */
 html::before {
   content: '';
   position: fixed;
@@ -34,6 +37,9 @@ html::before {
   filter: blur(1px);
   z-index: -2;
   pointer-events: none;
+  /* Optimize rendering */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 body {
@@ -43,9 +49,12 @@ body {
   position: relative;
   overflow-x: hidden;
   min-height: 100vh;
+  /* Optimize background image loading */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
-/* Heavily blurred background image layer for body */
+/* Blurred background image layer for body - optimized */
 body::after {
   content: '';
   position: fixed;
@@ -57,6 +66,9 @@ body::after {
   filter: blur(1px);
   z-index: -2;
   pointer-events: none;
+  /* Optimize rendering */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Dark overlay to make background darker while keeping text visible */
