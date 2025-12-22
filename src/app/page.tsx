@@ -348,7 +348,7 @@ export default async function Home() {
                   </Link>
                 </div>
                 <div className="flex items-center justify-start">
-                  <div className="relative flex h-64 w-64 items-center justify-center -ml-12 sm:-ml-16 lg:-ml-20 xl:-ml-24">
+                  <div className="relative flex h-64 w-64 items-center justify-center -ml-16 sm:-ml-20 lg:-ml-24 xl:-ml-28 2xl:-ml-32">
                     {/* Logo image with SEO optimization - positioned further left */}
                     <Image
                       src="/images/logo_3.png"
