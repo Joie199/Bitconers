@@ -140,9 +140,6 @@ export default function RootLayout({
         <StructuredData data={organizationStructuredData} />
         <StructuredData data={websiteStructuredData} />
         
-        {/* Bitcoin Background Elements */}
-        <div className="bitcoin-keys-bg" />
-        <div className="bitcoin-logo-bg" />
         <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="flex-1 relative z-10">{children}</main>
