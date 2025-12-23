@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Performance optimizations for smooth scrolling */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 :root {
   --background: #020617; /* slate-950 */
   --foreground: #f9fafb; /* zinc-50 */
@@ -20,10 +26,11 @@ html {
   background: url('/images/bitcoin-bg.jpg') center center / cover no-repeat fixed;
   background-color: #020617;
   min-height: 100vh;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
-  background: url('/images/bitcoin-bg.jpg') center center / cover no-repeat fixed;
   background-color: #020617;
   color: var(--foreground);
   position: relative;
@@ -31,7 +38,7 @@ body {
   min-height: 100vh;
 }
 
-/* Blurred background image layer - optimized */
+/* Blurred background image layer - optimized for performance */
 body::after {
   content: '';
   position: fixed;
@@ -43,11 +50,13 @@ body::after {
   filter: blur(1px);
   z-index: -2;
   pointer-events: none;
-  will-change: transform;
-  transform: translateZ(0);
+  /* Performance optimizations */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-/* Gradient overlay: darker on left (text area), brighter on right (image area) */
+/* Gradient overlay: darker on left (text area), brighter on right (image area) - optimized */
 body::before {
   content: '';
   position: fixed;
@@ -64,14 +73,13 @@ body::before {
     rgba(0, 0, 0, 0.6) 80%,
     rgba(0, 0, 0, 0.55) 100%
   );
-  /* Fade edges using inset box-shadow */
-  box-shadow: 
-    inset 0 100px 150px -80px rgba(2, 6, 23, 0.9),
-    inset 0 -100px 150px -80px rgba(0, 0, 0, 0.9),
-    inset 100px 0 150px -80px rgba(2, 6, 23, 0.9),
-    inset -100px 0 150px -80px rgba(0, 0, 0, 0.9);
   pointer-events: none;
   z-index: -1;
+  /* Performance optimizations */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Simplified edge fade - removed heavy box-shadow */
 }
 
 
