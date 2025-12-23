@@ -410,6 +410,14 @@ export default function ApplyPage() {
     
     // The phone number is already combined in formData.phone via handlePhoneChange
     const selectedCohortObj = selectedCohort ? cohorts.find((c) => c.id === selectedCohort) : null;
+    
+    // Validate that the selected cohort is not full
+    if (selectedCohortObj && selectedCohortObj.available <= 0) {
+      setSubmitError('This cohort is full. Please select a different cohort.');
+      setSubmitting(false);
+      return;
+    }
+    
     const cohortNumber = selectedCohortObj ? selectedCohortObj.id : null;
     
     const finalFormData = {
@@ -577,6 +585,7 @@ export default function ApplyPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        if (cohort.available <= 0) return; // Prevent selection if full
                         console.log('Cohort selected:', cohort.id, cohort.name);
                         setSelectedCohort(cohort.id);
                         const normalizedLevel = normalizeLevel(cohort.level);
@@ -589,12 +598,21 @@ export default function ApplyPage() {
                       onMouseDown={(e) => {
                         e.stopPropagation();
                       }}
+                      disabled={cohort.available <= 0}
                       className={cn(
                         "mt-4 w-full rounded-lg px-4 py-2 text-sm font-semibold transition",
-                        selectedCohort === cohort.id ? buttonStyles.selected : buttonStyles.outline
+                        cohort.available <= 0
+                          ? "cursor-not-allowed opacity-50 bg-zinc-800/50 border border-zinc-700 text-zinc-500"
+                          : selectedCohort === cohort.id 
+                            ? buttonStyles.selected 
+                            : buttonStyles.outline
                       )}
                     >
-                      {selectedCohort === cohort.id ? "Selected" : "Select Cohort"}
+                      {cohort.available <= 0 
+                        ? "Full - Not Available" 
+                        : selectedCohort === cohort.id 
+                          ? "Selected" 
+                          : "Select Cohort"}
                     </button>
                   </div>
                 ))}
@@ -925,12 +943,17 @@ export default function ApplyPage() {
                   {cohorts.map((cohort) => (
                     <option 
                       key={cohort.id} 
-                      value={cohort.id} 
+                      value={cohort.id}
+                      disabled={cohort.available <= 0}
                       className={`bg-zinc-950 ${
-                        formData.preferredCohort === cohort.id.toString() ? 'text-green-400' : 'text-zinc-50'
+                        cohort.available <= 0
+                          ? 'text-zinc-600 cursor-not-allowed'
+                          : formData.preferredCohort === cohort.id.toString() 
+                            ? 'text-green-400' 
+                            : 'text-zinc-50'
                       }`}
                     >
-                      {cohort.name} ({cohort.available} seats available)
+                      {cohort.name} ({cohort.available <= 0 ? 'Full' : `${cohort.available} seats available`})
                     </option>
                   ))}
                 </select>
