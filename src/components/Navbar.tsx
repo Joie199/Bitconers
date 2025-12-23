@@ -116,6 +116,12 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-1 xl:flex">
           <Link
+            href="/courses"
+            className="rounded-full px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
+          >
+            Courses
+          </Link>
+          <Link
             href="/chapters"
             className="rounded-full px-3 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
           >
@@ -409,6 +415,13 @@ export function Navbar() {
               className="block rounded-lg px-4 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
             >
               Home
+            </Link>
+            <Link
+              href="/courses"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block rounded-lg px-4 py-2 text-sm text-zinc-300 transition hover:bg-cyan-400/10 hover:text-cyan-200"
+            >
+              Courses
             </Link>
             <Link
               href="/chapters"
