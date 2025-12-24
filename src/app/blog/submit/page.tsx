@@ -240,7 +240,7 @@ export default function SubmitBlogPage() {
                             setCohortOtherText("");
                           }
                         }}
-                        disabled={isAuthenticated && formData.cohortId && formData.cohort !== "Other"}
+                        disabled={!!(isAuthenticated && formData.cohortId && formData.cohort !== "Other")}
                         className={`w-full rounded-lg border border-cyan-400/30 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-50 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 appearance-none cursor-pointer ${
                           isAuthenticated && formData.cohortId && formData.cohort !== "Other" ? 'opacity-70 cursor-not-allowed' : ''
                         }`}
