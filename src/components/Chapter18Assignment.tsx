@@ -157,6 +157,29 @@ export function Chapter18Assignment({ assignmentId }: Chapter18AssignmentProps) 
               <p className="text-sm text-green-300 font-medium">✓ Approved!</p>
             )}
           </div>
+          
+          {/* Show answers after submission */}
+          <div className="space-y-3 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
+            <p className="text-sm font-medium text-zinc-300 mb-2">Your Answers & Correct Answers:</p>
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs text-zinc-400 mb-1">Address A ({ADDRESSES.A})</p>
+                <p className="text-sm text-zinc-200">Your answer: {answerA}</p>
+                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.A}</p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-400 mb-1">Address B ({ADDRESSES.B})</p>
+                <p className="text-sm text-zinc-200">Your answer: {answerB}</p>
+                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.B}</p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-400 mb-1">Address C ({ADDRESSES.C})</p>
+                <p className="text-sm text-zinc-200">Your answer: {answerC}</p>
+                <p className="text-xs text-green-400 mt-1">Correct: {CORRECT_ANSWERS.C}</p>
+              </div>
+            </div>
+          </div>
+          
           <button
             onClick={() => {
               setSubmitted(false);
