@@ -251,14 +251,25 @@ export function Chapter8Assignment({ assignmentId }: Chapter8AssignmentProps) {
               </button>
             </div>
             <p className="text-xs text-zinc-400">Write down these 12 words in order. You'll need to restore them in Step 2.</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
-              {seedPhrase.map((word, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
-                  <code className="flex-1 font-mono text-sm text-zinc-200">{word}</code>
-                </div>
-              ))}
-            </div>
+            {showSeed ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
+                {seedPhrase.map((word, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
+                    <code className="flex-1 font-mono text-sm text-zinc-200">{word}</code>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
+                    <code className="flex-1 font-mono text-sm text-zinc-500">••••••••</code>
+                  </div>
+                ))}
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowSeed(!showSeed)}
