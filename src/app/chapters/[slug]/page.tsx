@@ -8,6 +8,8 @@ import { NextChapterButton } from "./NextChapterButton";
 import { LiveBlockchainData } from "@/components/LiveBlockchainData";
 import { AdminModeWrapper } from "@/components/AdminModeWrapper";
 import { ChapterAssignment } from "@/components/ChapterAssignment";
+import { Chapter6Assignment } from "@/components/Chapter6Assignment";
+import { Chapter18Assignment } from "@/components/Chapter18Assignment";
 import type { Metadata } from "next";
 
 type ChapterPageProps = {
@@ -705,6 +707,19 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               points={10}
               rewardSats={100}
             />
+          ) : chapter.slug === 'keys-and-transactions' ? (
+            <Chapter6Assignment
+              assignmentId="66666666-6666-4666-8666-666666666666"
+            />
+          ) : chapter.slug === 'blockchain-basics' ? (
+            <ChapterAssignment
+              assignmentId="77777777-7777-4777-8777-777777777777"
+              title="Assignment: Build a Block (Conceptual)"
+              question="Conceptually explain how a block is built, including transactions, hash, and linking to previous block."
+              description="Demonstrate your understanding of blockchain structure and block creation."
+              points={10}
+              rewardSats={100}
+            />
           ) : chapter.slug === 'exchange-software-wallet' ? (
             <ChapterAssignment
               assignmentId="88888888-8888-4888-8888-888888888888"
@@ -723,6 +738,10 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               points={10}
               rewardSats={100}
             />
+          ) : chapter.slug === 'intro-to-bitcoin-script-optional-track' ? (
+            <Chapter18Assignment
+              assignmentId="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            />
           ) : chapter.slug === 'verify-for-yourself-block-explorers-nodes' ? (
             <div className="mt-3">
               <Link
@@ -736,15 +755,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 Complete the assignment to practice using block explorers and verify transactions independently.
               </p>
             </div>
-          ) : chapter.activities.length === 0 ? (
-            <p className="mt-2 text-zinc-300">No activities in this chapter.</p>
-          ) : (
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-zinc-200">
-              {chapter.activities.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ul>
-          )}
+          ) : null}
         </section>
 
         {/* Summary */}

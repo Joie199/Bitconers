@@ -1,0 +1,39 @@
+-- Create Chapter 6 Assignment: "Create & Validate Bitcoin Addresses"
+-- This assignment requires instructor review (text submission)
+
+INSERT INTO assignments (
+  id,
+  title,
+  description,
+  chapter_number,
+  chapter_slug,
+  question,
+  search_address,
+  correct_answer,
+  answer_type,
+  points,
+  status,
+  cohort_id,
+  created_at,
+  updated_at
+) VALUES (
+  '66666666-6666-4666-8666-666666666666', -- Deterministic UUID for Chapter 6 assignment
+  'Assignment: Create & Validate Bitcoin Addresses',
+  'Part A: Create one on-chain receive address and one Lightning receive request. Part B: Validate addresses by pasting correct and incorrect addresses in each field.',
+  6,
+  'keys-and-transactions',
+  'Part A: Create addresses. Part B: Validate addresses with correct and incorrect examples.',
+  NULL,
+  'INSTRUCTOR_REVIEW', -- Special value indicating this requires manual review
+  'text',
+  10,
+  'active',
+  NULL, -- Available to all cohorts
+  NOW(),
+  NOW()
+) ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  question = EXCLUDED.question,
+  updated_at = NOW();
+
