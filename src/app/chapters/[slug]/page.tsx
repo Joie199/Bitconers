@@ -9,6 +9,7 @@ import { LiveBlockchainData } from "@/components/LiveBlockchainData";
 import { AdminModeWrapper } from "@/components/AdminModeWrapper";
 import { ChapterAssignment } from "@/components/ChapterAssignment";
 import { Chapter6Assignment } from "@/components/Chapter6Assignment";
+import { Chapter8Assignment } from "@/components/Chapter8Assignment";
 import { Chapter18Assignment } from "@/components/Chapter18Assignment";
 import type { Metadata } from "next";
 
@@ -721,13 +722,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               rewardSats={100}
             />
           ) : chapter.slug === 'exchange-software-wallet' ? (
-            <ChapterAssignment
+            <Chapter8Assignment
               assignmentId="88888888-8888-4888-8888-888888888888"
-              title="Assignment: First Wallet Proof"
-              question="Create a wallet, back up seed securely, restore it (dry run). Reflection: What went wrong or surprised you?"
-              description="Hands-on practice with wallet creation, backup, and recovery."
-              points={10}
-              rewardSats={200}
             />
           ) : chapter.slug === 'hardware-signers' ? (
             <ChapterAssignment
