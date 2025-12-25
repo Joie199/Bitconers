@@ -291,7 +291,12 @@ export default function BlogPage() {
                   <div className="text-left">
                     <h3 className="mb-2 text-lg font-semibold text-purple-200">Pre-Education Ideas</h3>
                     <p className="text-sm text-zinc-300">
-                      Are you curious about Bitcoin but haven't started learning yet? Share your thoughts, questions, or ideas about Bitcoin before your education journey begins. We'd love to hear what you think!
+                      Are you curious about Bitcoin but haven't started learning yet?
+                      <br />
+                      Share your thoughts, questions, or ideas about Bitcoin as you see it today.
+                      <br />
+                      <br />
+                      <span className="text-purple-300 font-medium">Thoughtful and well-explained contributions will receive a sats reward.</span>
                     </p>
                     <Link
                       href="/blog/submit"

@@ -47,7 +47,12 @@ export async function POST(req: NextRequest) {
       .select('*')
       .eq('student_id', profile.id)
       .eq('chapter_number', chapterNumber)
-      .single();
+      .maybeSingle();
+    
+    // Log error but continue (might be first time accessing chapter)
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Error checking chapter progress:', checkError);
+    }
 
     // Check if chapter was already completed to avoid duplicate rewards
     const wasAlreadyCompleted = existingProgress?.is_completed === true;
@@ -66,9 +71,22 @@ export async function POST(req: NextRequest) {
       if (updateError) {
         console.error('Error updating chapter progress:', updateError);
         return NextResponse.json(
-          { error: 'Failed to update chapter progress' },
+          { error: 'Failed to update chapter progress', details: updateError.message },
           { status: 500 }
         );
+      }
+
+      // Verify the update was successful
+      const { data: verifyUpdate } = await supabaseAdmin
+        .from('chapter_progress')
+        .select('is_completed, completed_at')
+        .eq('id', existingProgress.id)
+        .single();
+      
+      if (verifyUpdate?.is_completed) {
+        console.log(`[mark-completed] Successfully updated chapter ${chapterNumber} progress for student ${profile.id}`);
+      } else {
+        console.warn(`[mark-completed] Warning: Chapter ${chapterNumber} progress update may not have persisted for student ${profile.id}`);
       }
 
       // Unlock next chapter if it exists
@@ -85,7 +103,7 @@ export async function POST(req: NextRequest) {
             .select('id')
             .eq('student_id', profile.id)
             .eq('chapter_number', nextChapterNumber)
-            .single();
+            .maybeSingle();
 
           if (!nextProgress) {
             // Create progress record for next chapter and unlock it
@@ -128,9 +146,64 @@ export async function POST(req: NextRequest) {
       if (insertError) {
         console.error('Error creating chapter progress:', insertError);
         return NextResponse.json(
-          { error: 'Failed to create chapter progress' },
+          { error: 'Failed to create chapter progress', details: insertError.message },
           { status: 500 }
         );
+      }
+
+      // Verify the insert was successful
+      const { data: verifyInsert } = await supabaseAdmin
+        .from('chapter_progress')
+        .select('id, is_completed, completed_at')
+        .eq('student_id', profile.id)
+        .eq('chapter_number', chapterNumber)
+        .single();
+      
+      if (verifyInsert?.is_completed) {
+        console.log(`[mark-completed] Successfully created chapter ${chapterNumber} progress for student ${profile.id}`);
+      } else {
+        console.warn(`[mark-completed] Warning: Chapter ${chapterNumber} progress creation may not have persisted for student ${profile.id}`);
+      }
+
+      // Unlock next chapter if it exists (same logic as update path)
+      if (chapterNumber < 20) {
+        const nextChapterNumber = chapterNumber + 1;
+        // Get next chapter slug from chaptersContent
+        const { chaptersContent } = await import('@/content/chaptersContent');
+        const nextChapter = chaptersContent.find(c => c.number === nextChapterNumber);
+        
+        if (nextChapter) {
+          // Check if next chapter progress already exists
+          const { data: nextProgress } = await supabaseAdmin
+            .from('chapter_progress')
+            .select('id')
+            .eq('student_id', profile.id)
+            .eq('chapter_number', nextChapterNumber)
+            .maybeSingle();
+
+          if (!nextProgress) {
+            // Create progress record for next chapter and unlock it
+            await supabaseAdmin
+              .from('chapter_progress')
+              .insert({
+                student_id: profile.id,
+                chapter_number: nextChapterNumber,
+                chapter_slug: nextChapter.slug,
+                is_unlocked: true,
+                is_completed: false,
+                unlocked_at: new Date().toISOString(),
+              });
+          } else {
+            // Update existing record to unlock
+            await supabaseAdmin
+              .from('chapter_progress')
+              .update({
+                is_unlocked: true,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', nextProgress.id);
+          }
+        }
       }
     }
 
@@ -179,10 +252,34 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Final verification: Check that the chapter is marked as completed in the database
+    const { data: finalCheck, error: finalCheckError } = await supabaseAdmin
+      .from('chapter_progress')
+      .select('is_completed, completed_at, chapter_number')
+      .eq('student_id', profile.id)
+      .eq('chapter_number', chapterNumber)
+      .maybeSingle();
+
+    if (finalCheckError) {
+      console.error(`[mark-completed] Error verifying chapter completion:`, finalCheckError);
+    }
+
+    if (!finalCheck?.is_completed) {
+      console.error(`[mark-completed] CRITICAL: Chapter ${chapterNumber} completion was not saved to database for student ${profile.id}`);
+      return NextResponse.json({
+        success: false,
+        error: 'Chapter completion was not saved to database',
+        chapterNumber,
+      }, { status: 500 });
+    }
+
+    console.log(`[mark-completed] Verified: Chapter ${chapterNumber} is marked as completed for student ${profile.id} at ${finalCheck.completed_at}`);
+
     return NextResponse.json({
       success: true,
       message: 'Chapter marked as completed',
       chapterNumber,
+      completedAt: finalCheck.completed_at,
       newlyUnlockedAchievements: newlyUnlockedAchievements.length > 0 ? newlyUnlockedAchievements : undefined,
     });
   } catch (error: any) {

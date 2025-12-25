@@ -70,7 +70,8 @@ export async function POST(req: NextRequest) {
 
     // Calculate points
     const pointsEarned = isCorrect ? (assignment.points || 10) : 0;
-    const rewardAmount = isCorrect ? (assignment.reward_sats || 200) : 0;
+    // Cap reward at 200 sats maximum
+    const rewardAmount = isCorrect ? Math.min(assignment.reward_sats || 200, 200) : 0;
 
     // Update submission
     const { data: updatedSubmission, error: updateError } = await supabaseAdmin

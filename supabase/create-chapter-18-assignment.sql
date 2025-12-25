@@ -28,7 +28,7 @@ INSERT INTO assignments (
   'INSTRUCTOR_REVIEW', -- Special value indicating this requires manual review
   'text',
   10,
-  100, -- 100 sats reward (TBD - instructor review)
+  200, -- 200 sats reward (max reward)
   'active',
   NULL, -- Available to all cohorts
   NOW(),

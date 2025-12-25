@@ -116,8 +116,8 @@ export async function POST(req: NextRequest) {
     const isNewlyCorrect = isCorrect && !wasAlreadyCorrect;
     const isNewSubmission = !existingSubmission;
 
-    // Get reward amount (use assignment's reward_sats, default to 200 if not set)
-    const rewardAmount = assignment.reward_sats || 200;
+    // Get reward amount (use assignment's reward_sats, default to 200 if not set, max 200)
+    const rewardAmount = Math.min(assignment.reward_sats || 200, 200);
 
     let submission;
     if (existingSubmission) {

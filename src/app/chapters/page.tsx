@@ -599,9 +599,26 @@ export default function ChaptersPage() {
           <AnimatedSection animation="slideUp">
             <div className="mb-16 text-center">
               <h1 className="text-4xl font-bold tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
-                Learning Path<br />
-                Bitcoin Foundations → Lightning → Sovereignty
+                Learning Path
               </h1>
+              <div className="mx-auto mt-8 max-w-4xl">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-xl sm:text-2xl lg:text-3xl font-semibold">
+                  <div className="flex items-center gap-3 text-cyan-300">
+                    <span className="text-3xl">📚</span>
+                    <span>Bitcoin Foundations</span>
+                  </div>
+                  <span className="text-orange-400 text-2xl sm:text-3xl">→</span>
+                  <div className="flex items-center gap-3 text-orange-300">
+                    <span className="text-3xl">⚡</span>
+                    <span>Lightning</span>
+                  </div>
+                  <span className="text-purple-400 text-2xl sm:text-3xl">→</span>
+                  <div className="flex items-center gap-3 text-purple-300">
+                    <span className="text-3xl">👑</span>
+                    <span>Sovereignty</span>
+                  </div>
+                </div>
+              </div>
               <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-400 sm:text-xl">
                 Follow the lessons step-by-step or jump to any topic you want to explore.
               </p>
@@ -614,7 +631,7 @@ export default function ChaptersPage() {
           {/* Learning Path Progress Bar */}
           <AnimatedSection animation="slideRight">
             <div className="mb-16 rounded-xl border border-cyan-400/25 bg-black/80 p-6 shadow-[0_0_40px_rgba(34,211,238,0.2)]">
-            <h2 className="mb-6 text-center text-xl font-semibold text-cyan-200">Learning Path Progress</h2>
+            <h2 className="mb-6 text-center text-xl font-semibold text-cyan-200">Your Progress Through the Levels</h2>
             <div className="relative flex items-center justify-between">
               <div className="relative flex flex-1 items-center">
                 {/* Level I */}

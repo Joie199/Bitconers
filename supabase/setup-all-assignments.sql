@@ -206,7 +206,7 @@ INSERT INTO assignments (
   'Identify the script type for each address: Address A (bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080) → P2WPKH, Address B (3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy) → P2SH, Address C (bc1p5cyxnuxmeuwuvkwfem96llyxf3s2h0c6h7) → Taproot (P2TR)',
   18, 'intro-to-bitcoin-script-optional-track',
   'Identify the script type for three addresses: Address A, Address B, Address C',
-  NULL, 'INSTRUCTOR_REVIEW', 'text', 10, 100, 'active', NULL, NOW(), NOW()
+  NULL, 'INSTRUCTOR_REVIEW', 'text', 10, 200, 'active', NULL, NOW(), NOW()
 ) ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title,
   description = EXCLUDED.description,
