@@ -676,7 +676,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             <ChapterAssignment
               assignmentId="11111111-1111-4111-8111-111111111111"
               title="Assignment: &quot;What Is Money to Me?&quot;"
-              question="Write 5-7 sentences answering: What problem does money solve in my community?"
+              question="What problem does money solve in my community?"
               description="Reflect on how money functions in your daily life and community."
               points={10}
               rewardSats={50}

@@ -72,8 +72,8 @@ export function ChapterAssignment({
       return;
     }
 
-    if (!answer.trim() || answer.trim().split(/[.!?]+/).filter(s => s.trim().length > 0).length < 5) {
-      setError('Please write at least 5 sentences for your response.');
+    if (!answer.trim()) {
+      setError('Please write your response.');
       return;
     }
 
@@ -174,22 +174,18 @@ export function ChapterAssignment({
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="answer" className="block text-sm font-medium text-zinc-300 mb-2">
-              Your Response (5-7 sentences)
-            </label>
-            <textarea
-              id="answer"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              rows={8}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition resize-none"
-              placeholder="Write 5-7 sentences answering: What problem does money solve in my community?"
-              required
-              minLength={100}
-            />
-            <p className="mt-2 text-xs text-zinc-400">
-              {answer.trim().split(/[.!?]+/).filter(s => s.trim().length > 0).length} sentences (minimum 5 required)
-            </p>
+              <label htmlFor="answer" className="block text-sm font-medium text-zinc-300 mb-2">
+                Your Response
+              </label>
+              <textarea
+                id="answer"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                rows={8}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition resize-none"
+                placeholder="Write your response..."
+                required
+              />
           </div>
 
           {error && (
