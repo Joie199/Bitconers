@@ -8,17 +8,48 @@ interface Chapter6AssignmentProps {
   assignmentId: string;
 }
 
+// Bitcoin address validation functions
+function isValidBitcoinAddress(address: string): boolean {
+  if (!address || address.trim().length === 0) return false;
+  
+  const trimmed = address.trim();
+  
+  // Legacy addresses (P2PKH): starts with 1, length 26-35
+  const legacyRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+  
+  // Bech32 addresses (SegWit): starts with bc1, length 14-74
+  const bech32Regex = /^bc1[a-z0-9]{13,72}$/i;
+  
+  // Taproot addresses: starts with bc1p, length 62
+  const taprootRegex = /^bc1p[a-z0-9]{58}$/i;
+  
+  // P2SH addresses: starts with 3, length 26-35
+  const p2shRegex = /^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+  
+  return legacyRegex.test(trimmed) || 
+         bech32Regex.test(trimmed) || 
+         taprootRegex.test(trimmed) || 
+         p2shRegex.test(trimmed);
+}
+
+function isValidLightningInvoice(invoice: string): boolean {
+  if (!invoice || invoice.trim().length === 0) return false;
+  
+  const trimmed = invoice.trim();
+  
+  // Lightning invoice starts with lnbc (mainnet) or lntb/lntbs (testnet)
+  // or could be a lightning address like user@domain.com
+  const lightningInvoiceRegex = /^(lnbc|lntb|lntbs)[0-9a-z]{1,1900}$/i;
+  const lightningAddressRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
+  return lightningInvoiceRegex.test(trimmed) || lightningAddressRegex.test(trimmed);
+}
+
 export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
   const { profile, isAuthenticated } = useAuth();
   const { isAuthenticated: isAdminAuth, email: adminEmail, loading: adminLoading } = useSession('admin');
-  const [onChainAddress, setOnChainAddress] = useState('');
-  const [onChainAddressType, setOnChainAddressType] = useState('');
-  const [onChainNetwork, setOnChainNetwork] = useState('');
-  const [lightningInvoice, setLightningInvoice] = useState('');
-  const [lightningAmount, setLightningAmount] = useState('');
-  const [lightningExpiry, setLightningExpiry] = useState('');
   
-  // Part B
+  // Part A (formerly Part B) - Address Validation
   const [validationOnChain, setValidationOnChain] = useState('');
   const [validationLightning, setValidationLightning] = useState('');
   const [reflection, setReflection] = useState('');
@@ -28,6 +59,8 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
   const [error, setError] = useState<string | null>(null);
   const [submissionStatus, setSubmissionStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [onChainError, setOnChainError] = useState<string | null>(null);
+  const [lightningError, setLightningError] = useState<string | null>(null);
 
   useEffect(() => {
     if ((isAuthenticated && profile?.email) || (isAdminAuth && adminEmail)) {
@@ -53,12 +86,6 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
           if (thisAssignment.submission.answer) {
             try {
               const answerData = JSON.parse(thisAssignment.submission.answer);
-              setOnChainAddress(answerData.onChainAddress || '');
-              setOnChainAddressType(answerData.onChainAddressType || '');
-              setOnChainNetwork(answerData.onChainNetwork || '');
-              setLightningInvoice(answerData.lightningInvoice || '');
-              setLightningAmount(answerData.lightningAmount || '');
-              setLightningExpiry(answerData.lightningExpiry || '');
               setValidationOnChain(answerData.validationOnChain || '');
               setValidationLightning(answerData.validationLightning || '');
               setReflection(answerData.reflection || '');
@@ -75,6 +102,34 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
     }
   };
 
+  const validateOnChainAddress = (address: string) => {
+    if (!address.trim()) {
+      setOnChainError(null);
+      return;
+    }
+    
+    // Check if it's a valid address
+    if (isValidBitcoinAddress(address)) {
+      setOnChainError(null);
+    } else {
+      setOnChainError('Invalid Bitcoin address. Must be a valid on-chain address (starts with 1, 3, or bc1)');
+    }
+  };
+
+  const validateLightningAddress = (invoice: string) => {
+    if (!invoice.trim()) {
+      setLightningError(null);
+      return;
+    }
+    
+    // Check if it's a valid lightning invoice or address
+    if (isValidLightningInvoice(invoice)) {
+      setLightningError(null);
+    } else {
+      setLightningError('Invalid Lightning invoice or address. Must start with lnbc/lntb/lntbs or be a Lightning address (user@domain.com)');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const email = isAdminAuth && adminEmail ? adminEmail : profile?.email;
@@ -83,8 +138,24 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
       return;
     }
 
-    if (!onChainAddress || !onChainAddressType || !onChainNetwork || !lightningInvoice || !validationOnChain || !validationLightning || !reflection.trim()) {
-      setError('Please complete all required fields.');
+    // Validate addresses before submission
+    const onChainValid = isValidBitcoinAddress(validationOnChain);
+    const lightningValid = isValidLightningInvoice(validationLightning);
+
+    if (!validationOnChain.trim() || !validationLightning.trim()) {
+      setError('Please provide both on-chain address and Lightning address/invoice.');
+      return;
+    }
+
+    if (!onChainValid) {
+      setError('Please enter a valid Bitcoin on-chain address in Input 1.');
+      setOnChainError('Invalid Bitcoin address');
+      return;
+    }
+
+    if (!lightningValid) {
+      setError('Please enter a valid Lightning invoice or address in Input 2.');
+      setLightningError('Invalid Lightning invoice or address');
       return;
     }
 
@@ -93,19 +164,9 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
 
     try {
       const answerData = {
-        partA: {
-          onChainAddress,
-          onChainAddressType,
-          onChainNetwork,
-          lightningInvoice,
-          lightningAmount,
-          lightningExpiry,
-        },
-        partB: {
-          validationOnChain,
-          validationLightning,
-        },
-        reflection,
+        validationOnChain,
+        validationLightning,
+        reflection: reflection.trim() || '', // Optional reflection
       };
 
       const response = await fetch('/api/assignments/submit', {
@@ -156,7 +217,7 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
     <div className="rounded-lg border border-zinc-800/60 bg-zinc-950 p-5 shadow-inner space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-zinc-100 mb-2">Assignment: Create & Validate Bitcoin Addresses</h3>
-        <p className="text-sm text-zinc-400 mb-4">Deliverable: Short paragraph + validation results | Reward: TBD (after instructor review)</p>
+        <p className="text-sm text-zinc-400 mb-4">Deliverable: Valid addresses + reflection | Reward: TBD (after instructor review)</p>
       </div>
 
       {submitted && submissionStatus ? (
@@ -180,107 +241,10 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Part A */}
+          {/* Part A - Address Validation */}
           <div className="space-y-4 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <h4 className="text-base font-semibold text-zinc-200">Part A — Create Addresses</h4>
-            
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                1. Create one on-chain receive address
-              </label>
-              <input
-                type="text"
-                value={onChainAddress}
-                onChange={(e) => setOnChainAddress(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="bc1... or 1... or 3..."
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Address type
-                </label>
-                <select
-                  value={onChainAddressType}
-                  onChange={(e) => setOnChainAddressType(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition"
-                  required
-                >
-                  <option value="">Select type</option>
-                  <option value="bc1 (SegWit/bech32)">bc1... (SegWit/bech32)</option>
-                  <option value="Legacy (P2PKH)">Legacy (P2PKH)</option>
-                  <option value="P2SH">P2SH (3...)</option>
-                  <option value="Taproot (P2TR)">Taproot (bc1p...)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Network
-                </label>
-                <select
-                  value={onChainNetwork}
-                  onChange={(e) => setOnChainNetwork(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition"
-                  required
-                >
-                  <option value="">Select network</option>
-                  <option value="Mainnet">Mainnet</option>
-                  <option value="Testnet">Testnet</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                2. Create one Lightning receive request
-              </label>
-              <input
-                type="text"
-                value={lightningInvoice}
-                onChange={(e) => setLightningInvoice(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="lnbc1... or Lightning address"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Invoice amount (can be zero)
-                </label>
-                <input
-                  type="text"
-                  value={lightningAmount}
-                  onChange={(e) => setLightningAmount(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition"
-                  placeholder="e.g., 1000 sats or 0"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Expiry time
-                </label>
-                <input
-                  type="text"
-                  value={lightningExpiry}
-                  onChange={(e) => setLightningExpiry(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition"
-                  placeholder="e.g., 1 hour, 1 day"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Part B */}
-          <div className="space-y-4 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <h4 className="text-base font-semibold text-zinc-200">Part B — Address Validation (Critical Thinking)</h4>
-            <p className="text-sm text-zinc-400">For each input: Paste the correct address first, then paste an incorrect address (e.g., Lightning invoice in on-chain field, Testnet address marked as mainnet, invalid checksum).</p>
+            <h4 className="text-base font-semibold text-zinc-200">Part A — Address Validation</h4>
+            <p className="text-sm text-zinc-400">Paste valid addresses in each field. Addresses will be validated when you submit.</p>
             
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
@@ -288,12 +252,28 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
               </label>
               <textarea
                 value={validationOnChain}
-                onChange={(e) => setValidationOnChain(e.target.value)}
-                rows={4}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="Paste correct on-chain address, then incorrect address"
+                onChange={(e) => {
+                  setValidationOnChain(e.target.value);
+                  validateOnChainAddress(e.target.value);
+                }}
+                onBlur={(e) => validateOnChainAddress(e.target.value)}
+                rows={3}
+                className={`w-full rounded-lg border px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition font-mono text-sm ${
+                  onChainError 
+                    ? 'border-red-500/50 bg-red-900/20 focus:border-red-500 focus:ring-red-500/20' 
+                    : validationOnChain.trim() && isValidBitcoinAddress(validationOnChain)
+                    ? 'border-green-500/50 bg-green-900/20 focus:border-green-500 focus:ring-green-500/20'
+                    : 'border-zinc-700 bg-zinc-900 focus:border-cyan-500/50 focus:ring-cyan-500/20'
+                }`}
+                placeholder="Paste a valid Bitcoin on-chain address (starts with 1, 3, or bc1)"
                 required
               />
+              {onChainError && (
+                <p className="mt-1 text-xs text-red-400">{onChainError}</p>
+              )}
+              {validationOnChain.trim() && !onChainError && isValidBitcoinAddress(validationOnChain) && (
+                <p className="mt-1 text-xs text-green-400">✓ Valid Bitcoin address</p>
+              )}
             </div>
 
             <div>
@@ -302,27 +282,42 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
               </label>
               <textarea
                 value={validationLightning}
-                onChange={(e) => setValidationLightning(e.target.value)}
-                rows={4}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition font-mono text-sm"
-                placeholder="Paste correct Lightning invoice, then incorrect address"
+                onChange={(e) => {
+                  setValidationLightning(e.target.value);
+                  validateLightningAddress(e.target.value);
+                }}
+                onBlur={(e) => validateLightningAddress(e.target.value)}
+                rows={3}
+                className={`w-full rounded-lg border px-4 py-2 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition font-mono text-sm ${
+                  lightningError 
+                    ? 'border-red-500/50 bg-red-900/20 focus:border-red-500 focus:ring-red-500/20' 
+                    : validationLightning.trim() && isValidLightningInvoice(validationLightning)
+                    ? 'border-green-500/50 bg-green-900/20 focus:border-green-500 focus:ring-green-500/20'
+                    : 'border-zinc-700 bg-zinc-900 focus:border-cyan-500/50 focus:ring-cyan-500/20'
+                }`}
+                placeholder="Paste a valid Lightning invoice (lnbc...) or Lightning address (user@domain.com)"
                 required
               />
+              {lightningError && (
+                <p className="mt-1 text-xs text-red-400">{lightningError}</p>
+              )}
+              {validationLightning.trim() && !lightningError && isValidLightningInvoice(validationLightning) && (
+                <p className="mt-1 text-xs text-green-400">✓ Valid Lightning invoice/address</p>
+              )}
             </div>
           </div>
 
-          {/* Reflection */}
+          {/* Reflection - Optional */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">
-              Reflection: What did you learn from this exercise?
+              Reflection: What did you learn from this exercise? <span className="text-zinc-500 text-xs">(Optional)</span>
             </label>
             <textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
               rows={4}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition resize-none"
-              placeholder="Write your reflection..."
-              required
+              placeholder="Write your reflection (optional)..."
             />
           </div>
 
@@ -344,4 +339,3 @@ export function Chapter6Assignment({ assignmentId }: Chapter6AssignmentProps) {
     </div>
   );
 }
-
