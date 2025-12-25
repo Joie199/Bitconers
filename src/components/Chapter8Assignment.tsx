@@ -204,23 +204,36 @@ export function Chapter8Assignment({ assignmentId }: Chapter8AssignmentProps) {
             )}
           </div>
           
-          {/* Show submitted seed phrase and inputs */}
-          <div className="space-y-4 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
-            <h4 className="text-sm font-semibold text-zinc-300">Your Seed Phrase Restoration:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {studentInputs.map((input, index) => (
-                <div key={index}>
-                  <label className="block text-xs text-zinc-400 mb-1">
-                    Word {index + 1}
-                  </label>
-                  <input
-                    type="text"
-                    value={input}
-                    disabled
-                    className={getInputClassName(index)}
-                  />
-                </div>
-              ))}
+          {/* Show submitted seed phrase restoration and original seed phrase */}
+          <div className="space-y-4">
+            <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
+              <h4 className="text-sm font-semibold text-zinc-300 mb-3">Your Original Seed Phrase:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-zinc-950 rounded border border-zinc-700">
+                {seedPhrase.map((word, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="text-xs text-zinc-500 w-6">{index + 1}.</span>
+                    <code className="flex-1 font-mono text-sm text-zinc-200">{word}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800/50">
+              <h4 className="text-sm font-semibold text-zinc-300 mb-3">Your Seed Phrase Restoration:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {studentInputs.map((input, index) => (
+                  <div key={index}>
+                    <label className="block text-xs text-zinc-400 mb-1">
+                      Word {index + 1}
+                    </label>
+                    <input
+                      type="text"
+                      value={input}
+                      disabled
+                      className={getInputClassName(index)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
