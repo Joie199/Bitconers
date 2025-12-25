@@ -533,11 +533,11 @@ export default async function Home() {
                   Guided by Mentors & Community Leaders
                 </h2>
               </div>
-              <AnimatedList animation="slideLeft" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <AnimatedList animation="slideLeft" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-items-center max-w-7xl mx-auto">
                 {mentors.map((mentor, index) => (
                   <div
                     key={index}
-                    className="rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_20px_rgba(34,211,238,0.1)]"
+                    className="w-full max-w-sm rounded-xl border border-cyan-400/25 bg-black/80 p-8 shadow-[0_0_20px_rgba(34,211,238,0.1)] flex flex-col items-center text-center"
                   >
                     <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/20 to-cyan-500/20 overflow-hidden">
                       {mentor.image ? (
@@ -557,9 +557,9 @@ export default async function Home() {
                     {mentor.type && (
                       <p className="mb-3 text-xs font-medium text-orange-300">{mentor.type}</p>
                     )}
-                    <p className="mb-4 text-sm text-zinc-400">"{mentor.description}"</p>
+                    <p className="mb-4 text-sm text-zinc-400 flex-grow">"{mentor.description}"</p>
                     {(mentor.github || mentor.twitter) && (
-                      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-zinc-700">
+                      <div className="flex items-center justify-center gap-3 mt-auto pt-4 border-t border-zinc-700 w-full">
                         {mentor.github && (
                           <a
                             href={mentor.github}
