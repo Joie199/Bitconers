@@ -135,7 +135,7 @@ export function ChapterAssignment({
         <div className="mb-4 p-4 bg-zinc-900/80 rounded-lg border border-zinc-800/50">
           <p className="text-zinc-200 font-medium mb-2">Task:</p>
           <p className="text-zinc-300">{question}</p>
-          <p className="text-sm text-zinc-400 mt-2">Deliverable: Text submission (5-7 sentences)</p>
+          <p className="text-sm text-zinc-400 mt-2">Deliverable: Text submission</p>
           <p className="text-sm text-zinc-400">Reward: {rewardSats} sats (awarded after instructor review)</p>
         </div>
       </div>
