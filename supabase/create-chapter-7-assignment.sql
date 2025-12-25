@@ -1,4 +1,4 @@
--- Create Chapter 7 Assignment: "Build a Block (Conceptual)"
+-- Create Chapter 7 Assignment: "Understanding a Block"
 -- This assignment requires instructor review (text submission)
 
 INSERT INTO assignments (
@@ -18,11 +18,11 @@ INSERT INTO assignments (
   updated_at
 ) VALUES (
   '77777777-7777-4777-8777-777777777777', -- Deterministic UUID for Chapter 7 assignment
-  'Assignment: Build a Block (Conceptual)',
-  'Demonstrate your understanding of blockchain structure and block creation. Conceptually explain how a block is built, including transactions, hash, and linking to previous block.',
+  'Assignment: Understanding a Block',
+  'Explain the consequences of attempting to alter a transaction in a previous block on the blockchain. What would happen if someone tried to change a transaction in an old block?',
   7,
   'blockchain-basics',
-  'Conceptually explain how a block is built, including transactions, hash, and linking to previous block.',
+  'What would happen if someone tried to change a transaction in an old block?',
   NULL,
   'INSTRUCTOR_REVIEW', -- Special value indicating this requires manual review
   'text',

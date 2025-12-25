@@ -715,9 +715,9 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           ) : chapter.slug === 'blockchain-basics' ? (
             <ChapterAssignment
               assignmentId="77777777-7777-4777-8777-777777777777"
-              title="Assignment: Build a Block (Conceptual)"
-              question="Conceptually explain how a block is built, including transactions, hash, and linking to previous block."
-              description="Demonstrate your understanding of blockchain structure and block creation."
+              title="Assignment: Understanding a Block"
+              question="What would happen if someone tried to change a transaction in an old block?"
+              description="Explain the consequences of attempting to alter a transaction in a previous block on the blockchain."
               points={10}
               rewardSats={100}
             />
