@@ -131,7 +131,7 @@ export default function AboutPage() {
               <section className="rounded-xl border border-green-400/25 bg-green-500/5 p-5 sm:p-6">
               <h2 className="text-lg font-semibold text-green-200 sm:text-xl">A growing community — open to all</h2>
               <p className="mt-3 text-zinc-200">
-                Built in Uganda and connected to the Pan-African and global Bitcoin ecosystem. We welcome mentors,
+                Connected to the Pan-African and global Bitcoin ecosystem. We welcome mentors,
                 guest lecturers, Bitcoin developers, educators, open-source contributors, builders, wallet creators,
                 Lightning enthusiasts, and anyone who wants to support African learners.
               </p>
