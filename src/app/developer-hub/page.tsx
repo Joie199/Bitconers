@@ -278,6 +278,30 @@ export default function DeveloperHubPage() {
                     </ul>
                   </div>
 
+                  {/* SavingsSatoshi */}
+                  <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-5 flex flex-col h-full">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-indigo-200">SavingsSatoshi</h4>
+                      <a
+                        href="https://savingsatoshi.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-300 hover:text-indigo-200"
+                        aria-label="Visit SavingsSatoshi website (opens in new tab)"
+                      >
+                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                      </a>
+                    </div>
+                    <p className="mb-3 text-sm text-zinc-300">Code your way through the mysteries of bitcoin.</p>
+                    <p className="mb-3 text-sm font-medium text-indigo-200">Why use it?</p>
+                    <ul className="ml-4 space-y-1 text-sm text-zinc-400">
+                      <li>• Interactive coding challenges</li>
+                      <li>• Learn Bitcoin concepts through practice</li>
+                      <li>• Open-source production by the Bitcoin community</li>
+                      <li>• Build practical Bitcoin development skills</li>
+                    </ul>
+                  </div>
+
                   {/* Mempool Explorers & Block Explorers */}
                   <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-5">
                     <div className="mb-3 flex items-center justify-between">
